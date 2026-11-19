@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: deny all by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'name', 'email', 'role', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'name', 'email', 'role', 'city', 'savedProviderIds', 'createdAt', 'updatedAt'])
+        && data.uid is string && data.uid == request.auth.uid && data.uid.size() <= 128
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 120
+        && data.email is string && data.email.size() <= 180
+        && data.role in ['customer', 'provider']
+        && (!('city' in data) || (data.city is string && data.city.size() <= 80))
+        && (!('savedProviderIds' in data) || (data.savedProviderIds is list && data.savedProviderIds.size() <= 50));
+    }
+
+    function isValidServiceRequest(data) {
+      return data.keys().hasAll(['requestId', 'referenceCode', 'customerUid', 'requestType', 'serviceName', 'problemSummary', 'city', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['requestId', 'referenceCode', 'customerUid', 'requestType', 'serviceName', 'problemSummary', 'city', 'status', 'createdAt', 'updatedAt'])
+        && data.requestId is string && data.requestId.size() <= 128
+        && data.referenceCode is string && data.referenceCode.size() <= 32
+        && data.customerUid is string && data.customerUid == request.auth.uid && data.customerUid.size() <= 128
+        && data.requestType in ['marketplace', 'direct']
+        && data.serviceName is string && data.serviceName.size() <= 120
+        && data.problemSummary is string && data.problemSummary.size() <= 400
+        && data.city is string && data.city.size() <= 80
+        && data.status is string && data.status.size() <= 40;
+    }
+
+    function isValidReview(data) {
+      return data.keys().hasAll(['reviewId', 'jobId', 'customerUid', 'customerName', 'providerId', 'rating', 'comment', 'isVerifiedJob', 'createdAt'])
+        && data.keys().hasOnly(['reviewId', 'jobId', 'customerUid', 'customerName', 'providerId', 'rating', 'comment', 'serviceName', 'isVerifiedJob', 'createdAt'])
+        && data.reviewId is string && isValidId(data.reviewId)
+        && data.jobId is string && isValidId(data.jobId)
+        && data.customerUid is string && data.customerUid == request.auth.uid && data.customerUid.size() <= 128
+        && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 120
+        && data.providerId is string && isValidId(data.providerId)
+        && data.rating is int && data.rating >= 1 && data.rating <= 5
+        && data.comment is string && data.comment.size() >= 3 && data.comment.size() <= 1000
+        && (!('serviceName' in data) || (data.serviceName is string && data.serviceName.size() <= 120))
+        && data.isVerifiedJob is bool && data.isVerifiedJob == true;
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && (request.auth.uid == userId || isAdmin());
+      allow create: if isSignedIn() && isValidId(userId) && request.auth.uid == userId
+        && isValidUserProfile(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isSignedIn() && isValidId(userId) && (request.auth.uid == userId || isAdmin())
+        && isValidUserProfile(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'city', 'savedProviderIds', 'updatedAt']);
+    }
+
+    match /service_requests/{requestId} {
+      allow get: if isSignedIn() && isValidId(requestId) && (existing().customerUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.customerUid == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidId(requestId)
+        && isValidServiceRequest(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isSignedIn() && isValidId(requestId) && (existing().customerUid == request.auth.uid || isAdmin())
+        && isValidServiceRequest(incoming())
+        && incoming().requestId == existing().requestId
+        && incoming().customerUid == existing().customerUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+    }
+
+    match /reviews/{reviewId} {
+      allow get: if isValidId(reviewId);
+      allow list: if true;
+      allow create: if isSignedIn() && isValidId(reviewId)
+        && isValidReview(incoming())
+        && incoming().reviewId == reviewId
+        && incoming().createdAt == request.time;
+      allow update, delete: if isAdmin();
+    }
+
+    match /test/connection {
+      allow get: if true;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "FixSoon",
+  "description": "Whatever needs fixing, find the right professional. Multi-service marketplace for roadside assistance, mobile mechanics, and home repairs in the Greater Toronto Area.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

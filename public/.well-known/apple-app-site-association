@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["TEAMID.ca.fixsoon.app"],
+        "components": [
+          { "/": "/*", "comment": "Universal Links for FixSoon iOS App" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["TEAMID.ca.fixsoon.app"]
+  }
+}

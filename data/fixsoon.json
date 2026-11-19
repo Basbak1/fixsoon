@@ -1,0 +1,644 @@
+{
+  "users": [
+    {
+      "id": "usr_cust_1",
+      "name": "Alex Chen",
+      "email": "alex.customer@fixsoon.demo",
+      "phone": "416-555-0142",
+      "role": "customer",
+      "password_hash": "d484eb23af491b6654b6e0e7f1eec765:278e514e6035802b4af635786d40f6e8176321ae24044d29de289f8e9fd77b923eee65cf6bc7963ac425896595045ef7c2fbb716284fd665737655dd477b8d2f",
+      "city": "Toronto",
+      "saved_provider_ids": [
+        "prov_marcus"
+      ],
+      "created_at": "2026-11-12T01:24:21.458Z"
+    },
+    {
+      "id": "usr_prov_1",
+      "name": "Marcus Miller",
+      "email": "marcus.auto@fixsoon.demo",
+      "phone": "416-555-0188",
+      "role": "provider",
+      "password_hash": "d484eb23af491b6654b6e0e7f1eec765:278e514e6035802b4af635786d40f6e8176321ae24044d29de289f8e9fd77b923eee65cf6bc7963ac425896595045ef7c2fbb716284fd665737655dd477b8d2f",
+      "city": "Toronto",
+      "saved_provider_ids": [],
+      "created_at": "2026-11-12T01:24:21.458Z"
+    },
+    {
+      "id": "usr_prov_2",
+      "name": "Sarah Jenkins",
+      "email": "sarah.tech@fixsoon.demo",
+      "phone": "905-555-0164",
+      "role": "provider",
+      "password_hash": "d484eb23af491b6654b6e0e7f1eec765:278e514e6035802b4af635786d40f6e8176321ae24044d29de289f8e9fd77b923eee65cf6bc7963ac425896595045ef7c2fbb716284fd665737655dd477b8d2f",
+      "city": "Mississauga",
+      "saved_provider_ids": [],
+      "created_at": "2026-11-12T01:24:21.458Z"
+    },
+    {
+      "id": "usr_prov_3",
+      "name": "David Patel",
+      "email": "david.pending@fixsoon.demo",
+      "phone": "905-555-0199",
+      "role": "provider",
+      "password_hash": "d484eb23af491b6654b6e0e7f1eec765:278e514e6035802b4af635786d40f6e8176321ae24044d29de289f8e9fd77b923eee65cf6bc7963ac425896595045ef7c2fbb716284fd665737655dd477b8d2f",
+      "city": "Brampton",
+      "saved_provider_ids": [],
+      "created_at": "2026-11-12T01:24:21.458Z"
+    },
+    {
+      "id": "usr_admin_1",
+      "name": "FixSoon Operations",
+      "email": "admin@fixsoon.demo",
+      "phone": "416-555-0100",
+      "role": "admin",
+      "password_hash": "d484eb23af491b6654b6e0e7f1eec765:278e514e6035802b4af635786d40f6e8176321ae24044d29de289f8e9fd77b923eee65cf6bc7963ac425896595045ef7c2fbb716284fd665737655dd477b8d2f",
+      "city": "Toronto",
+      "saved_provider_ids": [],
+      "created_at": "2026-11-12T01:24:21.458Z"
+    }
+  ],
+  "service_categories": [
+    {
+      "id": "cat_auto",
+      "slug": "automotive-roadside",
+      "name": "Automotive & Roadside Assistance",
+      "description": "Mobile mechanics, roadside jumpstarts, battery replacement, flat tire help, and on-site vehicle diagnostics.",
+      "image_url": "/src/assets/images/category_automotive_1794446299137.jpg",
+      "is_active": true,
+      "seo_title": "Mobile Mechanics & Roadside Assistance in the GTA | FixSoon",
+      "seo_description": "Connect with independent mobile mechanics, battery boost, flat tire, and roadside assistance professionals across Toronto and the GTA.",
+      "dynamic_fields": [
+        {
+          "key": "vehicle_year",
+          "label": "Vehicle year",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g. 2019"
+        },
+        {
+          "key": "vehicle_make",
+          "label": "Vehicle make",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g. Honda"
+        },
+        {
+          "key": "vehicle_model",
+          "label": "Vehicle model",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g. Civic"
+        },
+        {
+          "key": "can_vehicle_move",
+          "label": "Can the vehicle be driven safely?",
+          "type": "select",
+          "required": true,
+          "options": [
+            "No, it will not start or move",
+            "Yes, but warning light or noise present",
+            "Not sure"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_home",
+      "slug": "home-services",
+      "name": "Home & Appliance Services",
+      "description": "Independent appliance repair, plumbing fixtures, electrical troubleshooting, and general home maintenance.",
+      "image_url": "/src/assets/images/category_home_appliance_1794446298673.jpg",
+      "is_active": true,
+      "seo_title": "Home Appliance Repair, Plumbing & Electrical Services | FixSoon",
+      "seo_description": "Find independent appliance repair technicians, plumbers, and electricians in the Greater Toronto Area.",
+      "dynamic_fields": [
+        {
+          "key": "appliance_or_fixture",
+          "label": "Appliance or fixture type",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g. Front-load washing machine, kitchen faucet"
+        },
+        {
+          "key": "manufacturer",
+          "label": "Brand / Manufacturer (if known)",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g. LG, Samsung, Moen"
+        },
+        {
+          "key": "model_number",
+          "label": "Model number (optional)",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g. WM3900HWA"
+        },
+        {
+          "key": "property_type",
+          "label": "Property type",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Detached / Semi-detached house",
+            "Townhouse",
+            "Condo / Apartment",
+            "Commercial space"
+          ]
+        }
+      ]
+    }
+  ],
+  "service_subcategories": [
+    {
+      "id": "sub_roadside",
+      "category_id": "cat_auto",
+      "slug": "roadside-assistance",
+      "name": "Roadside Assistance",
+      "description": "On-the-spot emergency help for stranded vehicles including boosts, lockouts, and fuel delivery.",
+      "keywords": [
+        "stranded",
+        "roadside",
+        "emergency",
+        "tow",
+        "stuck",
+        "help"
+      ],
+      "typical_duration": "30–60 mins",
+      "seo_title": "Roadside Assistance in Toronto & GTA | FixSoon",
+      "seo_description": "Request fast roadside assistance from independent professionals across Toronto, Mississauga, Brampton, and the GTA."
+    },
+    {
+      "id": "sub_mobile_mech",
+      "category_id": "cat_auto",
+      "slug": "mobile-mechanic",
+      "name": "Mobile Mechanic",
+      "description": "Certified mobile diagnostics, starter/alternator repairs, brake service, and inspections at your driveway or parking spot.",
+      "keywords": [
+        "mechanic",
+        "repair",
+        "engine",
+        "noise",
+        "brake",
+        "alternator",
+        "starter",
+        "inspection"
+      ],
+      "typical_duration": "1–2 hours",
+      "seo_title": "Mobile Mechanic Near You in the GTA | FixSoon",
+      "seo_description": "Compare quotes from independent mobile mechanics in Toronto, Mississauga, and Brampton."
+    },
+    {
+      "id": "sub_battery_boost",
+      "category_id": "cat_auto",
+      "slug": "battery-boost",
+      "name": "Battery Boost & Jumpstart",
+      "description": "Safe commercial-grade jumpstart and charging system check when your car will not crank.",
+      "keywords": [
+        "wont start",
+        "won't start",
+        "dead battery",
+        "jump",
+        "boost",
+        "click",
+        "no crank",
+        "car dead"
+      ],
+      "typical_duration": "20–40 mins",
+      "seo_title": "Battery Boost & Jumpstart Service in the GTA | FixSoon",
+      "seo_description": "Dead car battery? Find independent roadside technicians for a safe battery boost and charging test."
+    },
+    {
+      "id": "sub_battery_replace",
+      "category_id": "cat_auto",
+      "slug": "battery-replacement",
+      "name": "Mobile Battery Replacement",
+      "description": "On-site battery testing, removal, and installation of a compatible replacement battery.",
+      "keywords": [
+        "battery replacement",
+        "new battery",
+        "battery dead",
+        "corroded",
+        "replace battery"
+      ],
+      "typical_duration": "30–60 mins",
+      "seo_title": "Mobile Car Battery Replacement in Toronto & GTA | FixSoon",
+      "seo_description": "Get quotes for mobile car battery replacement at home, work, or roadside in the GTA."
+    },
+    {
+      "id": "sub_flat_tire",
+      "category_id": "cat_auto",
+      "slug": "flat-tire-assistance",
+      "name": "Flat Tire Assistance & Change",
+      "description": "Spare tire mounting, tire plug/patch where safe, or mobile tire replacement.",
+      "keywords": [
+        "flat tire",
+        "puncture",
+        "nail",
+        "blowout",
+        "spare tire",
+        "tire change",
+        "rim"
+      ],
+      "typical_duration": "30–50 mins",
+      "seo_title": "Flat Tire Assistance & Mobile Tire Change GTA | FixSoon",
+      "seo_description": "Flat tire in Toronto or the GTA? Request an independent technician to mount your spare or repair your tire."
+    },
+    {
+      "id": "sub_diagnostics",
+      "category_id": "cat_auto",
+      "slug": "vehicle-diagnostics",
+      "name": "Vehicle Diagnostics & Check Engine",
+      "description": "OBD-II fault code scanning, electrical tracing, and pre-purchase vehicle inspections.",
+      "keywords": [
+        "check engine",
+        "light",
+        "diagnostic",
+        "scan",
+        "code",
+        "electrical",
+        "inspection"
+      ],
+      "typical_duration": "45–90 mins",
+      "seo_title": "Mobile Vehicle Diagnostics & Pre-Purchase Inspection | FixSoon",
+      "seo_description": "Book an independent mobile technician for OBD-II diagnostics and pre-purchase inspections in the GTA."
+    },
+    {
+      "id": "sub_washer",
+      "category_id": "cat_home",
+      "slug": "washing-machine-repair",
+      "name": "Washing Machine & Dryer Repair",
+      "description": "Troubleshooting leaks, drain pump failures, spin issues, and heating problems for laundry appliances.",
+      "keywords": [
+        "washing machine",
+        "washer",
+        "dryer",
+        "leaking",
+        "spin",
+        "drain",
+        "laundry"
+      ],
+      "typical_duration": "1–2 hours",
+      "seo_title": "Washing Machine & Dryer Repair in the GTA | FixSoon",
+      "seo_description": "Find independent appliance technicians for washing machine and dryer repairs across Toronto and the GTA."
+    },
+    {
+      "id": "sub_fridge",
+      "category_id": "cat_home",
+      "slug": "refrigerator-repair",
+      "name": "Refrigerator & Stove Repair",
+      "description": "Cooling diagnostics, thermostat replacement, oven elements, and kitchen appliance servicing.",
+      "keywords": [
+        "fridge",
+        "refrigerator",
+        "freezer",
+        "stove",
+        "oven",
+        "not cooling",
+        "appliance"
+      ],
+      "typical_duration": "1–2 hours",
+      "seo_title": "Refrigerator & Kitchen Appliance Repair GTA | FixSoon",
+      "seo_description": "Request quotes from independent refrigerator and stove repair specialists in the Greater Toronto Area."
+    },
+    {
+      "id": "sub_plumbing",
+      "category_id": "cat_home",
+      "slug": "plumbing-fixtures",
+      "name": "Plumbing & Fixture Repair",
+      "description": "Leaking faucets, toilet repairs, P-trap clearing, and fixture installations.",
+      "keywords": [
+        "faucet",
+        "leak",
+        "leaking",
+        "plumbing",
+        "toilet",
+        "sink",
+        "pipe",
+        "drain"
+      ],
+      "typical_duration": "1–2 hours",
+      "seo_title": "Plumbing & Faucet Repair Services in the GTA | FixSoon",
+      "seo_description": "Connect with local plumbing and fixture repair professionals in Toronto, Mississauga, and Brampton."
+    },
+    {
+      "id": "sub_electrical",
+      "category_id": "cat_home",
+      "slug": "electrical-handyman",
+      "name": "Electrical & General Maintenance",
+      "description": "Outlet troubleshooting, lighting installation, furniture assembly, and general home maintenance.",
+      "keywords": [
+        "electrical",
+        "outlet",
+        "light",
+        "breaker",
+        "switch",
+        "handyman",
+        "assembly"
+      ],
+      "typical_duration": "1–3 hours",
+      "seo_title": "Electrical & Home Maintenance Professionals GTA | FixSoon",
+      "seo_description": "Find qualified professionals for lighting, electrical troubleshooting, and home maintenance."
+    }
+  ],
+  "gta_locations": [
+    {
+      "slug": "toronto",
+      "name": "Toronto",
+      "region": "City of Toronto",
+      "neighbourhoods": [
+        "Downtown",
+        "North York",
+        "Scarborough",
+        "Etobicoke",
+        "East York"
+      ]
+    },
+    {
+      "slug": "mississauga",
+      "name": "Mississauga",
+      "region": "Peel Region",
+      "neighbourhoods": [
+        "Square One",
+        "Port Credit",
+        "Erin Mills",
+        "Meadowvale",
+        "Malton"
+      ]
+    },
+    {
+      "slug": "brampton",
+      "name": "Brampton",
+      "region": "Peel Region",
+      "neighbourhoods": [
+        "Bramalea",
+        "Downtown Brampton",
+        "Mount Pleasant",
+        "Heart Lake"
+      ]
+    },
+    {
+      "slug": "markham",
+      "name": "Markham",
+      "region": "York Region",
+      "neighbourhoods": [
+        "Unionville",
+        "Milliken",
+        "Cornell",
+        "Thornhill"
+      ]
+    },
+    {
+      "slug": "vaughan",
+      "name": "Vaughan",
+      "region": "York Region",
+      "neighbourhoods": [
+        "Woodbridge",
+        "Maple",
+        "Concord",
+        "Thornhill"
+      ]
+    },
+    {
+      "slug": "oakville",
+      "name": "Oakville",
+      "region": "Halton Region",
+      "neighbourhoods": [
+        "Bronte",
+        "Glen Abbey",
+        "Clearview",
+        "Downtown Oakville"
+      ]
+    },
+    {
+      "slug": "niagara-falls",
+      "name": "Niagara Falls",
+      "region": "Niagara Region",
+      "neighbourhoods": [
+        "Lundy’s Lane",
+        "Chippawa",
+        "Stamford"
+      ]
+    }
+  ],
+  "provider_profiles": [
+    {
+      "id": "prov_marcus",
+      "user_id": "usr_prov_1",
+      "slug": "marcus-miller-mobile-auto",
+      "display_name": "Marcus Miller",
+      "business_name": "Miller Mobile Auto & Roadside",
+      "provider_type": "mobile_technician",
+      "bio": "Red Seal automotive technician with 11 years of mobile diagnostics, starter/alternator repair, battery replacement, and roadside assistance across Toronto and Mississauga.",
+      "avatar_url": "/src/assets/images/provider_avatar_1_1794446298913.jpg",
+      "primary_city": "Toronto",
+      "coverage_cities": [
+        "Toronto",
+        "Mississauga",
+        "Etobicoke",
+        "North York",
+        "Scarborough"
+      ],
+      "coverage_radius_km": 35,
+      "category_ids": [
+        "cat_auto"
+      ],
+      "subcategory_ids": [
+        "sub_roadside",
+        "sub_mobile_mech",
+        "sub_battery_boost",
+        "sub_battery_replace",
+        "sub_flat_tire",
+        "sub_diagnostics"
+      ],
+      "languages": [
+        "English"
+      ],
+      "years_experience": 11,
+      "starting_price": 75,
+      "diagnostic_fee": 85,
+      "free_estimates": true,
+      "pricing_notes": "Diagnostic fee is waived toward repair labour if approved on-site.",
+      "operating_hours": "Mon–Sat 7:00 AM – 9:00 PM",
+      "emergency_available": true,
+      "is_available_now": true,
+      "status": "approved",
+      "verifications": {
+        "email_verified": true,
+        "phone_verified": true,
+        "business_verified": true,
+        "license_verified": true,
+        "insurance_verified": true,
+        "profile_reviewed": true
+      },
+      "rating_avg": 4.9,
+      "review_count": 2,
+      "completed_jobs_count": 2,
+      "is_demo": true,
+      "created_at": "2026-11-12T01:24:21.458Z"
+    },
+    {
+      "id": "prov_sarah",
+      "user_id": "usr_prov_2",
+      "slug": "sarah-jenkins-gta-technical",
+      "display_name": "Sarah Jenkins",
+      "business_name": "Jenkins Multi-Trade & Appliance Care",
+      "provider_type": "independent_professional",
+      "bio": "Independent technical specialist serving Peel and West Toronto for vehicle battery/tire roadside support as well as residential washing machine, refrigerator, and fixture repairs.",
+      "avatar_url": "/src/assets/images/provider_avatar_2_1794446299392.jpg",
+      "primary_city": "Mississauga",
+      "coverage_cities": [
+        "Mississauga",
+        "Brampton",
+        "Oakville",
+        "Toronto"
+      ],
+      "coverage_radius_km": 30,
+      "category_ids": [
+        "cat_auto",
+        "cat_home"
+      ],
+      "subcategory_ids": [
+        "sub_battery_boost",
+        "sub_battery_replace",
+        "sub_flat_tire",
+        "sub_washer",
+        "sub_fridge",
+        "sub_plumbing",
+        "sub_electrical"
+      ],
+      "languages": [
+        "English",
+        "French"
+      ],
+      "years_experience": 8,
+      "starting_price": 65,
+      "diagnostic_fee": 75,
+      "free_estimates": true,
+      "pricing_notes": "Upfront written quote before any parts are ordered.",
+      "operating_hours": "Mon–Sun 8:00 AM – 8:00 PM",
+      "emergency_available": false,
+      "is_available_now": true,
+      "status": "approved",
+      "verifications": {
+        "email_verified": true,
+        "phone_verified": true,
+        "business_verified": true,
+        "license_verified": false,
+        "insurance_verified": true,
+        "profile_reviewed": true
+      },
+      "rating_avg": 4.8,
+      "review_count": 1,
+      "completed_jobs_count": 1,
+      "is_demo": true,
+      "created_at": "2026-11-12T01:24:21.458Z"
+    },
+    {
+      "id": "prov_david",
+      "user_id": "usr_prov_3",
+      "slug": "david-patel-peel-roadside",
+      "display_name": "David Patel",
+      "business_name": "Peel Tire & Roadside Support",
+      "provider_type": "registered_business",
+      "bio": "Mobile tire changes, flat repairs, and battery boosts in Brampton, Vaughan, and Mississauga. Application submitted for FixSoon verification.",
+      "avatar_url": "",
+      "primary_city": "Brampton",
+      "coverage_cities": [
+        "Brampton",
+        "Mississauga",
+        "Vaughan"
+      ],
+      "coverage_radius_km": 25,
+      "category_ids": [
+        "cat_auto"
+      ],
+      "subcategory_ids": [
+        "sub_roadside",
+        "sub_battery_boost",
+        "sub_flat_tire"
+      ],
+      "languages": [
+        "English",
+        "Hindi",
+        "Punjabi"
+      ],
+      "years_experience": 5,
+      "starting_price": 60,
+      "diagnostic_fee": 0,
+      "free_estimates": true,
+      "pricing_notes": "Flat-rate tire swap and jumpstart pricing.",
+      "operating_hours": "Daily 7:00 AM – 10:00 PM",
+      "emergency_available": true,
+      "is_available_now": true,
+      "status": "pending_verification",
+      "verifications": {
+        "email_verified": true,
+        "phone_verified": true,
+        "business_verified": false,
+        "license_verified": false,
+        "insurance_verified": false,
+        "profile_reviewed": false
+      },
+      "rating_avg": 0,
+      "review_count": 0,
+      "completed_jobs_count": 0,
+      "is_demo": true,
+      "created_at": "2026-11-12T01:24:21.458Z"
+    }
+  ],
+  "service_requests": [],
+  "request_matches": [],
+  "quotes": [],
+  "jobs": [],
+  "messages": [],
+  "reviews": [
+    {
+      "id": "rev_1",
+      "job_id": "job_demo_1",
+      "customer_id": "usr_cust_1",
+      "customer_name": "Alex C.",
+      "provider_id": "prov_marcus",
+      "rating": 5,
+      "comment": "Arrived in North York within 35 minutes, tested the alternator and replaced the dead battery on the spot. Clear pricing.",
+      "service_name": "Mobile Battery Replacement",
+      "created_at": "2026-10-18T14:30:00.000Z"
+    },
+    {
+      "id": "rev_2",
+      "job_id": "job_demo_2",
+      "customer_id": "usr_cust_1",
+      "customer_name": "Jordan T.",
+      "provider_id": "prov_marcus",
+      "rating": 5,
+      "comment": "Found a seized brake caliper pin during a driveway inspection and showed me the worn part before quoting.",
+      "service_name": "Mobile Mechanic",
+      "created_at": "2026-10-25T16:15:00.000Z"
+    },
+    {
+      "id": "rev_3",
+      "job_id": "job_demo_3",
+      "customer_id": "usr_cust_1",
+      "customer_name": "Priya S.",
+      "provider_id": "prov_sarah",
+      "rating": 5,
+      "comment": "Fixed our front-load washer drain pump leak in Mississauga without upselling unnecessary parts.",
+      "service_name": "Washing Machine & Dryer Repair",
+      "created_at": "2026-11-02T11:00:00.000Z"
+    }
+  ],
+  "disputes": [],
+  "notifications": [],
+  "audit_logs": [
+    {
+      "id": "aud_1",
+      "actor_id": "usr_admin_1",
+      "actor_name": "FixSoon Operations",
+      "action": "SYSTEM_SEED",
+      "target_type": "platform",
+      "target_id": "fixsoon_gta",
+      "details": "Initialized GTA demo marketplace categories, locations, and sample providers.",
+      "created_at": "2026-11-12T01:24:21.458Z"
+    }
+  ]
+}

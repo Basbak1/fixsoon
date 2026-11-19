@@ -1,0 +1,70 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated FixSoon user profile stored in Firestore",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 180 },
+        "role": { "type": "string", "enum": ["customer", "provider", "admin"] },
+        "city": { "type": "string", "maxLength": 80 },
+        "savedProviderIds": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role", "createdAt", "updatedAt"]
+    },
+    "UserServiceRequest": {
+      "title": "UserServiceRequest",
+      "description": "Persisted customer service request summary in Firestore",
+      "type": "object",
+      "properties": {
+        "requestId": { "type": "string", "maxLength": 128 },
+        "referenceCode": { "type": "string", "maxLength": 32 },
+        "customerUid": { "type": "string", "maxLength": 128 },
+        "requestType": { "type": "string", "enum": ["marketplace", "direct"] },
+        "serviceName": { "type": "string", "maxLength": 120 },
+        "problemSummary": { "type": "string", "maxLength": 400 },
+        "city": { "type": "string", "maxLength": 80 },
+        "status": { "type": "string", "maxLength": 40 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["requestId", "referenceCode", "customerUid", "requestType", "serviceName", "problemSummary", "city", "status", "createdAt", "updatedAt"]
+    },
+    "VerifiedReview": {
+      "title": "VerifiedReview",
+      "description": "Verified customer rating and review for a completed FixSoon job",
+      "type": "object",
+      "properties": {
+        "reviewId": { "type": "string", "maxLength": 128 },
+        "jobId": { "type": "string", "maxLength": 128 },
+        "customerUid": { "type": "string", "maxLength": 128 },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "providerId": { "type": "string", "maxLength": 128 },
+        "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "comment": { "type": "string", "maxLength": 1000 },
+        "serviceName": { "type": "string", "maxLength": 120 },
+        "isVerifiedJob": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["reviewId", "jobId", "customerUid", "customerName", "providerId", "rating", "comment", "isVerifiedJob", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user profile and saved provider preferences"
+    },
+    "/service_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/UserServiceRequest" },
+      "description": "Customer service requests persisted in Firestore"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/VerifiedReview" },
+      "description": "Verified customer ratings and comments on completed jobs"
+    }
+  }
+}
