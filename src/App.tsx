@@ -9,6 +9,7 @@ import { Footer } from './components/Footer';
 import { resolveRouteSeo } from './lib/seo';
 import { useOnlineStatus } from './hooks/usePWAInstall';
 import { HomePage } from './pages/HomePage';
+import { WorldLeoPages } from './pages/WorldLeoPages';
 import { AuthPage } from './pages/AuthPage';
 import { RequestFlowPage } from './pages/RequestFlowPage';
 import { DirectoryPage } from './pages/DirectoryPage';
@@ -19,6 +20,19 @@ import { ProviderOnboardingPage } from './pages/ProviderOnboardingPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { PublicInfoPages } from './pages/PublicInfoPages';
 import type { GtaLocation, ProviderProfile, ServiceCategory, ServiceSubcategory } from './types/fixsoon';
+
+const WORLDLEO_SPECIAL_ROUTES = new Set([
+  '/home',
+  '/home/ai-design',
+  '/home/kitchen-renovation',
+  '/home/bathroom-renovation',
+  '/home/backyard-design',
+  '/auto',
+  '/auto/fixsoon',
+  '/contact',
+  '/privacy',
+  '/terms',
+]);
 
 function AppShell() {
   const [fullUrl, setFullUrl] = useState(() => window.location.pathname + window.location.search);
@@ -77,11 +91,16 @@ function AppShell() {
   };
 
   const [pathname, searchStr = ''] = fullUrl.split('?');
+  const cleanPath = pathname.replace(/\/+$/, '') || '/';
   const searchParams = new URLSearchParams(searchStr);
-  const seo = resolveRouteSeo(pathname, { categories, subcategories, locations, providers });
+  const seo = resolveRouteSeo(cleanPath, { categories, subcategories, locations, providers });
+
+  const urgencyParam = searchParams.get('urgency');
+  const initialUrgency: 'emergency' | 'today' | 'scheduled' =
+    urgencyParam === 'emergency' || urgencyParam === 'scheduled' ? urgencyParam : 'today';
 
   const renderRoute = () => {
-    if (pathname === '/' || pathname === '') {
+    if (cleanPath === '/') {
       return (
         <HomePage
           categories={categories}
@@ -94,11 +113,23 @@ function AppShell() {
       );
     }
 
-    if (pathname === '/auth') {
+    if (WORLDLEO_SPECIAL_ROUTES.has(cleanPath)) {
+      return (
+        <WorldLeoPages
+          path={cleanPath}
+          subcategories={subcategories}
+          locations={locations}
+          providers={providers}
+          onNavigate={navigate}
+        />
+      );
+    }
+
+    if (cleanPath === '/auth') {
       return <AuthPage onNavigate={navigate} />;
     }
 
-    if (pathname === '/request') {
+    if (cleanPath === '/request') {
       return (
         <RequestFlowPage
           categories={categories}
@@ -110,12 +141,13 @@ function AppShell() {
           initialCategoryId={searchParams.get('cat') || ''}
           initialSubcategoryId={searchParams.get('sub') || ''}
           initialCity={searchParams.get('city') || 'Toronto'}
+          initialUrgency={initialUrgency}
           onNavigate={navigate}
         />
       );
     }
 
-    if (pathname === '/professionals') {
+    if (cleanPath === '/professionals') {
       return (
         <DirectoryPage
           categories={categories}
@@ -128,20 +160,20 @@ function AppShell() {
       );
     }
 
-    if (pathname.startsWith('/professionals/')) {
-      const slug = pathname.replace('/professionals/', '');
+    if (cleanPath.startsWith('/professionals/')) {
+      const slug = cleanPath.replace('/professionals/', '');
       return <ProviderProfilePage slug={slug} onNavigate={navigate} />;
     }
 
-    if (pathname === '/customer-dashboard') {
+    if (cleanPath === '/customer-dashboard') {
       return <CustomerDashboard onNavigate={navigate} />;
     }
 
-    if (pathname === '/provider-dashboard') {
+    if (cleanPath === '/provider-dashboard') {
       return <ProviderDashboard onNavigate={navigate} />;
     }
 
-    if (pathname === '/provider-onboarding') {
+    if (cleanPath === '/provider-onboarding') {
       return (
         <ProviderOnboardingPage
           categories={categories}
@@ -152,13 +184,13 @@ function AppShell() {
       );
     }
 
-    if (pathname === '/admin') {
+    if (cleanPath === '/admin') {
       return <AdminDashboard onNavigate={navigate} onCatalogRefresh={loadCatalogAndProviders} />;
     }
 
     return (
       <PublicInfoPages
-        path={pathname}
+        path={cleanPath}
         categories={categories}
         subcategories={subcategories}
         locations={locations}
@@ -171,7 +203,7 @@ function AppShell() {
   const isOnline = useOnlineStatus();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-[#F8FAFC]">
+    <div className="min-h-screen flex flex-col bg-[#F4F2EC] dark:bg-[#0D0F12] text-[#171717] dark:text-[#F1EFE8]">
       <SeoHead
         title={seo.title}
         description={seo.description}
@@ -179,7 +211,7 @@ function AppShell() {
         noIndex={seo.noIndex}
       />
       {!isOnline && (
-        <div className="bg-[#0F172A] text-[#F59E0B] border-b border-[#1E293B] px-4 py-2 text-xs font-medium text-center">
+        <div className="bg-[#171717] text-[#D8B45A] border-b border-[#343941] px-4 py-2 text-xs font-medium text-center">
           You are currently offline. Cached pages remain available and requests will sync once reconnected.
         </div>
       )}
@@ -199,9 +231,9 @@ function AppShell() {
           </span>
         </div>
       )}
-      <Header currentPath={pathname} onNavigate={navigate} />
+      <Header currentPath={cleanPath} onNavigate={navigate} />
       <Breadcrumbs
-        pathname={pathname}
+        pathname={cleanPath}
         categories={categories}
         subcategories={subcategories}
         locations={locations}

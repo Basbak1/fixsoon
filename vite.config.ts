@@ -20,17 +20,17 @@ export default defineConfig(() => {
         ],
         manifest: {
           id: '/',
-          name: 'FixSoon – Mobile Mechanic & Tire Dispatch',
-          short_name: 'FixSoon',
+          name: 'WorldLeo — Home, Auto & FixSoon Roadside Marketplace',
+          short_name: 'WorldLeo',
           description:
-            'Connect with verified mobile mechanics and flat tire specialists for cars, trucks, Bobcats, and trailers across the GTA, Hamilton, and Niagara.',
-          theme_color: '#0F172A',
-          background_color: '#090D16',
+            'Find professionals, plan projects, and get things done across WorldLeo Home, WorldLeo Auto, AI Design Studio, and FixSoon roadside assistance in Ontario.',
+          theme_color: '#0D0F12',
+          background_color: '#0D0F12',
           display: 'standalone',
           orientation: 'portrait-primary',
           start_url: '/',
           scope: '/',
-          categories: ['auto', 'utilities', 'lifestyle'],
+          categories: ['home', 'auto', 'utilities', 'lifestyle'],
           icons: [
             {
               src: '/pwa-192x192.png',
@@ -53,16 +53,16 @@ export default defineConfig(() => {
           ],
           shortcuts: [
             {
-              name: 'Request Roadside Help',
-              short_name: 'Request',
-              description: 'Start a mobile mechanic or flat tire request',
-              url: '/request',
+              name: 'FixSoon Roadside Help',
+              short_name: 'FixSoon',
+              description: 'Get urgent roadside mechanic or flat tire help',
+              url: '/auto/fixsoon',
               icons: [{ src: '/pwa-192x192.png', sizes: '192x192' }],
             },
             {
-              name: 'Find Verified Pros',
+              name: 'Browse Verified Pros',
               short_name: 'Directory',
-              description: 'Browse verified mobile mechanics & tire techs',
+              description: 'Browse verified independent service professionals',
               url: '/professionals',
               icons: [{ src: '/pwa-192x192.png', sizes: '192x192' }],
             },

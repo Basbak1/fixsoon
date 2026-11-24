@@ -31,13 +31,13 @@ export function PublicInfoPages({
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10">
         <div className="space-y-2">
-          <h1 className="font-display text-3xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-            {activeCat ? activeCat.name : 'All FixSoon Service Categories'}
+          <h1 className="font-display text-3xl font-bold text-[#171717] dark:text-[#F1EFE8]">
+            {activeCat ? activeCat.name : 'All Active WorldLeo Service Categories'}
           </h1>
-          <p className="text-sm sm:text-base text-[#475569] dark:text-[#94A3B8] max-w-2xl">
+          <p className="text-sm sm:text-base text-[#55534E] dark:text-[#B5B7BB] max-w-2xl">
             {activeCat
               ? activeCat.description
-              : 'Select a service below to view details, eligible GTA professionals, or start a request.'}
+              : 'Select an active service below to view details, eligible Ontario professionals, or start a request.'}
           </p>
         </div>
 
@@ -310,34 +310,39 @@ export function PublicInfoPages({
   if (path === '/how-it-works' || path === '/about') {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-        <h1 className="font-display text-3xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-          How FixSoon Works
-        </h1>
-        <p className="text-base text-[#475569] dark:text-[#94A3B8] leading-relaxed">
-          FixSoon is built around a simple promise: <strong>Whatever needs fixing, find the right professional.</strong> Whether you have a car that will not start in North York, a flat tire on a trailer in Mississauga, or a Bobcat down on a job site, you do not need technical jargon to get help.
-        </p>
+        <div className="space-y-3">
+          <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#A87919] dark:text-[#D8B45A]">
+            WorldLeo · Model A+ &amp; Model B
+          </div>
+          <h1 className="font-display text-3xl font-bold text-[#171717] dark:text-[#F1EFE8]">
+            How WorldLeo Works
+          </h1>
+          <p className="text-base text-[#55534E] dark:text-[#B5B7BB] leading-relaxed">
+            WorldLeo connects Ontario homeowners and drivers with independent professionals across <strong className="text-[#171717] dark:text-[#F1EFE8]">WorldLeo Home</strong>, <strong className="text-[#171717] dark:text-[#F1EFE8]">WorldLeo Auto</strong>, and urgent <strong className="text-[#171717] dark:text-[#F1EFE8]">FixSoon</strong> roadside support.
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
-              step: '01. Describe the problem',
-              text: 'Type what is wrong in plain language or select a category. Only relevant questions are shown.',
+              step: '01. Describe what you need',
+              text: 'Enter the issue in plain words or choose Home/Auto categories. Only relevant follow-up fields are shown.',
             },
             {
-              step: '02. Choose your request method',
-              text: 'Send a General Marketplace Request to receive multiple quotes, or send a Direct Request to a specific professional.',
+              step: '02. Model A+ Direct or Model B Quotes',
+              text: 'Send a Direct Request to a specific verified pro or urgent FixSoon request, or post to the Marketplace to compare written quotes.',
             },
             {
               step: '03. Compare, assign & review',
-              text: 'Compare transparent estimates, ETA, and verification status. Your exact address stays private until you accept a quote.',
+              text: 'Compare labour/parts breakdowns, ETA, and verified credentials. Your exact street address stays private until you accept a quote.',
             },
           ].map((item) => (
             <div
               key={item.step}
-              className="p-6 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-2"
+              className="p-6 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] space-y-2"
             >
-              <div className="text-xs font-mono font-semibold text-[#B45309] dark:text-[#F59E0B]">{item.step}</div>
-              <p className="text-sm text-[#475569] dark:text-[#94A3B8] leading-relaxed">{item.text}</p>
+              <div className="text-xs font-mono font-semibold text-[#A87919] dark:text-[#D8B45A]">{item.step}</div>
+              <p className="text-sm text-[#55534E] dark:text-[#B5B7BB] leading-relaxed">{item.text}</p>
             </div>
           ))}
         </div>
@@ -345,43 +350,49 @@ export function PublicInfoPages({
     );
   }
 
-  // /for-providers
-  if (path === '/for-providers') {
+  // /for-professionals or /for-providers
+  if (path === '/for-professionals' || path === '/for-providers') {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-        <div className="p-8 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-5">
-          <h1 className="font-display text-3xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-            Built for Independent Technicians &amp; Local Repair Businesses
+        <div className="p-8 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] space-y-5">
+          <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#A87919] dark:text-[#D8B45A]">
+            WorldLeo Professionals · Home &amp; Auto
+          </div>
+          <h1 className="font-display text-3xl font-bold text-[#171717] dark:text-[#F1EFE8]">
+            Built for Independent Technicians, Contractors &amp; Local Shops
           </h1>
-          <p className="text-base text-[#475569] dark:text-[#94A3B8] leading-relaxed">
-            Whether you operate a mobile mechanic van, a truck and trailer tire service, or heavy-equipment roadside support for Bobcats and skid steers, FixSoon sends you only requests that match your selected services and GTA coverage area.
+          <p className="text-base text-[#55534E] dark:text-[#B5B7BB] leading-relaxed">
+            Whether you operate a mobile mechanic van, a truck and trailer tire truck under FixSoon, or a residential renovation business under WorldLeo Home, requests are filtered strictly by your selected trades and Ontario coverage municipalities.
           </p>
-          <ul className="space-y-2.5 text-sm text-[#0F172A] dark:text-[#F8FAFC]">
+          <ul className="space-y-2.5 text-sm text-[#171717] dark:text-[#F1EFE8]">
             <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B]" />
-              <span>Receive both matched marketplace requests and direct customer requests</span>
+              <CheckCircle2 className="w-4 h-4 text-[#A87919] dark:text-[#D8B45A] shrink-0" />
+              <span>Receive matched marketplace requests and direct customer requests</span>
             </li>
             <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B]" />
-              <span>Submit clear estimates with labour, parts, ETA, and warranty terms</span>
+              <CheckCircle2 className="w-4 h-4 text-[#A87919] dark:text-[#D8B45A] shrink-0" />
+              <span>Submit clear estimates with service fees, itemized parts, ETA, and warranty terms</span>
             </li>
             <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B]" />
-              <span>Public SEO profile page to build long-term local reputation</span>
+              <CheckCircle2 className="w-4 h-4 text-[#A87919] dark:text-[#D8B45A] shrink-0" />
+              <span>Dedicated SEO profile page showing verified credentials separately from bios</span>
             </li>
           </ul>
+          <div className="p-3.5 rounded-lg border border-[#D8D4CA] dark:border-[#343941] bg-[#ECE9E0] dark:bg-[#22262D] text-xs text-[#55534E] dark:text-[#B5B7BB]">
+            Phase 1 Notice: You can preview the provider onboarding form and Provider Hub in demo mode. Live commercial verification &amp; payouts open in upcoming phases.
+          </div>
           <div className="pt-2 flex flex-wrap gap-3">
             <button
               type="button"
               onClick={() => onNavigate('/provider-onboarding')}
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A]"
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#171717] text-[#D8B45A] dark:bg-[#D8B45A] dark:text-[#0D0F12] cursor-pointer"
             >
-              Start Provider Registration
+              Start Professional Onboarding
             </button>
             <button
               type="button"
               onClick={() => onNavigate('/auth')}
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#E2E8F0] dark:border-[#1E293B]"
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#D8D4CA] dark:border-[#343941] cursor-pointer"
             >
               Sign In to Provider Hub
             </button>
@@ -394,33 +405,34 @@ export function PublicInfoPages({
   // /android-blueprint
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-6">
-      <div className="p-8 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-4">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#B45309] dark:text-[#F59E0B]">
+      <div className="p-8 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] space-y-4">
+        <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-[#A87919] dark:text-[#D8B45A]">
           <Smartphone className="w-4 h-4" />
-          <span>Shared Backend &amp; Android Client Architecture</span>
+          <span>Shared Backend &amp; Future Expo + React Native Client Contract</span>
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-          Shared REST API for Web &amp; Kotlin Jetpack Compose
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#171717] dark:text-[#F1EFE8]">
+          Versioned /api/v1 REST Contract for Web &amp; Mobile Apps
         </h1>
-        <p className="text-sm text-[#475569] dark:text-[#94A3B8] leading-relaxed">
-          This web environment runs the shared Express + relational backend on port 3000. A native Android APK cannot be compiled inside a browser-only Node container, so the backend exposes clean, stateless JSON endpoints with Bearer token authentication ready for Retrofit/Ktor in Kotlin Jetpack Compose.
+        <p className="text-sm text-[#55534E] dark:text-[#B5B7BB] leading-relaxed">
+          WorldLeo runs an Express API server on port 3000 exposing versioned <code className="font-mono">/api/v1/*</code> endpoints alongside <code className="font-mono">/api/*</code> so future Expo + React Native iOS and Android apps share clean JSON contracts, feature flags, and Bearer auth.
         </p>
 
-        <div className="p-4 rounded-lg bg-[#F8FAFC] dark:bg-[#090D16] border border-[#E2E8F0] dark:border-[#1E293B] font-mono text-xs space-y-1.5 overflow-x-auto">
-          <div>POST /api/auth/login &amp; POST /api/auth/register</div>
-          <div>GET  /api/catalog (categories, dynamic_fields, subcategories, GTA locations)</div>
-          <div>POST /api/classify-problem (plain-language problem matcher)</div>
-          <div>GET  /api/providers &amp; GET /api/providers/:slug</div>
-          <div>POST /api/requests (marketplace or direct)</div>
-          <div>POST /api/requests/:id/convert-to-marketplace</div>
-          <div>GET  /api/customer/dashboard &amp; POST /api/quotes/:id/accept</div>
-          <div>GET  /api/provider/dashboard &amp; POST /api/provider/requests/:id/quote</div>
-          <div>POST /api/provider/jobs/:id/status (on_the_way, arrived, work_in_progress, completed)</div>
+        <div className="p-4 rounded-lg bg-[#F4F2EC] dark:bg-[#0D0F12] border border-[#D8D4CA] dark:border-[#343941] font-mono text-xs space-y-1.5 overflow-x-auto text-[#171717] dark:text-[#F1EFE8]">
+          <div>GET  /api/v1/health &amp; GET /api/v1/config (featureFlags, planningPackPriceCad)</div>
+          <div>POST /api/v1/auth/login &amp; POST /api/v1/auth/register</div>
+          <div>GET  /api/v1/catalog (categories, dynamic_fields, subcategories, Ontario locations)</div>
+          <div>POST /api/v1/classify-problem (plain-language problem matcher)</div>
+          <div>GET  /api/v1/providers &amp; GET /api/v1/providers/:slug</div>
+          <div>POST /api/v1/requests (marketplace or direct)</div>
+          <div>POST /api/v1/requests/:id/convert-to-marketplace</div>
+          <div>GET  /api/v1/customer/dashboard &amp; POST /api/v1/quotes/:id/accept</div>
+          <div>GET  /api/v1/provider/dashboard &amp; POST /api/v1/provider/requests/:id/quote</div>
+          <div>POST /api/v1/provider/jobs/:id/status (on_the_way, arrived, work_in_progress, completed)</div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-[#475569] dark:text-[#94A3B8]">
-          <ShieldCheck className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B]" />
-          <span>Android permissions (ACCESS_FINE_LOCATION, CAMERA, POST_NOTIFICATIONS) are requested just-in-time only when the user taps location or photo features.</span>
+        <div className="flex items-center gap-2 text-xs text-[#55534E] dark:text-[#B5B7BB]">
+          <ShieldCheck className="w-4 h-4 text-[#A87919] dark:text-[#D8B45A] shrink-0" />
+          <span>Native Expo mobile projects are scheduled for Phase 6 after production database and token hardening in Phase 2.</span>
         </div>
       </div>
     </div>

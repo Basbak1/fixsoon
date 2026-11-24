@@ -16,19 +16,30 @@ interface BreadcrumbsProps {
 }
 
 const STATIC_LABELS: Record<string, string> = {
+  home: 'WorldLeo Home',
+  auto: 'WorldLeo Auto',
+  fixsoon: 'FixSoon Roadside',
+  'ai-design': 'AI Design Studio',
+  'kitchen-renovation': 'Kitchen Renovation',
+  'bathroom-renovation': 'Bathroom Renovation',
+  'backyard-design': 'Backyard Design',
   services: 'Services',
   professionals: 'Professionals',
   'how-it-works': 'How It Works',
-  'for-providers': 'For Providers',
+  'for-professionals': 'For Professionals',
+  'for-providers': 'For Professionals',
   'coverage-areas': 'Coverage Areas',
-  about: 'About',
+  about: 'About & Vetting',
+  contact: 'Contact',
+  privacy: 'Privacy Policy',
+  terms: 'Terms of Service',
   request: 'Request Service',
   auth: 'Account & Sign In',
   'customer-dashboard': 'Customer Dashboard',
   'provider-dashboard': 'Provider Hub',
   'provider-onboarding': 'Provider Onboarding',
   admin: 'Operations Console',
-  'android-blueprint': 'Android & Shared API',
+  'android-blueprint': 'Mobile & Shared API',
 };
 
 export function Breadcrumbs({
@@ -44,7 +55,7 @@ export function Breadcrumbs({
     if (!clean || clean === '/') return [];
 
     const segments = clean.split('/').filter(Boolean);
-    const trail: BreadcrumbItem[] = [{ label: 'Home', path: '/' }];
+    const trail: BreadcrumbItem[] = [{ label: 'WorldLeo', path: '/' }];
 
     if (segments[0] === 'categories' && segments[1]) {
       trail.push({ label: 'Services', path: '/services' });
@@ -112,15 +123,16 @@ export function Breadcrumbs({
     return trail;
   }, [pathname, categories, subcategories, locations, providers]);
 
-  // Inject Schema.org BreadcrumbList JSON-LD for SEO discoverability
   useEffect(() => {
-    const existing = document.getElementById('fixsoon-breadcrumb-jsonld');
+    const existing = document.getElementById('worldleo-breadcrumb-jsonld');
     if (existing) existing.remove();
+    const legacy = document.getElementById('fixsoon-breadcrumb-jsonld');
+    if (legacy) legacy.remove();
     if (items.length <= 1) return;
 
     const origin = window.location.origin;
     const script = document.createElement('script');
-    script.id = 'fixsoon-breadcrumb-jsonld';
+    script.id = 'worldleo-breadcrumb-jsonld';
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify({
       '@context': 'https://schema.org',
@@ -140,17 +152,17 @@ export function Breadcrumbs({
   return (
     <nav
       aria-label="Breadcrumb"
-      className="border-b border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF]/70 dark:bg-[#111827]/70"
+      className="border-b border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF]/80 dark:bg-[#171A1F]/80"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5">
-        <ol className="flex flex-wrap items-center gap-1.5 text-xs text-[#475569] dark:text-[#94A3B8]">
+        <ol className="flex flex-wrap items-center gap-1.5 text-xs text-[#55534E] dark:text-[#B5B7BB]">
           {items.map((item, idx) => {
             const isLast = idx === items.length - 1;
             return (
               <li key={`${item.path}-${idx}`} className="inline-flex items-center gap-1.5">
                 {idx > 0 && (
                   <span
-                    className="text-[#CBD5E1] dark:text-[#475569] select-none font-mono text-xs px-0.5"
+                    className="text-[#D8D4CA] dark:text-[#343941] select-none font-mono text-xs px-0.5"
                     aria-hidden="true"
                   >
                     /
@@ -159,7 +171,7 @@ export function Breadcrumbs({
                 {isLast ? (
                   <span
                     aria-current="page"
-                    className="px-1.5 py-0.5 font-semibold text-[#0F172A] dark:text-[#F8FAFC] capitalize"
+                    className="px-1.5 py-0.5 font-semibold text-[#171717] dark:text-[#F1EFE8]"
                   >
                     {item.label}
                   </span>
@@ -167,7 +179,7 @@ export function Breadcrumbs({
                   <button
                     type="button"
                     onClick={() => onNavigate(item.path)}
-                    className="px-1.5 py-0.5 rounded-md text-[#475569] dark:text-[#94A3B8] hover:text-[#B45309] dark:hover:text-[#F59E0B] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] hover:underline underline-offset-4 decoration-[#B45309]/50 dark:decoration-[#F59E0B]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B45309] dark:focus-visible:ring-[#F59E0B] capitalize transition-all duration-150 cursor-pointer"
+                    className="px-1.5 py-0.5 rounded-md text-[#55534E] dark:text-[#B5B7BB] hover:text-[#A87919] dark:hover:text-[#D8B45A] hover:bg-[#ECE9E0] dark:hover:bg-[#22262D] hover:underline underline-offset-4 decoration-[#A87919]/50 dark:decoration-[#D8B45A]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A87919] dark:focus-visible:ring-[#D8B45A] transition-all duration-150 cursor-pointer"
                   >
                     {item.label}
                   </button>

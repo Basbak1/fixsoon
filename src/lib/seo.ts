@@ -20,18 +20,81 @@ export function resolveRouteSeo(
 
   if (clean === '/') {
     return {
-      title: 'FixSoon – Mobile Mechanic & Flat Tire Service | GTA, Hamilton & Niagara',
+      title: 'WorldLeo — Find Professionals. Plan Projects. Get Things Done. | Ontario',
       description:
-        'We bring the mechanic & tire shop to you. Connect with verified mobile mechanics and flat tire specialists for cars, trucks, Bobcats, and trailers across the GTA, Greater Hamilton Area, and Niagara Region.',
+        'WorldLeo connects homeowners and drivers across the GTA, Greater Hamilton Area, and Niagara Region with independent professionals across WorldLeo Home, WorldLeo Auto, AI Design Studio, and FixSoon rapid roadside help.',
       canonicalPath: '/',
+    };
+  }
+
+  if (clean === '/home') {
+    return {
+      title: 'WorldLeo Home — Home Repairs, Renovations & Project Planning | Ontario',
+      description:
+        'Plan kitchen, bathroom, and backyard renovations, explore WorldLeo AI Design Studio, and prepare scope requests for Ontario home service professionals.',
+      canonicalPath: '/home',
+    };
+  }
+
+  if (clean === '/home/ai-design') {
+    return {
+      title: 'WorldLeo AI Design Studio — Project Concepts & Planning Packs',
+      description:
+        'Preview Free AI Inspiration and CAD $39 Planning Packs for kitchen, bathroom, and backyard projects on WorldLeo Home.',
+      canonicalPath: '/home/ai-design',
+    };
+  }
+
+  if (clean === '/home/kitchen-renovation') {
+    return {
+      title: 'Kitchen Renovation Planning & Professionals | WorldLeo Home',
+      description:
+        'Plan kitchen layouts, cabinetry, plumbing, and electrical scopes with WorldLeo Home across the GTA, Hamilton, and Niagara.',
+      canonicalPath: '/home/kitchen-renovation',
+    };
+  }
+
+  if (clean === '/home/bathroom-renovation') {
+    return {
+      title: 'Bathroom Renovation Planning & Professionals | WorldLeo Home',
+      description:
+        'Plan bathroom tiling, vanity, waterproofing, and fixture scopes with WorldLeo Home across Ontario.',
+      canonicalPath: '/home/bathroom-renovation',
+    };
+  }
+
+  if (clean === '/home/backyard-design') {
+    return {
+      title: 'Backyard Design & Exterior Planning | WorldLeo Home',
+      description:
+        'Plan patios, decks, fencing, and outdoor living projects with WorldLeo Home across Ontario.',
+      canonicalPath: '/home/backyard-design',
+    };
+  }
+
+  if (clean === '/auto') {
+    return {
+      title: 'WorldLeo Auto — Mobile Mechanics, Tires & FixSoon Roadside | Ontario',
+      description:
+        'Find independent mobile mechanics, flat tire specialists, battery services, and FixSoon urgent roadside assistance across Toronto, GTA, Hamilton, and Niagara.',
+      canonicalPath: '/auto',
+    };
+  }
+
+  if (clean === '/auto/fixsoon') {
+    return {
+      title: 'FixSoon by WorldLeo Auto — Urgent Roadside & Mobile Help',
+      description:
+        'Get rapid mobile mechanic, flat tire, battery boost, and roadside dispatch across Ontario through FixSoon, part of WorldLeo Auto.',
+      canonicalPath: '/auto/fixsoon',
     };
   }
 
   if (clean === '/services') {
     return {
-      title: 'Mobile Mechanic & Flat Tire Services – GTA, Hamilton & Niagara | FixSoon',
+      title: 'All Active Services — WorldLeo Marketplace | GTA, Hamilton & Niagara',
       description:
-        'Browse mobile mechanic, flat tire repair, battery boost, and roadside services for cars, trucks, Bobcats, and trailers across the GTA, Greater Hamilton Area, and Niagara Region.',
+        'Browse active mobile mechanic, flat tire repair, battery boost, and roadside services across the GTA, Greater Hamilton Area, and Niagara Region.',
       canonicalPath: '/services',
     };
   }
@@ -40,10 +103,10 @@ export function resolveRouteSeo(
     const slug = clean.replace('/categories/', '');
     const cat = context.categories.find((c) => c.slug === slug);
     return {
-      title: cat ? cat.seo_title : 'Service Category | FixSoon',
+      title: cat ? `${cat.name} | WorldLeo` : 'Service Category | WorldLeo',
       description: cat
         ? cat.seo_description
-        : 'Explore independent repair and maintenance professionals in the Greater Toronto Area.',
+        : 'Explore independent repair and maintenance professionals across Ontario.',
       canonicalPath: clean,
     };
   }
@@ -52,10 +115,10 @@ export function resolveRouteSeo(
     const slug = clean.replace('/services/', '');
     const sub = context.subcategories.find((s) => s.slug === slug);
     return {
-      title: sub ? sub.seo_title : `${slug.replace(/-/g, ' ')} | FixSoon`,
+      title: sub ? `${sub.name} | WorldLeo Auto & FixSoon` : `${slug.replace(/-/g, ' ')} | WorldLeo`,
       description: sub
         ? sub.seo_description
-        : 'Request quotes from independent repair professionals in Toronto and the GTA on FixSoon.',
+        : 'Request quotes from independent professionals in Toronto and the GTA on WorldLeo.',
       canonicalPath: clean,
     };
   }
@@ -67,17 +130,17 @@ export function resolveRouteSeo(
     const cityName = loc?.name || (citySlug || 'Toronto').replace(/-/g, ' ');
     const serviceName = sub?.name || (serviceSlug || 'Mobile Mechanic').replace(/-/g, ' ');
     return {
-      title: `${serviceName} in ${cityName}, ON | FixSoon`,
-      description: `Find verified ${serviceName.toLowerCase()} professionals serving ${cityName} and nearby GTA, Hamilton & Niagara communities. Compare quotes or request a pro directly.`,
+      title: `${serviceName} in ${cityName}, ON | WorldLeo`,
+      description: `Find verified ${serviceName.toLowerCase()} professionals serving ${cityName} and nearby GTA, Hamilton & Niagara communities on WorldLeo.`,
       canonicalPath: clean,
     };
   }
 
   if (clean === '/professionals') {
     return {
-      title: 'Service Provider Directory – Mobile Mechanics & Tire Techs | FixSoon',
+      title: 'Service Provider Directory | WorldLeo',
       description:
-        'Browse verified mobile mechanics and flat tire technicians serving cars, trucks, Bobcats, and trailers across the GTA, Greater Hamilton Area, and Niagara Region.',
+        'Browse verified independent service professionals across the GTA, Greater Hamilton Area, and Niagara Region.',
       canonicalPath: '/professionals',
     };
   }
@@ -87,76 +150,100 @@ export function resolveRouteSeo(
     const prov = context.providers.find((p) => p.slug === slug || p.id === slug);
     if (prov) {
       return {
-        title: `${prov.business_name} – ${prov.primary_city} | FixSoon`,
+        title: `${prov.business_name} – ${prov.primary_city} | WorldLeo`,
         description: prov.bio.slice(0, 155),
         canonicalPath: `/professionals/${prov.slug}`,
       };
     }
     return {
-      title: 'Professional Profile | FixSoon',
-      description: 'View verified credentials, service coverage, and customer reviews on FixSoon.',
+      title: 'Professional Profile | WorldLeo',
+      description: 'View verified credentials, service coverage, and completed-job reviews on WorldLeo.',
       canonicalPath: clean,
     };
   }
 
   if (clean === '/coverage-areas') {
     return {
-      title: 'GTA, Greater Hamilton & Niagara Region Coverage | FixSoon',
+      title: 'GTA, Greater Hamilton & Niagara Region Coverage | WorldLeo',
       description:
-        'Explore active FixSoon mobile mechanic and flat tire coverage across Toronto, Mississauga, Brampton, Markham, Vaughan, Oakville, Burlington, Hamilton, St. Catharines, Niagara Falls, and Welland.',
+        'Explore WorldLeo coverage across Toronto, Mississauga, Brampton, Markham, Vaughan, Oakville, Burlington, Hamilton, St. Catharines, Niagara Falls, and Welland.',
       canonicalPath: '/coverage-areas',
     };
   }
 
   if (clean === '/how-it-works') {
     return {
-      title: 'How FixSoon Works – General & Direct Requests | FixSoon',
+      title: 'How WorldLeo Works — Direct & Marketplace Requests | WorldLeo',
       description:
-        'Learn how FixSoon connects you with independent repair professionals using general marketplace quotes or direct provider requests.',
+        'Learn how WorldLeo connects customers with independent Home and Auto professionals using Model A+ direct dispatch or Model B multi-quote comparison.',
       canonicalPath: '/how-it-works',
     };
   }
 
-  if (clean === '/for-providers') {
+  if (clean === '/for-providers' || clean === '/for-professionals') {
     return {
-      title: 'Join FixSoon as an Independent Service Professional | FixSoon',
+      title: 'For Professionals — Join WorldLeo Home & Auto | WorldLeo',
       description:
-        'Receive qualified local repair and roadside requests across the GTA, Greater Hamilton Area, and Niagara Region without paying for irrelevant leads.',
-      canonicalPath: '/for-providers',
+        'Receive qualified local service requests across the GTA, Greater Hamilton Area, and Niagara Region on WorldLeo.',
+      canonicalPath: clean,
     };
   }
 
   if (clean === '/about') {
     return {
-      title: 'About FixSoon & Our Verification Framework | FixSoon',
+      title: 'About WorldLeo & Verification Standards | WorldLeo',
       description:
-        'Discover how FixSoon builds trust with transparent credential checks, privacy-first request matching, and genuine job reviews.',
+        'Discover how WorldLeo separates verified checks from self-reported details across Home, Auto, and FixSoon services.',
       canonicalPath: '/about',
+    };
+  }
+
+  if (clean === '/contact') {
+    return {
+      title: 'Contact WorldLeo — Ontario Support & Inquiries',
+      description: 'Contact WorldLeo support, provider onboarding, and operations in Ontario.',
+      canonicalPath: '/contact',
+    };
+  }
+
+  if (clean === '/privacy') {
+    return {
+      title: 'Privacy Policy (Draft Preview) | WorldLeo',
+      description: 'WorldLeo draft privacy practices for address masking, accounts, and service requests.',
+      canonicalPath: '/privacy',
+    };
+  }
+
+  if (clean === '/terms') {
+    return {
+      title: 'Terms of Service (Draft Preview) | WorldLeo',
+      description: 'WorldLeo draft marketplace terms and independent contractor disclosures.',
+      canonicalPath: '/terms',
     };
   }
 
   if (clean === '/android-blueprint') {
     return {
-      title: 'Android App & Shared REST API Architecture | FixSoon',
+      title: 'Mobile & Shared REST API Architecture | WorldLeo',
       description:
-        'Inspect the shared REST API endpoints and Kotlin Jetpack Compose architecture powering FixSoon across web and mobile.',
+        'Inspect the shared versioned /api/v1 REST endpoints powering WorldLeo web and planned Expo + React Native clients.',
       canonicalPath: '/android-blueprint',
     };
   }
 
   if (clean === '/request') {
     return {
-      title: 'Request a Mobile Mechanic or Tire Service | FixSoon',
+      title: 'Request Service or FixSoon Help | WorldLeo',
       description:
-        'Describe what needs fixing in plain language and receive quotes from verified independent professionals across the GTA, Hamilton, and Niagara.',
+        'Describe what needs fixing in plain language and receive written quotes from verified independent professionals on WorldLeo.',
       canonicalPath: '/request',
     };
   }
 
   if (clean === '/auth') {
     return {
-      title: 'Sign In or Create Account | FixSoon',
-      description: 'Sign in to manage your FixSoon service requests, quotes, or provider profile.',
+      title: 'Sign In or Create Account | WorldLeo',
+      description: 'Sign in to manage your WorldLeo service requests, quotes, or professional workspace.',
       canonicalPath: '/auth',
       noIndex: true,
     };
@@ -164,7 +251,7 @@ export function resolveRouteSeo(
 
   if (clean === '/customer-dashboard') {
     return {
-      title: 'Customer Dashboard | FixSoon',
+      title: 'Customer Dashboard | WorldLeo',
       description: 'Track your service requests, compare quotes, and monitor active jobs.',
       canonicalPath: '/customer-dashboard',
       noIndex: true,
@@ -173,7 +260,7 @@ export function resolveRouteSeo(
 
   if (clean === '/provider-dashboard') {
     return {
-      title: 'Service Provider Hub | FixSoon',
+      title: 'Service Provider Hub | WorldLeo',
       description: 'Manage matched requests, submit quotes, and update active jobs.',
       canonicalPath: '/provider-dashboard',
       noIndex: true,
@@ -182,8 +269,8 @@ export function resolveRouteSeo(
 
   if (clean === '/provider-onboarding') {
     return {
-      title: 'Professional Onboarding & Profile Setup | FixSoon',
-      description: 'Set up your independent repair or roadside service profile on FixSoon.',
+      title: 'Professional Onboarding & Profile Setup | WorldLeo',
+      description: 'Set up your independent service profile on WorldLeo.',
       canonicalPath: '/provider-onboarding',
       noIndex: true,
     };
@@ -191,17 +278,17 @@ export function resolveRouteSeo(
 
   if (clean === '/admin') {
     return {
-      title: 'Operations Console | FixSoon',
-      description: 'FixSoon administrator verification and marketplace operations console.',
+      title: 'Operations Console | WorldLeo',
+      description: 'WorldLeo administrator verification and marketplace operations console.',
       canonicalPath: '/admin',
       noIndex: true,
     };
   }
 
   return {
-    title: 'FixSoon – Whatever Needs Fixing | GTA, Hamilton & Niagara',
+    title: 'WorldLeo — Find Professionals. Plan Projects. Get Things Done.',
     description:
-      'Whatever needs fixing, find verified mobile mechanics and roadside tire specialists across the GTA, Greater Hamilton Area, and Niagara Region.',
+      'WorldLeo connects homeowners and drivers across Ontario with verified professionals across Home, Auto, and FixSoon.',
     canonicalPath: clean,
   };
 }

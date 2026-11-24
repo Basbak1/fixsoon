@@ -12,9 +12,9 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>(() => {
-    const saved = localStorage.getItem('fixsoon_theme');
+    const saved = localStorage.getItem('worldleo_theme') || localStorage.getItem('fixsoon_theme');
     if (saved === 'light' || saved === 'dark' || saved === 'system') return saved;
-    return 'light';
+    return 'system';
   });
 
   const [systemDark, setSystemDark] = useState<boolean>(() =>
@@ -41,7 +41,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setMode = (next: ThemeMode) => {
     setModeState(next);
-    localStorage.setItem('fixsoon_theme', next);
+    localStorage.setItem('worldleo_theme', next);
   };
 
   return (

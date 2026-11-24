@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { FixSoonLogo } from './FixSoonLogo';
+import { WorldLeoLogo } from './WorldLeoLogo';
 import { NotificationBell } from './NotificationBell';
 import { PWAInstallButton } from './PWAInstallButton';
 import { useAuth } from '../context/AuthContext';
@@ -15,11 +15,12 @@ export function Header({ currentPath, onNavigate }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { label: 'Services', path: '/services' },
+    { label: 'Home', path: '/home' },
+    { label: 'Auto', path: '/auto' },
+    { label: 'FixSoon', path: '/auto/fixsoon' },
+    { label: 'AI Design', path: '/home/ai-design' },
     { label: 'Professionals', path: '/professionals' },
-    { label: 'How It Works', path: '/how-it-works' },
-    { label: 'For Providers', path: '/for-providers' },
-    { label: 'Coverage', path: '/coverage-areas' },
+    { label: 'For Pros', path: '/for-professionals' },
   ];
 
   const dashboardPath =
@@ -35,29 +36,34 @@ export function Header({ currentPath, onNavigate }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC]/95 dark:bg-[#090D16]/95 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
-        {/* Zone 1: Single-element Brand Wordmark */}
+    <header className="sticky top-0 z-40 border-b border-[#D8D4CA] dark:border-[#343941] bg-[#F4F2EC]/95 dark:bg-[#0D0F12]/95 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
+        {/* Brand Wordmark */}
         <button
           type="button"
           onClick={() => go('/')}
-          className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D97706] rounded"
-          aria-label="FixSoon Home"
+          className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A87919] dark:focus-visible:outline-[#D8B45A] rounded cursor-pointer"
+          aria-label="WorldLeo Home"
         >
-          <FixSoonLogo />
+          <WorldLeoLogo />
         </button>
 
-        {/* Zone 2: Clean single-line text navigation links */}
-        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#475569] dark:text-[#94A3B8]">
+        {/* Clean single-line text navigation */}
+        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#55534E] dark:text-[#B5B7BB]">
           {navItems.map((item) => {
-            const active = currentPath === item.path;
+            const active =
+              currentPath === item.path ||
+              (item.path === '/home' && currentPath.startsWith('/home/') && currentPath !== '/home/ai-design') ||
+              (item.path === '/auto' && currentPath.startsWith('/auto/') && currentPath !== '/auto/fixsoon');
             return (
               <button
                 key={item.path}
                 type="button"
                 onClick={() => go(item.path)}
-                className={`whitespace-nowrap shrink-0 py-1 transition-colors hover:text-[#0F172A] dark:hover:text-[#F8FAFC] ${
-                  active ? 'text-[#0F172A] dark:text-[#F8FAFC] underline underline-offset-8 decoration-[#D97706] dark:decoration-[#F59E0B] decoration-2' : ''
+                className={`whitespace-nowrap shrink-0 py-1 transition-colors hover:text-[#171717] dark:hover:text-[#F1EFE8] cursor-pointer ${
+                  active
+                    ? 'text-[#171717] dark:text-[#F1EFE8] underline underline-offset-8 decoration-[#A87919] dark:decoration-[#D8B45A] decoration-2 font-semibold'
+                    : ''
                 }`}
               >
                 {item.label}
@@ -66,7 +72,7 @@ export function Header({ currentPath, onNavigate }: HeaderProps) {
           })}
         </nav>
 
-        {/* Zone 3: Single Primary Action (+ Account access on desktop) */}
+        {/* Account & Primary Action */}
         <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
           <PWAInstallButton />
           {user ? (
@@ -75,16 +81,16 @@ export function Header({ currentPath, onNavigate }: HeaderProps) {
               <button
                 type="button"
                 onClick={() => go(dashboardPath)}
-                className="hidden sm:inline-flex items-center px-3.5 py-2 text-xs font-semibold rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-white dark:bg-[#111827] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#D97706] dark:hover:border-[#F59E0B] transition-colors whitespace-nowrap shrink-0"
+                className="hidden sm:inline-flex items-center px-3.5 py-2 text-xs font-semibold rounded-lg border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] text-[#171717] dark:text-[#F1EFE8] hover:border-[#A87919] dark:hover:border-[#D8B45A] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
               >
-                {user.role === 'admin' ? 'Admin Panel' : user.role === 'provider' ? 'Provider Hub' : 'My Requests'}
+                {user.role === 'admin' ? 'Admin Console' : user.role === 'provider' ? 'Provider Hub' : 'My Requests'}
               </button>
             </>
           ) : (
             <button
               type="button"
               onClick={() => go('/auth')}
-              className="hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium text-[#55534E] dark:text-[#B5B7BB] hover:text-[#171717] dark:hover:text-[#F1EFE8] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
               Sign In
             </button>
@@ -93,15 +99,15 @@ export function Header({ currentPath, onNavigate }: HeaderProps) {
           <button
             type="button"
             onClick={() => go('/request')}
-            className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#090D16] hover:opacity-90 transition-opacity whitespace-nowrap shrink-0"
+            className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-[#171717] text-[#D8B45A] dark:bg-[#D8B45A] dark:text-[#0D0F12] hover:opacity-90 transition-opacity whitespace-nowrap shrink-0 cursor-pointer"
           >
-            Request Pro
+            Request Service
           </button>
 
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 rounded-lg text-[#0F172A] dark:text-[#F8FAFC] hover:bg-black/5 dark:hover:bg-white/5"
+            className="lg:hidden p-2 rounded-lg text-[#171717] dark:text-[#F1EFE8] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -110,24 +116,26 @@ export function Header({ currentPath, onNavigate }: HeaderProps) {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden border-t border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] px-4 py-4 space-y-2">
-          {navItems.map((item) => (
-            <button
-              key={item.path}
-              type="button"
-              onClick={() => go(item.path)}
-              className="block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]"
-            >
-              {item.label}
-            </button>
-          ))}
-          <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#1E293B] flex items-center justify-between gap-3">
+        <div className="lg:hidden border-t border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] px-4 py-4 space-y-1.5">
+          {[...navItems, { label: 'Coverage Areas', path: '/coverage-areas' }, { label: 'How It Works', path: '/how-it-works' }].map(
+            (item) => (
+              <button
+                key={item.path}
+                type="button"
+                onClick={() => go(item.path)}
+                className="block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-[#171717] dark:text-[#F1EFE8] hover:bg-[#ECE9E0] dark:hover:bg-[#22262D]"
+              >
+                {item.label}
+              </button>
+            )
+          )}
+          <div className="pt-2 border-t border-[#D8D4CA] dark:border-[#343941] flex items-center justify-between gap-3">
             {user ? (
               <>
                 <button
                   type="button"
                   onClick={() => go(dashboardPath)}
-                  className="flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]"
+                  className="flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold bg-[#ECE9E0] dark:bg-[#22262D] text-[#171717] dark:text-[#F1EFE8]"
                 >
                   Open Dashboard
                 </button>
@@ -137,7 +145,7 @@ export function Header({ currentPath, onNavigate }: HeaderProps) {
                     logout();
                     go('/');
                   }}
-                  className="py-2.5 px-3 rounded-lg text-sm font-medium text-[#475569] dark:text-[#94A3B8]"
+                  className="py-2.5 px-3 rounded-lg text-sm font-medium text-[#55534E] dark:text-[#B5B7BB]"
                 >
                   Sign Out
                 </button>
@@ -146,7 +154,7 @@ export function Header({ currentPath, onNavigate }: HeaderProps) {
               <button
                 type="button"
                 onClick={() => go('/auth')}
-                className="w-full py-2.5 px-3 rounded-lg text-sm font-semibold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]"
+                className="w-full py-2.5 px-3 rounded-lg text-sm font-semibold bg-[#ECE9E0] dark:bg-[#22262D] text-[#171717] dark:text-[#F1EFE8]"
               >
                 Sign In / Create Account
               </button>

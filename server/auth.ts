@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import type { UserRole } from '../src/types/fixsoon.js';
 
-const TOKEN_SECRET = process.env.SESSION_SECRET || 'fixsoon-dev-session-secret-change-in-prod';
+const TOKEN_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 
 export function hashPassword(password: string): string {
   const salt = crypto.randomBytes(16).toString('hex');

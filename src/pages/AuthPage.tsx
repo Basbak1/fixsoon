@@ -85,15 +85,15 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-7 p-6 sm:p-8 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827]">
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-[#F8FAFC] dark:bg-[#090D16] mb-6">
+        <div className="lg:col-span-7 p-6 sm:p-8 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F]">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-[#F4F2EC] dark:bg-[#0D0F12] mb-6">
             <button
               type="button"
               onClick={() => setMode('login')}
-              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors ${
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
                 mode === 'login'
-                  ? 'bg-[#FFFFFF] dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]'
-                  : 'text-[#475569] dark:text-[#94A3B8]'
+                  ? 'bg-[#FFFFFF] dark:bg-[#22262D] text-[#171717] dark:text-[#F1EFE8]'
+                  : 'text-[#55534E] dark:text-[#B5B7BB]'
               }`}
             >
               Sign In
@@ -101,22 +101,22 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
             <button
               type="button"
               onClick={() => setMode('register')}
-              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors ${
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
                 mode === 'register'
-                  ? 'bg-[#FFFFFF] dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]'
-                  : 'text-[#475569] dark:text-[#94A3B8]'
+                  ? 'bg-[#FFFFFF] dark:bg-[#22262D] text-[#171717] dark:text-[#F1EFE8]'
+                  : 'text-[#55534E] dark:text-[#B5B7BB]'
               }`}
             >
               Create Account
             </button>
           </div>
 
-          <h1 className="font-display text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2">
-            {mode === 'login' ? 'Welcome back to FixSoon' : 'Create your FixSoon account'}
+          <h1 className="font-display text-2xl font-bold text-[#171717] dark:text-[#F1EFE8] mb-2">
+            {mode === 'login' ? 'Welcome back to WorldLeo' : 'Create your WorldLeo account'}
           </h1>
-          <p className="text-sm text-[#475569] dark:text-[#94A3B8] mb-6">
+          <p className="text-sm text-[#55534E] dark:text-[#B5B7BB] mb-6">
             {mode === 'login'
-              ? 'Access your requests, quotes, or service provider workspace.'
+              ? 'Access your requests, quotes, or service provider workspace across Home, Auto & FixSoon.'
               : 'Request help as a customer or register as an independent service professional.'}
           </p>
 
@@ -234,18 +234,18 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A] hover:opacity-90 disabled:opacity-50"
+              className="w-full py-3 rounded-lg text-sm font-semibold bg-[#171717] text-[#D8B45A] dark:bg-[#D8B45A] dark:text-[#0D0F12] hover:opacity-90 disabled:opacity-50 cursor-pointer"
             >
               {submitting ? 'Please wait...' : mode === 'login' ? 'Sign In' : 'Create Account'}
             </button>
           </form>
 
-          <div className="mt-4 pt-4 border-t border-[#E2E8F0] dark:border-[#1E293B]">
+          <div className="mt-4 pt-4 border-t border-[#D8D4CA] dark:border-[#343941]">
             <button
               type="button"
               disabled={submitting}
               onClick={handleGoogleLogin}
-              className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#B45309] dark:hover:border-[#F59E0B] transition-colors disabled:opacity-50"
+              className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold border border-[#D8D4CA] dark:border-[#343941] bg-[#F4F2EC] dark:bg-[#0D0F12] text-[#171717] dark:text-[#F1EFE8] hover:border-[#A87919] dark:hover:border-[#D8B45A] transition-colors disabled:opacity-50 cursor-pointer"
             >
               Continue with Google (Firebase Auth)
             </button>
@@ -253,13 +253,13 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
         </div>
 
         {/* Demo Environment Quick Access */}
-        <div className="lg:col-span-5 p-6 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-4 h-fit">
+        <div className="lg:col-span-5 p-6 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] space-y-4 h-fit">
           <div>
-            <h2 className="font-display text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+            <h2 className="font-display text-lg font-bold text-[#171717] dark:text-[#F1EFE8]">
               Demo Environment Accounts
             </h2>
-            <p className="text-xs text-[#475569] dark:text-[#94A3B8] mt-1 leading-relaxed">
-              Test the complete two-sided marketplace workflow immediately using any seeded demo role below.
+            <p className="text-xs text-[#55534E] dark:text-[#B5B7BB] mt-1 leading-relaxed">
+              Test the complete two-sided WorldLeo &amp; FixSoon marketplace workflow immediately using any seeded demo role below.
             </p>
           </div>
 
@@ -270,12 +270,12 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
                 type="button"
                 disabled={submitting}
                 onClick={() => handleDemoLogin(acc.email)}
-                className="w-full text-left p-3 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] hover:border-[#B45309] dark:hover:border-[#F59E0B] transition-colors"
+                className="w-full text-left p-3 rounded-lg border border-[#D8D4CA] dark:border-[#343941] bg-[#F4F2EC] dark:bg-[#0D0F12] hover:border-[#A87919] dark:hover:border-[#D8B45A] transition-colors cursor-pointer"
               >
-                <div className="text-sm font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
+                <div className="text-sm font-semibold text-[#171717] dark:text-[#F1EFE8]">
                   {acc.label}
                 </div>
-                <div className="text-xs font-mono text-[#475569] dark:text-[#94A3B8] mt-0.5">
+                <div className="text-xs font-mono text-[#55534E] dark:text-[#B5B7BB] mt-0.5">
                   {acc.email}
                 </div>
               </button>

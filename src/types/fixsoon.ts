@@ -278,3 +278,21 @@ export interface GtaLocation {
   region: string;
   neighbourhoods: string[];
 }
+
+export interface PlatformFeatureFlags {
+  livePayments: boolean;
+  realGpsTracking: boolean;
+  aiDesignGeneration: boolean;
+  paidPlanningPacks: boolean;
+  liveProviderRegistration: boolean;
+}
+
+export interface PlatformConfigResponse {
+  platformName: string;
+  tagline: string;
+  subBrandAutoEmergency: string;
+  apiVersion: string;
+  planningPackPriceCad: number;
+  regions: string[];
+  featureFlags: PlatformFeatureFlags;
+}

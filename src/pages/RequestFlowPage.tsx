@@ -22,6 +22,7 @@ interface RequestFlowPageProps {
   initialCategoryId?: string;
   initialSubcategoryId?: string;
   initialCity?: string;
+  initialUrgency?: 'emergency' | 'today' | 'scheduled';
   onNavigate: (path: string) => void;
 }
 
@@ -35,6 +36,7 @@ export function RequestFlowPage({
   initialCategoryId = '',
   initialSubcategoryId = '',
   initialCity = 'Toronto',
+  initialUrgency = 'today',
   onNavigate,
 }: RequestFlowPageProps) {
   const { user, login, register } = useAuth();
@@ -48,7 +50,7 @@ export function RequestFlowPage({
   const [problemSummary, setProblemSummary] = useState(initialQuery);
   const [problemDetails, setProblemDetails] = useState('');
   const [dynamicFields, setDynamicFields] = useState<Record<string, string>>({});
-  const [urgency, setUrgency] = useState<'emergency' | 'today' | 'scheduled'>('today');
+  const [urgency, setUrgency] = useState<'emergency' | 'today' | 'scheduled'>(initialUrgency);
 
   const [requestType, setRequestType] = useState<RequestType>(initialProviderId ? 'direct' : 'marketplace');
   const [targetProviderId, setTargetProviderId] = useState(initialProviderId);

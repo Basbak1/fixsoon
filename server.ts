@@ -58,6 +58,56 @@ function toPublicUser(user: (typeof db.data.users)[number]) {
   };
 }
 
+function canAccessRequestThread(user: NonNullable<ReturnType<typeof getAuthUser>>, requestId: string): boolean {
+  if (user.role === 'admin') return true;
+  const reqRecord = db.data.service_requests.find((r) => r.id === requestId);
+  if (!reqRecord) return false;
+  if (reqRecord.customer_id === user.id) return true;
+  const prov = db.data.provider_profiles.find((p) => p.user_id === user.id);
+  if (!prov) return false;
+  const isMatched = db.data.request_matches.some((m) => m.request_id === requestId && m.provider_id === prov.id);
+  const isAssigned = db.data.jobs.some((j) => j.request_id === requestId && j.provider_id === prov.id);
+  return isMatched || isAssigned;
+}
+
+// ==========================================
+// MOBILE & VERSIONED API READINESS (/api/v1)
+// ==========================================
+app.use((req, _res, next) => {
+  if (req.url === '/api/v1' || req.url.startsWith('/api/v1/')) {
+    req.url = req.url.replace(/^\/api\/v1/, '/api');
+  }
+  next();
+});
+
+app.get('/api/health', (_req, res) => {
+  res.json({
+    ok: true,
+    platform: 'WorldLeo',
+    subBrand: 'FixSoon',
+    environment: process.env.NODE_ENV || 'development',
+    persistenceMode: 'interim_json_dev',
+  });
+});
+
+app.get('/api/config', (_req, res) => {
+  res.json({
+    platformName: 'WorldLeo',
+    tagline: 'Find professionals. Plan projects. Get things done.',
+    subBrandAutoEmergency: 'FixSoon',
+    apiVersion: 'v1',
+    planningPackPriceCad: 39,
+    regions: ['Greater Toronto Area', 'Greater Hamilton Area', 'Niagara Region'],
+    featureFlags: {
+      livePayments: false,
+      realGpsTracking: false,
+      aiDesignGeneration: false,
+      paidPlanningPacks: false,
+      liveProviderRegistration: false,
+    },
+  });
+});
+
 // ==========================================
 // SEO ROUTES: robots.txt & dynamic sitemap.xml
 // ==========================================
@@ -72,12 +122,23 @@ app.get('/sitemap.xml', (req, res) => {
   const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
   const urls: string[] = [
     '/',
+    '/home',
+    '/home/ai-design',
+    '/home/kitchen-renovation',
+    '/home/bathroom-renovation',
+    '/home/backyard-design',
+    '/auto',
+    '/auto/fixsoon',
     '/services',
     '/professionals',
     '/how-it-works',
+    '/for-professionals',
     '/for-providers',
     '/coverage-areas',
     '/about',
+    '/contact',
+    '/privacy',
+    '/terms',
   ];
 
   const activeCategories = db.data.service_categories.filter((c) => c.is_active);
@@ -136,43 +197,50 @@ app.get('/api/faqs', (_req, res) => {
 
   const faqs = [
     {
+      id: 'faq_worldleo_ecosystem',
+      category: 'Platform',
+      question: 'How do WorldLeo Home, WorldLeo Auto, and FixSoon work together?',
+      answer:
+        'WorldLeo is the parent marketplace for both home and vehicle services across Ontario. WorldLeo Home focuses on repairs, renovations, and the AI Design Studio planning preview, while WorldLeo Auto and its rapid-response FixSoon branch handle mobile mechanics, tire service, battery boosts, and roadside emergencies.',
+    },
+    {
       id: 'faq_coverage',
       category: 'Coverage',
-      question: 'Which areas and highways does FixSoon currently cover?',
-      answer: `FixSoon serves the Greater Toronto Area, Greater Hamilton Area, and Niagara Region—including ${cityList}—along the QEW, 401, 403, 407, and 400-series corridors. Availability for each request depends on active independent professionals covering your municipality.`,
+      question: 'Which areas and highways does WorldLeo currently cover?',
+      answer: `WorldLeo serves the Greater Toronto Area, Greater Hamilton Area, and Niagara Region—including ${cityList}—along the QEW, 401, 403, 407, and 400-series corridors. Availability for each request depends on active independent professionals covering your municipality.`,
     },
     {
       id: 'faq_vehicles_equipment',
-      category: 'Coverage',
-      question: 'What vehicles and equipment can I request service for?',
-      answer: `During our launch phase, FixSoon focuses on ${activeSubs.map((s) => s.name).join(', ')} for cars, SUVs, pickup and commercial trucks, Bobcats/skid steers, and utility or cargo trailers. Additional home-service categories will open in future phases.`,
+      category: 'Auto & FixSoon',
+      question: 'What vehicles and equipment can I request FixSoon or Auto service for?',
+      answer: `Our active automotive and roadside dispatch includes ${activeSubs.map((s) => s.name).join(', ')} for cars, SUVs, pickup and commercial trucks, Bobcats/skid steers, and utility or cargo trailers.`,
     },
     {
       id: 'faq_two_methods',
       category: 'Process',
-      question: 'What is the difference between a General Request and a Direct Request?',
+      question: 'What is the difference between a Direct Request and a Marketplace Quote Request?',
       answer:
         'A General Marketplace Request matches your issue with qualified professionals in your area so you can compare multiple written quotes side by side. A Direct Request lets you pick a specific professional from the directory and send your job straight to them—and if they are unavailable, you can switch to the general marketplace in one click.',
     },
     {
-      id: 'faq_how_fast',
-      category: 'Process',
-      question: 'Do I need to know the exact technical repair name before requesting?',
+      id: 'faq_ai_design',
+      category: 'AI Design Studio',
+      question: 'How does WorldLeo AI Design Studio work right now?',
       answer:
-        'No. You can describe what happened in everyday words—such as "my car won\'t start" or "flat tire on my trailer"—and FixSoon automatically suggests the right service category and only asks relevant follow-up questions.',
+        'WorldLeo AI Design Studio is currently in development preview. It outlines a planned Free AI Inspiration Preview and a structured Planning Pack (CAD $39, admin-configurable) for kitchen, bathroom, and backyard projects. Any AI-generated visual or 2D layout must be verified on-site by a qualified contractor or licensed engineer before construction.',
     },
     {
       id: 'faq_verification',
       category: 'Verification',
-      question: 'How does FixSoon verify mechanics and service providers?',
-      answer: `FixSoon separates self-reported profile info from verified checks. Our operations team reviews email and phone reachability, business identity, commercial liability insurance, and trade licences (such as Red Seal) before marking a check as Verified. Currently ${approvedCount} approved demo profile(s) illustrate how verification badges appear.`,
+      question: 'How does WorldLeo verify service professionals and reviews?',
+      answer: `WorldLeo separates self-reported profile info from verified checks. Operations reviews email and phone reachability, business identity, commercial liability insurance, and trade licences before marking a check as Verified. Currently ${approvedCount} approved demo profile(s) illustrate how verification badges and completed-job reviews appear.`,
     },
     {
       id: 'faq_privacy_pricing',
       category: 'Pricing & Privacy',
       question: 'When is my exact street address shared, and how do quotes work?',
       answer:
-        'Providers only see your general city or neighbourhood while reviewing a request and submitting a written estimate (labour, parts, call-out/diagnostic terms, and ETA). Your exact street address and direct contact details stay private until you accept a quote.',
+        'Professionals only see your general city or neighbourhood while reviewing a request and submitting a written estimate. Your exact street address and direct contact details stay private until you accept a quote.',
     },
   ];
 
@@ -307,10 +375,17 @@ app.post('/api/auth/firebase', (req, res) => {
   }
   const normalizedEmail = email.trim().toLowerCase();
   let user = db.data.users.find((u) => u.email.toLowerCase() === normalizedEmail);
-  if (!user) {
+  if (user) {
+    // Prevent linking into password-based or admin accounts without server-side Firebase Admin token verification
+    if (user.role === 'admin' || !user.id.startsWith('usr_fb_')) {
+      return res.status(403).json({
+        error: 'An account with this email already exists with password credentials. Sign in with email and password.',
+      });
+    }
+  } else {
     user = {
       id: `usr_fb_${uid.slice(0, 12)}`,
-      name: (name || 'FixSoon User').trim(),
+      name: (name || 'WorldLeo User').trim(),
       email: normalizedEmail,
       phone: '',
       role: 'customer',
@@ -701,6 +776,12 @@ app.get('/api/requests/:requestId/messages', (req, res) => {
   const user = getAuthUser(req);
   if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
+  const reqRecord = db.data.service_requests.find((r) => r.id === req.params.requestId);
+  if (!reqRecord) return res.status(404).json({ error: 'Request not found' });
+  if (!canAccessRequestThread(user, req.params.requestId)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
   const messages = db.data.messages.filter((m) => m.request_id === req.params.requestId);
   res.json({ messages });
 });
@@ -708,6 +789,12 @@ app.get('/api/requests/:requestId/messages', (req, res) => {
 app.post('/api/requests/:requestId/messages', (req, res) => {
   const user = getAuthUser(req);
   if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
+  const reqRecord = db.data.service_requests.find((r) => r.id === req.params.requestId);
+  if (!reqRecord) return res.status(404).json({ error: 'Request not found' });
+  if (!canAccessRequestThread(user, req.params.requestId)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
 
   const { body } = req.body as { body?: string };
   if (!body?.trim()) return res.status(400).json({ error: 'Message body is required.' });
@@ -724,7 +811,6 @@ app.post('/api/requests/:requestId/messages', (req, res) => {
 
   db.data.messages.push(msg);
 
-  const reqRecord = db.data.service_requests.find((r) => r.id === req.params.requestId);
   if (reqRecord) {
     if (user.role === 'customer') {
       const assignedJob = db.data.jobs.find((j) => j.request_id === reqRecord.id);
@@ -1257,12 +1343,62 @@ app.post('/api/admin/disputes/:disputeId/resolve', (req, res) => {
 // ==========================================
 async function startServer() {
   const httpServer = http.createServer(app);
+  const disableHmr = process.env.DISABLE_HMR === 'true';
 
   if (process.env.NODE_ENV !== 'production') {
+    if (disableHmr) {
+      app.get('/@vite/client', (_req, res) => {
+        res.type('application/javascript').send(`
+const sheetsMap = new Map();
+export function updateStyle(id, content) {
+  let style = sheetsMap.get(id);
+  if (!style) {
+    style = document.createElement('style');
+    style.setAttribute('type', 'text/css');
+    style.setAttribute('data-vite-dev-id', id);
+    style.textContent = content;
+    document.head.appendChild(style);
+    sheetsMap.set(id, style);
+  } else if (style.textContent !== content) {
+    style.textContent = content;
+  }
+}
+export function removeStyle(id) {
+  const style = sheetsMap.get(id);
+  if (style) {
+    style.remove();
+    sheetsMap.delete(id);
+  }
+}
+export function createHotContext() {
+  return {
+    accept() {},
+    acceptExports() {},
+    dispose() {},
+    prune() {},
+    invalidate() {},
+    on() {},
+    off() {},
+    send() {},
+    data: {},
+  };
+}
+export function injectQuery(url, queryToInject) {
+  if (!url || (url[0] !== '.' && url[0] !== '/')) return url;
+  const pathname = url.replace(/[?#].*$/, '');
+  const { search, hash } = new URL(url, 'http://vite.dev');
+  return pathname + '?' + queryToInject + (search ? '&' + search.slice(1) : '') + (hash || '');
+}
+export class ErrorOverlay extends HTMLElement {}
+`);
+      });
+    }
+
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        hmr: process.env.DISABLE_HMR === 'true' ? false : { server: httpServer },
+        hmr: !disableHmr,
+        ws: disableHmr ? false : { server: httpServer },
       },
       appType: 'spa',
     });
@@ -1278,7 +1414,7 @@ async function startServer() {
   }
 
   httpServer.listen(PORT, '0.0.0.0', () => {
-    console.log(`FixSoon server listening on http://localhost:${PORT}`);
+    console.log(`WorldLeo (with FixSoon Auto) server listening on http://localhost:${PORT}`);
   });
 }
 
