@@ -176,4 +176,40 @@ test('2.2 Approved WorldLeo Brand Identity assets and palette tokens are present
       `Legacy palette hex code found in ${path.relative(ROOT, file)}`
     );
   }
+
+  assert.equal(
+    fs.existsSync(path.join(ROOT, 'public/assets/aistudio/Avator_-_worldleo_13299111.jpg')),
+    true
+  );
+  assert.equal(
+    fs.existsSync(path.join(ROOT, 'public/assets/aistudio/logo_-_worldleo_ea3ba466.jpg')),
+    true
+  );
+  const avatarComponent = fs.readFileSync(
+    path.join(ROOT, 'src/components/LeoAmbassadorAvatar.tsx'),
+    'utf-8'
+  );
+  assert.match(avatarComponent, /\/assets\/aistudio\/Avator_-_worldleo_13299111\.jpg/);
+  assert.match(avatarComponent, /\/assets\/aistudio\/logo_-_worldleo_ea3ba466\.jpg/);
+
+  for (const fileName of [
+    'worldleo-logo-light.png',
+    'worldleo-logo-dark.png',
+    'worldleo-symbol.png',
+    'worldleo-badge.png',
+    'avatar-auto-expert.jpg',
+    'avatar-home-expert.jpg',
+  ]) {
+    assert.equal(
+      fs.existsSync(path.join(ROOT, 'public/assets/brand', fileName)),
+      true,
+      `Missing extracted brand asset: ${fileName}`
+    );
+  }
+  const logoComponent = fs.readFileSync(path.join(ROOT, 'src/components/WorldLeoLogo.tsx'), 'utf-8');
+  assert.match(logoComponent, /\/assets\/brand\/worldleo-logo-light\.png/);
+  assert.match(logoComponent, /\/assets\/brand\/worldleo-logo-dark\.png/);
+  assert.match(logoComponent, /\/assets\/brand\/worldleo-symbol\.png/);
+  assert.match(avatarComponent, /\/assets\/brand\/avatar-auto-expert\.jpg/);
+  assert.match(avatarComponent, /\/assets\/brand\/avatar-home-expert\.jpg/);
 });

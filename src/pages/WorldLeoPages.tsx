@@ -100,13 +100,12 @@ export function WorldLeoPages({
           </div>
 
           <div className="lg:col-span-5 space-y-4">
-            <div className="aspect-[16/10] rounded-xl overflow-hidden border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F6F2E8] dark:bg-[#103228]">
-              <img
-                src="/src/assets/images/category_home_appliance_1794446298673.jpg"
-                alt="WorldLeo Home renovation and repair planning"
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <LeoAmbassadorAvatar
+              persona="home"
+              variant="portrait"
+              label="WorldLeo Home Specialist"
+              subtitle="Repairs · Renovations · Skilled Trades"
+            />
             <div className="p-4 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-xs text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
               <span className="font-semibold text-[#171B19] dark:text-[#F6F2E8]">WorldLeo Home Catalog:</span>{' '}
               {homeSubs.length} Home repair and renovation categories active for quote requests. Live AI Design image generation and checkout remain in preview.
@@ -272,24 +271,33 @@ export function WorldLeoPages({
   if (path === '/home/ai-design') {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
-        <div className="p-8 sm:p-10 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#9F7B37] dark:text-[#D8B66F]">
-              WorldLeo AI Design Studio · Preview Mode
+        <div className="p-8 sm:p-10 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#9F7B37] dark:text-[#D8B66F]">
+                WorldLeo AI Design Studio · Preview Mode
+              </div>
+              <LeoAmbassadorAvatar size={38} label="Guided Project Planning" />
             </div>
-            <LeoAmbassadorAvatar size={38} label="Guided Project Planning" />
+            <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171B19] dark:text-[#F6F2E8] [text-wrap:balance]">
+              Turn room ideas into structured renovation concepts and planning packs.
+            </h1>
+            <p className="text-sm sm:text-base text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
+              WorldLeo AI Design Studio helps homeowners visualize kitchen, bathroom, and backyard concepts before requesting contractor quotes. Live AI image generation and Planning Pack checkout remain in preview during this stage.
+            </p>
+            <div className="p-4 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F6F2E8] dark:bg-[#103228] flex items-start gap-3 text-xs text-[#171B19] dark:text-[#F6F2E8]">
+              <AlertTriangle className="w-4 h-4 text-[#9F7B37] dark:text-[#D8B66F] shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold">Professional Verification Required:</span> All future AI-generated room concepts and indicative 2D spatial layouts are for early planning discussion only. Exact dimensions, structural loads, plumbing, electrical routing, and Ontario Building Code compliance must be verified on-site by a qualified contractor or licensed engineer.
+              </div>
+            </div>
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171B19] dark:text-[#F6F2E8] [text-wrap:balance]">
-            Turn room ideas into structured renovation concepts and planning packs.
-          </h1>
-          <p className="text-sm sm:text-base text-[#58605A] dark:text-[#B4C2BC] leading-relaxed max-w-3xl">
-            WorldLeo AI Design Studio helps homeowners visualize kitchen, bathroom, and backyard concepts before requesting contractor quotes. Live AI image generation and Planning Pack checkout remain in preview during this stage.
-          </p>
-          <div className="p-4 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F6F2E8] dark:bg-[#103228] flex items-start gap-3 text-xs text-[#171B19] dark:text-[#F6F2E8]">
-            <AlertTriangle className="w-4 h-4 text-[#9F7B37] dark:text-[#D8B66F] shrink-0 mt-0.5" />
-            <div>
-              <span className="font-semibold">Professional Verification Required:</span> All future AI-generated room concepts and indicative 2D spatial layouts are for early planning discussion only. Exact dimensions, structural loads, plumbing, electrical routing, and Ontario Building Code compliance must be verified on-site by a qualified contractor or licensed engineer.
-            </div>
+          <div className="lg:col-span-5">
+            <LeoAmbassadorAvatar
+              variant="portrait"
+              label="Leo · Renovation Concierge"
+              subtitle="Scope Briefs & Contractor Matching"
+            />
           </div>
         </div>
 
@@ -494,13 +502,12 @@ export function WorldLeoPages({
           </div>
 
           <div className="lg:col-span-5 space-y-4">
-            <div className="aspect-[16/10] rounded-xl overflow-hidden border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F6F2E8] dark:bg-[#103228]">
-              <img
-                src="/src/assets/images/category_automotive_1794446299137.jpg"
-                alt="WorldLeo Auto mobile mechanic and FixSoon tire service"
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <LeoAmbassadorAvatar
+              persona="auto"
+              variant="portrait"
+              label="WorldLeo Auto Specialist"
+              subtitle="Mobile Mechanics · Tires · FixSoon"
+            />
             <div className="p-4 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] flex items-center justify-between gap-3">
               <FixSoonLogo showParentTag />
               <button
@@ -570,9 +577,12 @@ export function WorldLeoPages({
         <section className="p-8 sm:p-10 rounded-xl border border-[#C6A45B] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <FixSoonLogo showParentTag />
-            <span className="text-xs font-mono uppercase tracking-[0.12em] text-[#9F7B37] dark:text-[#D8B66F]">
-              WorldLeo Auto → Rapid Roadside Feature
-            </span>
+            <LeoAmbassadorAvatar
+              persona="auto"
+              size={40}
+              label="FixSoon Roadside Network"
+              subtitle="WorldLeo Auto · Rapid Dispatch"
+            />
           </div>
 
           <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171B19] dark:text-[#F6F2E8] [text-wrap:balance]">

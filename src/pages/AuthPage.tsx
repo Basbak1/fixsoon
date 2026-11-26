@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiFetch } from '../lib/api';
 import { isFirebaseClientConfigured } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
+import { WorldLeoLogo } from '../components/WorldLeoLogo';
 import type { PlatformConfigResponse, UserRole } from '../types/fixsoon';
 
 interface AuthPageProps {
@@ -105,6 +106,7 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
         <div
           className={`${localEmulatorEnabled ? 'lg:col-span-7' : 'max-w-xl mx-auto w-full'} p-6 sm:p-8 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E]`}
         >
+          <WorldLeoLogo variant="compact" className="mb-5" />
           <div className="flex items-center gap-1 p-1 rounded-lg bg-[#F6F2E8] dark:bg-[#071E17] mb-6">
             <button
               type="button"

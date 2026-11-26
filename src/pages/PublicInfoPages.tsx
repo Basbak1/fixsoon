@@ -4,6 +4,8 @@ import { SeoHead } from '../components/SeoHead';
 import { CoverageMap } from '../components/CoverageMap';
 import { GroundingAdvisor } from '../components/GroundingAdvisor';
 import { WorldLeoVerifiedBadge } from '../components/WorldLeoVerifiedBadge';
+import { WorldLeoLogo } from '../components/WorldLeoLogo';
+import { LeoAmbassadorAvatar, WORLDLEO_LOGO_SHEET_IMAGE } from '../components/LeoAmbassadorAvatar';
 import { isWorldLeoVerified } from '../lib/commissions';
 import type { GtaLocation, ProviderProfile, ServiceCategory, ServiceSubcategory } from '../types/fixsoon';
 
@@ -360,6 +362,47 @@ export function PublicInfoPages({
             </div>
           ))}
         </div>
+
+        {/* WorldLeo Brand Identity & Ambassador Standard */}
+        <div className="p-6 sm:p-8 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#D8D4C7] dark:border-[#1E4438]">
+            <div className="space-y-1">
+              <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#9F7B37] dark:text-[#C6A45B]">
+                Corporate Identity &amp; Concierge Standard
+              </div>
+              <h2 className="font-display text-xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
+                The WorldLeo Shield Monogram &amp; Leo Ambassador
+              </h2>
+            </div>
+            <WorldLeoLogo variant="horizontal" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <LeoAmbassadorAvatar
+              variant="portrait"
+              label="Leo — WorldLeo Brand Ambassador"
+              subtitle="Trusted Home & Auto Guidance"
+            />
+            <div className="rounded-xl overflow-hidden border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17]">
+              <div className="aspect-[16/9] w-full overflow-hidden bg-[#F8F7F2]">
+                <img
+                  src={WORLDLEO_LOGO_SHEET_IMAGE}
+                  alt="WorldLeo Shield and Monogram Evolution brand identity system"
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+              <div className="px-4 py-3 bg-[#FFFFFF] dark:bg-[#0B261E] border-t border-[#D8D4C7] dark:border-[#1E4438]">
+                <div className="text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8]">
+                  Shield &amp; Monogram Evolution
+                </div>
+                <div className="text-[11px] font-mono text-[#9F7B37] dark:text-[#D8B66F]">
+                  1.2:1 Shield · Smooth Orbit · Minimalist Leo Endpoint
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -395,6 +438,21 @@ export function PublicInfoPages({
           <div className="p-3.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-xs text-[#6D756F] dark:text-[#A3ABA5]">
             Stage 2 Status: Security, atomic quote matching, and role-based verification workflows are active. Live commercial payment settlements open in an upcoming stage.
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+            <LeoAmbassadorAvatar
+              persona="auto"
+              variant="portrait"
+              label="WorldLeo Auto & FixSoon Technicians"
+              subtitle="Mobile Mechanics · Tires · Battery & Roadside"
+            />
+            <LeoAmbassadorAvatar
+              persona="home"
+              variant="portrait"
+              label="WorldLeo Home & Renovation Pros"
+              subtitle="Trades · Repairs · Kitchen, Bath & Exterior"
+            />
+          </div>
+
           <div className="pt-2 flex flex-wrap gap-3">
             <button
               type="button"

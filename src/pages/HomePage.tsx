@@ -13,7 +13,11 @@ import {
 } from 'lucide-react';
 import { SeoHead } from '../components/SeoHead';
 import { FixSoonLogo } from '../components/FixSoonLogo';
-import { LeoAmbassadorAvatar } from '../components/LeoAmbassadorAvatar';
+import {
+  LeoAmbassadorAvatar,
+  WORLDLEO_AUTO_EXPERT_IMAGE,
+  WORLDLEO_HOME_EXPERT_IMAGE,
+} from '../components/LeoAmbassadorAvatar';
 import { TrustAndVerification } from '../components/TrustAndVerification';
 import { WorldLeoVerifiedBadge } from '../components/WorldLeoVerifiedBadge';
 import { FaqSection, type FaqItem } from '../components/FaqSection';
@@ -115,18 +119,28 @@ export function HomePage({
       {/* Hero Section: Corporate Brand First + Balanced Home & Auto Divisions */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10 lg:pt-14 lg:pb-12">
         <div className="space-y-8">
-          <div className="max-w-3xl space-y-4">
-            <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#9F7B37] dark:text-[#D8B66F]">
-              Canadian Managed Service Marketplace · Ontario
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7 space-y-4">
+              <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#9F7B37] dark:text-[#D8B66F]">
+                Canadian Managed Service Marketplace · Ontario
+              </div>
+              <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-[#171B19] dark:text-[#F6F2E8] leading-[1.08] [text-wrap:balance]">
+                Your Home. Your Vehicle. One Trusted Place for Help.
+              </h1>
+              <p className="text-base sm:text-lg text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
+                Find qualified professionals, compare transparent quotes, and get dependable support from request to completion across{' '}
+                <strong className="text-[#171B19] dark:text-[#F6F2E8]">WorldLeo Home</strong> and{' '}
+                <strong className="text-[#171B19] dark:text-[#F6F2E8]">WorldLeo Auto</strong>.
+              </p>
             </div>
-            <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-[#171B19] dark:text-[#F6F2E8] leading-[1.08] [text-wrap:balance]">
-              Your Home. Your Vehicle. One Trusted Place for Help.
-            </h1>
-            <p className="text-base sm:text-lg text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
-              Find qualified professionals, compare transparent quotes, and get dependable support from request to completion across{' '}
-              <strong className="text-[#171B19] dark:text-[#F6F2E8]">WorldLeo Home</strong> and{' '}
-              <strong className="text-[#171B19] dark:text-[#F6F2E8]">WorldLeo Auto</strong>.
-            </p>
+            <div className="lg:col-span-5">
+              <LeoAmbassadorAvatar
+                variant="portrait"
+                persona="dual"
+                label="Skilled Auto & Home Experts"
+                subtitle="Verified Professionals · Transparent Quotes"
+              />
+            </div>
           </div>
 
           {/* Dual Balanced Division Cards */}
@@ -143,12 +157,22 @@ export function HomePage({
                     Repairs · Renovations · Design
                   </span>
                 </div>
-                <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
-                  Home repairs, renovations &amp; AI Design Studio
-                </h2>
-                <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
-                  Request plumbing, electrical, appliance, and handyman trades, plan full kitchen or bathroom renovations, and explore concepts in AI Design Studio before comparing written quotes.
-                </p>
+                <div className="flex items-start gap-4">
+                  <div className="space-y-2 flex-1 min-w-0">
+                    <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
+                      Home repairs, renovations &amp; AI Design Studio
+                    </h2>
+                    <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
+                      Request plumbing, electrical, appliance, and handyman trades, plan full kitchen or bathroom renovations, and explore concepts in AI Design Studio before comparing written quotes.
+                    </p>
+                  </div>
+                  <img
+                    src={WORLDLEO_HOME_EXPERT_IMAGE}
+                    alt="WorldLeo Home renovation and repair specialist"
+                    referrerPolicy="no-referrer"
+                    className="hidden sm:block w-24 md:w-28 aspect-[4/3] rounded-lg object-cover object-[50%_12%] border border-[#D8D4C7] dark:border-[#1E4438] shrink-0"
+                  />
+                </div>
                 <div className="flex flex-wrap gap-3 text-xs text-[#58605A] dark:text-[#B4C2BC]">
                   <button
                     type="button"
@@ -211,12 +235,22 @@ export function HomePage({
                   </div>
                   <FixSoonLogo showParentTag />
                 </div>
-                <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
-                  Mobile mechanics, tires &amp; FixSoon roadside help
-                </h2>
-                <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
-                  Schedule mobile vehicle maintenance, tire service, or battery replacement at your driveway or job site, or use <strong className="text-[#171B19] dark:text-[#F6F2E8]">FixSoon</strong> inside WorldLeo Auto when you need urgent roadside support.
-                </p>
+                <div className="flex items-start gap-4">
+                  <div className="space-y-2 flex-1 min-w-0">
+                    <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
+                      Mobile mechanics, tires &amp; FixSoon roadside help
+                    </h2>
+                    <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
+                      Schedule mobile vehicle maintenance, tire service, or battery replacement at your driveway or job site, or use <strong className="text-[#171B19] dark:text-[#F6F2E8]">FixSoon</strong> inside WorldLeo Auto when you need urgent roadside support.
+                    </p>
+                  </div>
+                  <img
+                    src={WORLDLEO_AUTO_EXPERT_IMAGE}
+                    alt="WorldLeo Auto mobile mechanic and FixSoon technician"
+                    referrerPolicy="no-referrer"
+                    className="hidden sm:block w-24 md:w-28 aspect-[4/3] rounded-lg object-cover object-[50%_12%] border border-[#D8D4C7] dark:border-[#1E4438] shrink-0"
+                  />
+                </div>
                 <div className="flex flex-wrap gap-3 text-xs text-[#58605A] dark:text-[#B4C2BC]">
                   <button
                     type="button"
@@ -501,7 +535,7 @@ export function HomePage({
           <div className="p-6 sm:p-8 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] flex flex-col justify-between gap-5">
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-3">
-                <LeoAmbassadorAvatar label="AI Design Studio" />
+                <LeoAmbassadorAvatar persona="home" label="AI Design Studio" />
                 <span className="text-xs font-mono text-[#58605A] dark:text-[#B4C2BC]">Preview Mode</span>
               </div>
               <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
@@ -578,9 +612,10 @@ export function HomePage({
               >
                 <div className="flex items-start gap-4">
                   <img
-                    src={prov.avatar_url || '/src/assets/images/provider_avatar_1_1794446298913.jpg'}
+                    src={prov.avatar_url || WORLDLEO_AUTO_EXPERT_IMAGE}
                     alt={prov.display_name}
-                    className="w-14 h-14 rounded-lg object-cover border border-[#D8D4C7] dark:border-[#1E4438]"
+                    referrerPolicy="no-referrer"
+                    className="w-14 h-14 rounded-lg object-cover object-top border border-[#D8D4C7] dark:border-[#1E4438]"
                   />
                   <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
