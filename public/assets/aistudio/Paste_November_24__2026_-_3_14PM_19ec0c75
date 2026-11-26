@@ -1,0 +1,1283 @@
+# WORLDLEO — FINAL STAGE 2 MASTER DEVELOPMENT PROMPT
+## Complete Marketplace Development, Brand Identity, Navigation, Payments, Security and Operations
+
+## YOUR ROLE AND MISSION
+
+Act as an experienced software architect, senior full-stack developer, UI/UX designer, brand identity specialist, marketplace product manager, security engineer and quality assurance lead.
+
+Your assignment is to transform the EXISTING WorldLeo application into a secure, fully integrated and professionally designed marketplace for Home and Automotive services.
+
+**Existing GitHub repository:**
+https://github.com/Basbak1/fixsoon
+
+**IMPORTANT: This is a continuation of Stage 1, NOT a new application.**
+
+Before making changes:
+
+1. Inspect the actual project currently loaded in Google AI Studio.
+2. Review existing code, architecture, components, pages and routes.
+3. Identify which Stage 1 features are already functional.
+4. Preserve working features and customer/provider workflows.
+5. Create a safe Git checkpoint or backup.
+6. Identify architectural and security problems.
+7. Implement Stage 2 incrementally, with tests after each development batch.
+
+Do not rebuild the application unnecessarily.
+
+Do not replace working components with visual mockups.
+
+Do not claim functionality exists unless it has been implemented and tested.
+
+---
+
+# PART 1 — WORLDLEO BUSINESS MODEL
+
+## 1.1 Business vision
+
+WorldLeo is one professionally managed marketplace connecting customers with independent service providers.
+
+Initial service regions:
+
+- Greater Toronto Area.
+- Hamilton and surrounding communities.
+- Niagara Region.
+- Other Ontario locations only when actual provider coverage exists.
+
+WorldLeo has two principal service divisions.
+
+### WORLDLEO HOME
+
+Home repairs, renovations, property maintenance, improvement projects, professional trades and AI-assisted renovation planning.
+
+### WORLDLEO AUTO
+
+Automotive repairs, mobile mechanics, tire services, battery assistance, vehicle maintenance and roadside support.
+
+Within WorldLeo Auto, **FixSoon** is the rapid roadside-assistance feature.
+
+Within WorldLeo Home, **AI Design Studio** is the AI-assisted renovation visualization and planning feature.
+
+Both divisions must share the same core marketplace infrastructure.
+
+## 1.2 Marketplace operating model
+
+WorldLeo operates as a **managed marketplace with evidence-based service monitoring**.
+
+The model includes:
+
+- Independent providers performing contracted services.
+- WorldLeo coordinating service requests.
+- Provider matching based on actual qualifications and availability.
+- Transparent quotations.
+- Customer approval before additional charges.
+- Secure payment processing.
+- Administrative service-progress monitoring.
+- Provider completion-evidence submissions.
+- WorldLeo completion reviews.
+- Structured dispute resolution.
+- Transparent provider commissions.
+- Approved payment-provider payouts.
+
+WorldLeo should not automatically be presented as the construction contractor, automotive repair business, employer of all providers, or guarantor of all workmanship.
+
+Provider responsibilities, WorldLeo responsibilities and customer rights must be clearly distinguished.
+
+---
+
+# PART 2 — FINAL WORLDLEO BRAND IDENTITY
+
+## 2.1 Primary logo — mandatory correction
+
+I am attaching my preferred WorldLeo logo as a reference.
+
+**The approved design is the W + Orbit + Small Calm Lion Head.**
+
+This must replace the current shield/checkmark as the primary WorldLeo corporate symbol.
+
+### Logo composition
+
+The logo consists of:
+
+1. A bold, distinctive W.
+2. A smooth orbit moving around the W.
+3. A small, minimalist lion head positioned near the upper-right endpoint of the orbit.
+4. A confident, calm and approachable lion expression.
+5. Elegant and balanced spacing.
+6. The WorldLeo wordmark.
+
+### Meaning behind the symbol
+
+**W:** Represents WorldLeo and the unified marketplace.
+
+**Orbit:** Represents connection, movement, service coverage and the journey from request to completion.
+
+**Leo:** Represents the friendly, capable and dependable brand ambassador who helps customers get things done.
+
+**Forward motion:** Represents efficiency and reliable service coordination.
+
+### Mandatory design rules
+
+- Preserve the W as the dominant visual element.
+- Keep the lion head significantly smaller than the W.
+- Keep the lion friendly, confident and calm.
+- Use a clean and natural lion-head silhouette.
+- Avoid aggressive facial expressions, teeth and roaring mouths.
+- Avoid unnecessary mane details.
+- Keep the orbit proportional and elegant.
+- Avoid excessive metallic effects, reflections and gradients.
+- Use flat or subtly shaded professional vector-style artwork.
+- Ensure the symbol works at small sizes.
+
+DO NOT replace the logo with:
+
+- A lion shield.
+- A generic roaring lion.
+- A house.
+- A wrench.
+- A car.
+- A globe.
+- A star.
+- A checkmark inside a shield.
+- A completely different W design.
+
+**The supplied W + Orbit + Leo image is the visual authority. Do not invent a replacement concept.**
+
+If an exact vector reproduction cannot be achieved, preserve the supplied image as the reference, create the closest clean scalable version possible, and clearly identify any differences for review.
+
+## 2.2 Current shield logo
+
+The existing shield/checkmark logo must no longer be WorldLeo's primary corporate logo.
+
+However, it may be repurposed as a separate trust indicator named:
+
+**WorldLeo Verified**
+
+Use it only for providers who have genuinely completed the defined verification requirements.
+
+Potential applications:
+
+- Verified provider badges.
+- Credential verification statuses.
+- Service Assurance sections.
+- Provider certification displays.
+
+The verification symbol must remain visually subordinate to WorldLeo's primary W + Orbit + Leo identity.
+
+Do not falsely imply government certification, insurance coverage or professional licensing.
+
+## 2.3 Final colour palette
+
+Adopt a premium, contemporary forest-green-and-gold identity.
+
+### Primary colours
+
+Deep bottle green: `#063B2B`
+
+Dark forest green: `#071E17`
+
+Secondary green: `#145443`
+
+### Accent colours
+
+Warm muted gold: `#C6A45B`
+
+Highlight gold: `#D8B66F`
+
+Deep gold: `#9F7B37`
+
+### Neutral colours
+
+Warm ivory: `#F6F2E8`
+
+Soft white: `#F8F7F2`
+
+Charcoal: `#171B19`
+
+Secondary grey: `#6D756F`
+
+### Theme behaviour
+
+Support both light and dark themes.
+
+**Light mode:**
+- Warm ivory and white backgrounds.
+- Forest-green headings.
+- Charcoal body text.
+- Gold accents.
+
+**Dark mode:**
+- Deep forest-green backgrounds.
+- Ivory text.
+- Muted gold accents.
+- Lighter green surfaces for visual hierarchy.
+
+Use restrained colour combinations.
+
+Do not use electric blue as the main brand colour.
+
+Blue may remain a functional status colour for GPS, maps or location tracking where appropriate.
+
+Maintain WCAG AA contrast for ordinary text and interactive controls.
+
+## 2.4 Required logo assets
+
+Create:
+
+- Full horizontal WorldLeo logo.
+- Compact WorldLeo logo.
+- Symbol-only W + Orbit + Leo.
+- Light-theme version.
+- Dark-theme version.
+- Monochrome version.
+- Favicon.
+- App icon.
+- Email/header version.
+- Invoice version.
+- Website navigation version.
+
+Use consistent proportions, spacing and colours.
+
+Prefer clean SVG assets where feasible.
+
+If a simplified lion is required for a 16px favicon, preserve the W and orbit and use a suitable simplified detail.
+
+Do not display trademark registration symbols unless their use is authorized.
+
+## 2.5 Future Leo ambassador
+
+WorldLeo will introduce a professional lion character named **Leo**.
+
+The character should:
+
+- Be charming and approachable.
+- Be confident but not arrogant.
+- Feel professional, intelligent and dependable.
+- Use the same visual personality as the logo's lion.
+- Wear WorldLeo branding where appropriate.
+- Represent customer support, guidance and service coordination.
+
+The full Leo avatar must be visually distinct from the small lion head used in the primary logo.
+
+Prepare appropriate reusable mascot assets and component locations, but do not force a large mascot into every screen.
+
+---
+
+# PART 3 — WEBSITE STRUCTURE AND NAVIGATION
+
+## 3.1 One brand, two service divisions
+
+WorldLeo must be the only primary corporate identity.
+
+FixSoon and AI Design Studio are signature features, not independent companies.
+
+### Main desktop navigation
+
+WorldLeo Logo | Home Services | Auto Services | AI Design Studio | Find Professionals | How It Works | For Professionals | Sign In | Request Service
+
+FixSoon should be easily accessible within Auto Services and through a prominent roadside-assistance action.
+
+Do not place a second corporate-looking FixSoon logo beside the WorldLeo logo.
+
+## 3.2 Home Services menu
+
+Include:
+
+- Home Repairs.
+- Kitchen Renovation.
+- Bathroom Renovation.
+- General Renovation.
+- Plumbing.
+- Electrical.
+- Painting.
+- Flooring.
+- Landscaping.
+- Backyard Design.
+- AI Design Studio.
+- Request Home Quotes.
+
+Only advertise services with actual qualified provider coverage when the platform is launched.
+
+## 3.3 Auto Services menu
+
+Include:
+
+- Find a Mechanic.
+- Mobile Mechanics.
+- Tire Services.
+- Battery Boost.
+- Battery Replacement.
+- Diagnostics.
+- Maintenance.
+- FixSoon — Urgent Roadside Assistance.
+
+## 3.4 For Professionals
+
+Include:
+
+- Why Join WorldLeo.
+- Provider Benefits.
+- Transparent Commissions.
+- Provider Registration.
+- Provider Dashboard.
+- Professional Support.
+
+## 3.5 Mobile navigation
+
+Build a responsive mobile menu prioritizing:
+
+- Home.
+- Auto.
+- Request Service.
+- Active Jobs.
+- Account.
+
+Make FixSoon roadside assistance accessible quickly from the mobile interface.
+
+Ensure menu and form controls have appropriate touch targets, labels and accessibility support.
+
+## 3.6 Footer
+
+Display one primary WorldLeo logo.
+
+Group links into:
+
+- Home Services.
+- Auto Services.
+- Professionals.
+- Service Areas.
+- Support.
+- Legal.
+
+Do not present FixSoon as a separate corporation.
+
+Remove ordinary customer-facing links to internal API documentation or development infrastructure.
+
+## 3.7 URL structure
+
+Standardize public routing around:
+
+- `/`
+- `/home`
+- `/auto`
+- `/auto/fixsoon`
+- `/home/ai-design`
+- `/home/kitchen-renovation`
+- `/home/bathroom-renovation`
+- `/home/backyard-design`
+- `/professionals`
+- `/professionals/:slug`
+- `/request-service`
+- `/how-it-works`
+- `/for-professionals`
+- `/dashboard`
+- `/privacy`
+- `/terms`
+
+Preserve existing routes or implement redirects where necessary.
+
+Use `worldleo.com` as the intended canonical domain when configured.
+
+---
+
+# PART 4 — CUSTOMER EXPERIENCE
+
+Implement a complete customer journey.
+
+Customers should be able to:
+
+1. Browse Home or Auto services.
+2. Find suitable professionals.
+3. Describe a problem using everyday language.
+4. Upload photographs.
+5. Submit a service request.
+6. Choose general marketplace matching or a specific provider.
+7. Receive quotations.
+8. Compare quotations.
+9. Select and approve a provider.
+10. Confirm appointment or dispatch.
+11. Pay through the WorldLeo checkout when enabled.
+12. Monitor job progress.
+13. View FixSoon GPS tracking for eligible jobs.
+14. Receive job completion information.
+15. Review final payment records.
+16. Report problems.
+17. Submit authentic reviews.
+18. Access service history and invoices.
+
+### Request form improvements
+
+Make forms category-specific.
+
+Home requests should collect renovation and property information.
+
+Auto requests should collect appropriate vehicle information.
+
+FixSoon requests should prioritize urgent intake and location.
+
+Do not automatically mark every service request as an emergency.
+
+When a customer enters from FixSoon, preselect Auto roadside assistance.
+
+When a customer enters through general Request Service, provide an appropriate Home/Auto choice.
+
+Avoid excessive form steps for urgent roadside requests.
+
+---
+
+# PART 5 — PROVIDER AND COMPANY EXPERIENCE
+
+Support individual providers and registered service companies.
+
+### Provider onboarding
+
+Collect:
+
+- Individual or business name.
+- Contact information.
+- Business registration details where applicable.
+- Offered services.
+- Coverage areas.
+- Availability.
+- Qualifications.
+- Relevant licences.
+- Insurance documents.
+- WSIB information where applicable.
+- Payment onboarding information.
+- Provider agreement acceptance.
+
+### Provider dashboard
+
+Allow providers to:
+
+- Maintain a professional profile.
+- Select service categories.
+- Define service areas.
+- Set availability.
+- Accept or decline requests.
+- Prepare quotations.
+- Manage appointments.
+- Communicate with customers.
+- Update job status.
+- Upload completion evidence.
+- Respond to disputes.
+- View commissions.
+- View payout records.
+- Review completed work and customer feedback.
+
+### Company/team management
+
+Registered companies should be able to add authorized technicians and staff.
+
+Company administrators can assign jobs to team members.
+
+Technicians must see only their authorized jobs and relevant customer information.
+
+Do not give ordinary team members access to all company financial or administrative records.
+
+---
+
+# PART 6 — WORLDLEO STAFF ROLES
+
+Implement separate role-based experiences for:
+
+### Customer
+Own requests, payments, messages and service history.
+
+### Individual provider
+Own quotations, assignments and payout information.
+
+### Provider company administrator
+Manage company staff, jobs, service offerings and business records.
+
+### Provider technician
+Access assigned jobs and permitted operational information.
+
+### WorldLeo coordinator
+Manage matching, assignments, delays, customer communications and evidence review.
+
+### Customer-support agent
+Manage authorized support cases and customer communication.
+
+### Finance administrator
+Manage financial oversight, payment status, reconciliation, refunds and permitted payout actions.
+
+### Super administrator
+Manage platform configuration, roles, provider verification, commissions and system audit records.
+
+Use server-enforced role and resource permissions.
+
+A user's frontend role selection must never be sufficient authorization for sensitive backend actions.
+
+---
+
+# PART 7 — CRITICAL SECURITY AND DATABASE WORK
+
+Before completing payment-related development, inspect and fix confirmed security and data-integrity problems.
+
+Priorities:
+
+1. Validate Firebase ID tokens server-side.
+2. Reject unauthenticated and forged identity information.
+3. Verify customer ownership of requests and jobs.
+4. Verify provider ownership or assignment.
+5. Restrict disputes to authorized participants.
+6. Restrict private messages to permitted users.
+7. Prevent duplicate quote acceptance.
+8. Prevent duplicate job creation.
+9. Protect customer addresses, photos and location records.
+10. Protect payment and provider verification information.
+
+### Production database
+
+Review the existing local JSON database implementation.
+
+Move production-critical marketplace records to a suitable persistent database with safe concurrent access.
+
+Evaluate existing Firebase/Firestore functionality before introducing a completely new stack.
+
+Document any migration plan before changing stored data.
+
+Use transactional operations or equivalent atomic controls for:
+
+- Quote acceptance.
+- Job creation.
+- Financial state changes.
+- Commission snapshots.
+- Payment event processing.
+- Refunds and payouts.
+
+Preserve existing test/demo data where appropriate, but clearly separate demo records from real users and providers.
+
+Do not expose real customer records during development.
+
+---
+
+# PART 8 — COMPLETE MARKETPLACE WORKFLOW
+
+Implement both request modes:
+
+### General request
+
+Customer posts a service requirement.
+
+WorldLeo matches the request to suitable available providers.
+
+Providers submit quotations.
+
+Customer selects a quotation.
+
+### Direct request
+
+Customer visits a specific provider profile.
+
+Customer submits a request directly to that provider.
+
+Both request modes must use the same underlying marketplace records and job workflow.
+
+### Quotation requirements
+
+Each quotation must include:
+
+- Provider.
+- Service scope.
+- Labour cost.
+- Dispatch/service fees.
+- Parts.
+- Materials.
+- Applicable taxes.
+- Appointment or expected service time.
+- Exclusions.
+- Warranty terms.
+- Quote validity.
+- Customer-approved changes.
+
+Require customer authorization before additional billable work.
+
+Create audit records for accepted quotations and change orders.
+
+Prevent double acceptance or inconsistent job assignments.
+
+---
+
+# PART 9 — TRANSPARENT PROGRESSIVE COMMISSIONS
+
+Implement WorldLeo's progressive marginal commission system.
+
+Commission is initially based on eligible labour, service and dispatch charges before applicable taxes.
+
+### Commission tiers
+
+| Eligible value portion | Marginal commission |
+|---|---:|
+| First $1,000 | 25% |
+| $1,000–$2,000 | 15% |
+| $2,000–$6,000 | 10% |
+| $6,000–$10,000 | 5% |
+| Above $10,000 | 2.5% |
+
+These are marginal rates, not flat rates applied to the entire job.
+
+### Expected results
+
+| Eligible job value | WorldLeo commission |
+|---|---:|
+| $500 | $125 |
+| $1,000 | $250 |
+| $2,000 | $400 |
+| $3,000 | $500 |
+| $6,000 | $800 |
+| $10,000 | $1,000 |
+| $20,000 | $1,250 |
+
+Write automated unit tests for each example.
+
+Use decimal-safe currency calculations and consistent rounding.
+
+### Transparency
+
+Before accepting a job, providers must see:
+
+- Customer quote amount.
+- Commission-eligible amount.
+- Commission breakdown.
+- Effective commission percentage.
+- Excluded parts/materials.
+- Applicable processing charges.
+- Expected provider payout.
+- Expected payout timing.
+
+Customers must see the full payable price and applicable charges before payment.
+
+### Administrative configuration
+
+Allow authorized administrators to configure:
+
+- Future commission versions.
+- Provider promotions.
+- Founding-provider discounts.
+- Fee-base exclusions.
+- Minimum service charges if later introduced.
+- Tax treatment.
+- Change-order calculations.
+
+Do not silently change the commission terms of an already accepted job.
+
+Do not allow hidden, arbitrary or undisclosed pricing adjustments.
+
+---
+
+# PART 10 — PAYMENT SYSTEM
+
+Build a secure WorldLeo-branded customer payment experience using a marketplace payment provider.
+
+Evaluate Stripe Connect first.
+
+### Important legal constraints
+
+WorldLeo operates in Ontario, Canada.
+
+Before activating live payments, the complete payment structure must be reviewed for:
+
+- Retail Payment Activities Act requirements.
+- Payment-provider account structure.
+- Customer/provider contractual responsibilities.
+- Ontario consumer protection rules.
+- Construction Act prompt-payment and holdback requirements.
+- GST/HST treatment.
+- Refunds and chargebacks.
+- Applicable data protection requirements.
+
+Using Stripe Connect does not automatically settle the regulatory questions.
+
+WorldLeo should not independently operate a homemade escrow system or receive and hold provider money in its own business bank account without the necessary legal review.
+
+### Stage 2 payment implementation
+
+Develop the payment workflows in SANDBOX/TEST MODE.
+
+#### Customer functionality
+
+- Secure checkout.
+- Payment confirmation.
+- Payment history.
+- Receipts.
+- Refund status.
+- Failed payment handling.
+
+#### Provider functionality
+
+- Connected-account onboarding.
+- Payout setup.
+- Commission breakdown.
+- Payment history.
+- Expected payouts.
+- Payout status.
+
+#### WorldLeo administration
+
+- Gross booking value.
+- WorldLeo revenue.
+- Payment-processing fees.
+- Provider allocations.
+- Payment events.
+- Refunds.
+- Disputes.
+- Chargebacks.
+- Payout reconciliation.
+- Financial audit logs.
+
+### Security rules
+
+Never store raw card information.
+
+Verify payment-provider webhooks.
+
+Use idempotency keys and duplicate-event protection.
+
+Do not assume payment succeeded merely because a customer reached a success page.
+
+Keep service completion, customer payment and provider payout statuses separate.
+
+Do not initiate real charges, real transfers or real payouts without explicit approval.
+
+### Renovation payments
+
+Prepare for milestone-based renovation projects.
+
+Track:
+
+- Approved scope.
+- Milestone definitions.
+- Amount due.
+- Evidence.
+- Change orders.
+- Customer communication.
+- Payment status.
+- Statutory holdback treatment where applicable.
+
+Do not treat ordinary platform quality reviews as a substitute for statutory construction-payment requirements.
+
+---
+
+# PART 11 — SERVICE ASSURANCE / MODEL B
+
+WorldLeo's strict monitoring policy is a key marketplace feature.
+
+Implement evidence-based administrative completion reviews.
+
+### Job lifecycle
+
+Draft → Submitted → Qualified → Quoting → Quote Accepted → Assigned → Scheduled/Dispatching → En Route → Arrived → In Progress → Evidence Submitted → Under Review → Completion Approved → Closed.
+
+Support separate cancellation, correction, refund and dispute paths.
+
+### Auto completion evidence
+
+Examples:
+
+- Arrival confirmation.
+- Before/after photos.
+- Work performed.
+- Parts installed.
+- Relevant test results.
+- Completion time.
+
+### Home completion evidence
+
+Examples:
+
+- Approved scope.
+- Progress photos.
+- Checklist.
+- Approved changes.
+- Required inspection documentation.
+- Completion records.
+
+### WorldLeo coordinator review
+
+Authorized staff should be able to:
+
+- Inspect submitted documents.
+- Approve administrative completion.
+- Request clarification.
+- Flag missing evidence.
+- Request corrections.
+- Open a documented dispute.
+- Escalate technical questions.
+- Record decisions and review timestamps.
+
+Administrative approval is not a professional certification or guarantee of technical workmanship.
+
+Create clear review deadlines, appeals and escalation procedures.
+
+Do not allow indefinite or arbitrary payout delays.
+
+---
+
+# PART 12 — FIXSOON ROADSIDE ASSISTANCE
+
+FixSoon must remain a feature of WorldLeo Auto.
+
+Its customer-facing name is:
+
+**FixSoon — Roadside Help by WorldLeo Auto**
+
+### Main customer journey
+
+1. Request roadside help.
+2. Share GPS or enter location.
+3. Describe vehicle problem.
+4. Match with available providers.
+5. Receive quotation.
+6. Accept provider and price.
+7. Confirm dispatch.
+8. Track approaching technician.
+9. Receive ETA and status updates.
+10. Confirm arrival.
+11. Receive service.
+12. Complete evidence and monitoring process.
+13. Process payment under approved rules.
+14. Receive receipt and provide feedback.
+
+### GPS tracking
+
+Develop a secure real-time tracking system.
+
+Requirements:
+
+- Provider permission for location sharing.
+- Tracking only during authorized jobs.
+- Secure customer tracking link.
+- Provider location updates.
+- Arrival ETA where real routing data is available.
+- Location freshness indicator.
+- Last known location timestamp.
+- Coordinator tracking view.
+- Delay alerts.
+- Stop-tracking controls.
+- Tracking expiration after the job.
+
+Do not show simulated tracking as real.
+
+Do not invent ETAs.
+
+Browser-based GPS is not guaranteed to work reliably in the background when devices are locked.
+
+Prepare the architecture for a future Expo/React Native provider app with supported native location capabilities.
+
+Do not activate paid maps or SMS services without authorization.
+
+---
+
+# PART 13 — AI DESIGN STUDIO
+
+WorldLeo Home must include a dedicated AI Design Studio.
+
+### Free tier
+
+Allow customers to:
+
+- Upload room or backyard photos.
+- Choose a renovation category.
+- Select preferred design style.
+- Describe desired improvements.
+- Generate conceptual AI visualization.
+- Save designs.
+- Request quotes.
+
+Use appropriate AI API configuration, privacy controls, file validation and usage limits.
+
+Do not make paid model calls without configured billing and approval.
+
+### Paid planning package
+
+Proposed starting price: CAD $39 per project, configurable by administration.
+
+Customer may enter:
+
+- Room dimensions.
+- Ceiling height.
+- Door/window locations.
+- Existing fixtures.
+- Preferred layout.
+- Budget.
+- Materials.
+- Desired changes.
+
+Generate:
+
+- Conceptual design alternatives.
+- Dimension-labelled preliminary layouts.
+- AI visualizations.
+- Proposed project brief.
+- Material preferences.
+- Scope checklist.
+- Questions requiring professional verification.
+- Downloadable PDF.
+- Contractor quote-request package.
+
+Use deterministic geometry for dimension-labelled plans.
+
+Do not rely on AI image generation to invent accurate technical drawings.
+
+All outputs must be presented as conceptual unless verified by qualified professionals.
+
+### AI Studio to marketplace connection
+
+A customer should be able to:
+
+Generate Design → Save Design → Choose Concept → Prepare Project Brief → Request Quotes → Hire Provider.
+
+Track conversion from design users to qualified customer requests without violating privacy or marketing-consent rules.
+
+Treat digital planning-pack payment records separately from provider service payments.
+
+---
+
+# PART 14 — NOTIFICATIONS AND COMMUNICATION
+
+Implement notifications for:
+
+- New service requests.
+- New provider opportunities.
+- Quotes received.
+- Quotes accepted.
+- Appointment confirmations.
+- FixSoon dispatch.
+- ETA updates.
+- Job status changes.
+- Completion evidence.
+- Review results.
+- Payment status.
+- Refunds.
+- Disputes.
+
+Begin with reliable in-app notifications.
+
+Integrate email and SMS only through properly configured services.
+
+Provide clear notification preferences.
+
+Separate transactional messages from promotional marketing.
+
+Marketing consent must be optional and unchecked by default.
+
+Store consent wording, timestamps, source and opt-out records.
+
+Do not automatically import or contact historical renovation customers.
+
+---
+
+# PART 15 — ADMINISTRATION DASHBOARD
+
+Build a centralized WorldLeo Operations Dashboard.
+
+Sections:
+
+- Overview.
+- Customers.
+- Providers.
+- Provider verification.
+- Service categories.
+- Coverage areas.
+- Customer requests.
+- Provider quotes.
+- Jobs.
+- FixSoon dispatch.
+- AI Design Studio.
+- Completion reviews.
+- Disputes.
+- Payments.
+- Commissions.
+- Provider payouts.
+- Refunds.
+- Staff and permissions.
+- Notifications.
+- Audit logs.
+
+### Dashboard reporting
+
+Include actual metrics such as:
+
+- New requests.
+- Unassigned jobs.
+- Quotes awaiting decisions.
+- Active jobs.
+- Overdue responses.
+- FixSoon dispatch activity.
+- Pending completion reviews.
+- Completed services.
+- Gross marketplace booking value.
+- WorldLeo commission revenue.
+- Provider payout status.
+- Refunds and disputes.
+
+Never display demo data as real operational performance.
+
+---
+
+# PART 16 — FUTURE IOS AND ANDROID READINESS
+
+The primary current deliverable is a responsive web application.
+
+Future native mobile applications will use Expo and React Native.
+
+Prepare:
+
+- A secure shared backend API.
+- Common TypeScript models.
+- Unified accounts.
+- Shared marketplace records.
+- Shared job states.
+- Shared payment records.
+- Shared permissions.
+- Real-time updates.
+- Mobile-compatible file uploads.
+- Future background GPS support.
+- Mobile-compatible notifications.
+
+Do not build a separate unrelated Android Kotlin application.
+
+Do not duplicate business logic between website and mobile systems unnecessarily.
+
+---
+
+# PART 17 — QUALITY ASSURANCE
+
+Create automated tests for:
+
+### Authentication
+
+- Invalid tokens rejected.
+- Unauthorized users blocked.
+- Resource ownership enforced.
+- Sensitive roles correctly restricted.
+
+### Marketplace
+
+- Request creation.
+- Provider matching.
+- Quote creation.
+- Quote acceptance.
+- Duplicate quote acceptance prevention.
+- Job creation.
+- Job status transitions.
+- Message authorization.
+
+### Commissions
+
+- All commission examples.
+- Tier boundaries.
+- Material exclusions.
+- Change orders.
+- Fee revisions.
+- Refund recalculation.
+
+### Payments
+
+- Test checkout.
+- Payment failure.
+- Duplicate webhook.
+- Refund.
+- Payout failure.
+- Financial reconciliation.
+
+### Service assurance
+
+- Completion evidence.
+- Coordinator approval.
+- Correction requests.
+- Appeals.
+- Dispute records.
+- Audit events.
+
+### Navigation and design
+
+- WorldLeo primary logo displayed correctly.
+- No competing FixSoon corporate logo.
+- Home and Auto navigation works.
+- AI Design Studio accessible.
+- FixSoon accessible.
+- Mobile navigation works.
+- Light/dark themes work.
+- Responsive layouts remain usable.
+
+Run available build checks, TypeScript validation, unit tests, API tests and Playwright tests where supported.
+
+If a feature cannot be tested because a service or credential is missing, report BLOCKED rather than PASSED.
+
+---
+
+# PART 18 — IMPLEMENTATION PLAN
+
+Implement in controlled batches.
+
+## Batch 2.1 — Security and data foundation
+
+- Audit existing code.
+- Fix authentication and authorization.
+- Prevent duplicate jobs.
+- Establish reliable data persistence.
+- Add regression tests.
+
+## Batch 2.2 — Brand identity and navigation
+
+- Replace the existing primary shield logo with the approved W + Orbit + Leo.
+- Preserve the existing readable WorldLeo wordmark.
+- Apply forest-green and muted-gold colours.
+- Prepare dark/light logo assets.
+- Standardize Home/Auto navigation.
+- Reorganize footer.
+- Position FixSoon correctly within Auto.
+- Make WorldLeo the only prominent parent brand.
+
+## Batch 2.3 — Complete marketplace experiences
+
+- Customer dashboard.
+- Provider onboarding.
+- Company/team management.
+- Request-to-quote workflows.
+- Job management.
+- Messaging and notifications.
+- Coordinator dashboard.
+
+## Batch 2.4 — Commissions and assurance
+
+- Progressive commission engine.
+- Transparent fee breakdown.
+- Evidence-based completion review.
+- Provider verification.
+- Complaint and dispute workflows.
+
+## Batch 2.5 — Payment sandbox
+
+- Payment-provider integration.
+- Test checkout.
+- Connected provider accounts.
+- Commission accounting.
+- Refunds.
+- Payout states.
+- Reconciliation.
+- Payment security tests.
+
+## Batch 2.6 — Specialized features
+
+- FixSoon GPS tracking pilot.
+- Dispatch coordination.
+- AI Design Studio free workflow.
+- Paid planning package foundation.
+- Project-to-quote integration.
+
+## Batch 2.7 — Regression and release preparation
+
+- Test existing and new pages.
+- Fix broken routes.
+- Validate responsive layouts.
+- Run automated tests.
+- Review security.
+- Document feature status.
+- Prepare controlled staging deployment.
+
+Obtain explicit approval before migrations that risk data loss, paid integrations, production deployment or real financial transactions.
+
+---
+
+# PART 19 — DEVELOPMENT DOCUMENTATION
+
+Create or update:
+
+- `WORLDLEO_PRODUCT_SPEC.md`
+- `WORLDLEO_ARCHITECTURE.md`
+- `WORLDLEO_ROADMAP.md`
+- `WORLDLEO_BRAND_GUIDELINES.md`
+- `WORLDLEO_SECURITY_CHECKLIST.md`
+- `WORLDLEO_PAYMENT_ARCHITECTURE.md`
+- `WORLDLEO_COMMISSION_POLICY.md`
+- `WORLDLEO_SERVICE_ASSURANCE.md`
+- `WORLDLEO_TEST_REPORT.md`
+- `WORLDLEO_CHANGELOG.md`
+
+For every development batch, document:
+
+1. Features implemented.
+2. Files modified.
+3. Tests executed.
+4. Passed and failed tests.
+5. Simulated features.
+6. External integrations still requiring configuration.
+7. Security issues.
+8. Required approvals.
+9. Next recommended development batch.
+
+---
+
+# PART 20 — FINAL ACCEPTANCE CRITERIA
+
+Stage 2 should produce:
+
+- One coherent WorldLeo brand.
+- Approved W + Orbit + Leo logo integration.
+- Forest-green-and-gold design system.
+- Consistent Home and Auto navigation.
+- No competing FixSoon corporate identity.
+- Secure authentication.
+- Secure provider and customer data.
+- Complete provider onboarding.
+- Customer service-request workflow.
+- General and direct provider quotations.
+- Duplicate-job prevention.
+- Dynamic progressive commissions.
+- Transparent provider fees.
+- WorldLeo coordinator dashboard.
+- Service assurance and completion reviews.
+- Provider verification.
+- Complaint and dispute management.
+- Sandbox payment functionality.
+- Provider payout status management.
+- FixSoon GPS architecture and web pilot.
+- AI Design Studio integration.
+- Future mobile API compatibility.
+- Automated tests.
+- Accurate implementation documentation.
+
+Do not mark unavailable or simulated integrations as fully functional.
+
+## BEGIN IMPLEMENTATION
+
+Start by auditing the actual current WorldLeo application and comparing it against these requirements.
+
+**First priority: Fix critical security and data integrity issues.**
+
+**Second priority: Replace the current primary shield logo with the attached W + Orbit + Leo identity and correct the entire website's navigation and visual hierarchy.**
+
+Then proceed through the marketplace, commissions, service assurance, payment sandbox and specialized feature batches.
+
+Work incrementally and preserve existing functionality.
+
+At the completion of each batch, show precisely what changed, which tests passed, and which items remain incomplete.
+
+### FINAL PRODUCT VISION
+
+**WORLDLEO**
+
+One trusted marketplace connecting customers with capable professionals.
+
+**WorldLeo Home:** Imagine, design, plan, hire and complete.
+
+**WorldLeo Auto:** Request, match, track, repair and complete.
+
+**FixSoon:** Fast roadside assistance within WorldLeo Auto.
+
+**AI Design Studio:** Inspiration and renovation planning within WorldLeo Home.
+
+**Leo:** The charming, professional ambassador representing WorldLeo's commitment to dependable service.
+
+The W represents WorldLeo.
+
+The orbit represents connection and movement.
+
+The small calm lion represents trusted help.
+
+Together they communicate:
+
+**WorldLeo — The right help, from request to completion.**

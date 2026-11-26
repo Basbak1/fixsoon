@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from './lib/api';
 import { ThemeProvider } from './context/ThemeContext';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Header } from './components/Header';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { SeoHead } from './components/SeoHead';
@@ -23,6 +23,8 @@ import type { GtaLocation, ProviderProfile, ServiceCategory, ServiceSubcategory 
 
 const WORLDLEO_SPECIAL_ROUTES = new Set([
   '/home',
+  '/home/repairs',
+  '/home/renovations',
   '/home/ai-design',
   '/home/kitchen-renovation',
   '/home/bathroom-renovation',
@@ -33,6 +35,29 @@ const WORLDLEO_SPECIAL_ROUTES = new Set([
   '/privacy',
   '/terms',
 ]);
+
+function DashboardRoleRouter({
+  onNavigate,
+  onCatalogRefresh,
+}: {
+  onNavigate: (path: string) => void;
+  onCatalogRefresh: () => void;
+}) {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return <CustomerDashboard onNavigate={onNavigate} />;
+  }
+  if (!user) {
+    return <AuthPage onNavigate={onNavigate} redirectAfter="/dashboard" />;
+  }
+  if (user.role === 'admin' || user.role === 'coordinator' || user.role === 'finance') {
+    return <AdminDashboard onNavigate={onNavigate} onCatalogRefresh={onCatalogRefresh} />;
+  }
+  if (user.role === 'provider' || user.role === 'company_member') {
+    return <ProviderDashboard onNavigate={onNavigate} />;
+  }
+  return <CustomerDashboard onNavigate={onNavigate} />;
+}
 
 function AppShell() {
   const [fullUrl, setFullUrl] = useState(() => window.location.pathname + window.location.search);
@@ -87,7 +112,7 @@ function AppShell() {
 
   const startRequestWithQuery = (query: string) => {
     setInitialQuery(query);
-    navigate('/request');
+    navigate('/request-service');
   };
 
   const [pathname, searchStr = ''] = fullUrl.split('?');
@@ -117,6 +142,7 @@ function AppShell() {
       return (
         <WorldLeoPages
           path={cleanPath}
+          categories={categories}
           subcategories={subcategories}
           locations={locations}
           providers={providers}
@@ -129,7 +155,7 @@ function AppShell() {
       return <AuthPage onNavigate={navigate} />;
     }
 
-    if (cleanPath === '/request') {
+    if (cleanPath === '/request-service' || cleanPath === '/request') {
       return (
         <RequestFlowPage
           categories={categories}
@@ -163,6 +189,10 @@ function AppShell() {
     if (cleanPath.startsWith('/professionals/')) {
       const slug = cleanPath.replace('/professionals/', '');
       return <ProviderProfilePage slug={slug} onNavigate={navigate} />;
+    }
+
+    if (cleanPath === '/dashboard') {
+      return <DashboardRoleRouter onNavigate={navigate} onCatalogRefresh={loadCatalogAndProviders} />;
     }
 
     if (cleanPath === '/customer-dashboard') {
@@ -203,7 +233,7 @@ function AppShell() {
   const isOnline = useOnlineStatus();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F4F2EC] dark:bg-[#0D0F12] text-[#171717] dark:text-[#F1EFE8]">
+    <div className="min-h-screen flex flex-col bg-[#F8F7F2] dark:bg-[#071E17] text-[#171B19] dark:text-[#F6F2E8]">
       <SeoHead
         title={seo.title}
         description={seo.description}
@@ -211,23 +241,23 @@ function AppShell() {
         noIndex={seo.noIndex}
       />
       {!isOnline && (
-        <div className="bg-[#171717] text-[#D8B45A] border-b border-[#343941] px-4 py-2 text-xs font-medium text-center">
+        <div className="bg-[#063B2B] text-[#F6F2E8] border-b border-[#1E4438] px-4 py-2 text-xs font-medium text-center">
           You are currently offline. Cached pages remain available and requests will sync once reconnected.
         </div>
       )}
       {gmpQuotaExceeded && (
-        <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm">
+        <div className="bg-[#F6F2E8] border-b border-[#D8D4C7] text-[#171B19] px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm">
           <span>
-            Google Maps Platform quota reached. If you are the app owner, visit{' '}
+            Google Maps Platform quota reached. Visit{' '}
             <a
               href="https://developers.google.com/maps/ai/ai-studio?utm_campaign=gmp_mcp_codeassist_v1_aistudio#quota_exceeded_errors"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline font-semibold text-amber-950 hover:text-amber-800"
+              className="underline font-semibold text-[#063B2B] hover:text-[#145443]"
             >
               maps developer site
             </a>{' '}
-            for instructions to update your account.
+            for quota settings.
           </span>
         </div>
       )}

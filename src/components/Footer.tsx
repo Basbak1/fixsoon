@@ -1,7 +1,6 @@
 import React from 'react';
 import { ArrowRight, Monitor, Moon, Sun } from 'lucide-react';
 import { WorldLeoLogo } from './WorldLeoLogo';
-import { FixSoonLogo } from './FixSoonLogo';
 import { useTheme, type ThemeMode } from '../context/ThemeContext';
 
 interface FooterProps {
@@ -12,25 +11,25 @@ export function Footer({ onNavigate }: FooterProps) {
   const { mode, setMode } = useTheme();
 
   const themes: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [
-    { id: 'light', label: 'Day', icon: <Sun className="w-3.5 h-3.5" /> },
-    { id: 'dark', label: 'Night', icon: <Moon className="w-3.5 h-3.5" /> },
+    { id: 'light', label: 'Light', icon: <Sun className="w-3.5 h-3.5" /> },
+    { id: 'dark', label: 'Dark', icon: <Moon className="w-3.5 h-3.5" /> },
     { id: 'system', label: 'Device', icon: <Monitor className="w-3.5 h-3.5" /> },
   ];
 
   const homeLinks = [
     { label: 'WorldLeo Home Overview', path: '/home' },
+    { label: 'Home Repairs & Trades', path: '/home/repairs' },
+    { label: 'Renovations & Remodelling', path: '/home/renovations' },
     { label: 'AI Design Studio', path: '/home/ai-design' },
-    { label: 'Kitchen Renovation', path: '/home/kitchen-renovation' },
-    { label: 'Bathroom Renovation', path: '/home/bathroom-renovation' },
-    { label: 'Backyard Design', path: '/home/backyard-design' },
+    { label: 'Kitchen & Bath Planning', path: '/home/kitchen-renovation' },
   ];
 
   const autoLinks = [
     { label: 'WorldLeo Auto Overview', path: '/auto' },
-    { label: 'FixSoon Urgent Roadside', path: '/auto/fixsoon' },
     { label: 'Mobile Mechanic', path: '/services/mobile-mechanic' },
     { label: 'Flat Tire Service', path: '/services/flat-tire-assistance' },
     { label: 'Battery Boost & Diagnostics', path: '/services/battery-boost' },
+    { label: 'FixSoon Roadside Assistance', path: '/auto/fixsoon' },
   ];
 
   const regionLinks = [
@@ -42,49 +41,49 @@ export function Footer({ onNavigate }: FooterProps) {
   ];
 
   const platformLinks = [
-    { label: 'Browse Professionals', path: '/professionals' },
+    { label: 'Find Professionals', path: '/professionals' },
+    { label: 'Request Service', path: '/request-service' },
     { label: 'How WorldLeo Works', path: '/how-it-works' },
     { label: 'For Professionals', path: '/for-professionals' },
     { label: 'Trust & Verification', path: '/about' },
-    { label: 'Mobile & Shared API', path: '/android-blueprint' },
     { label: 'Sign In / Account', path: '/auth' },
   ];
 
   return (
-    <footer className="border-t border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] text-[#55534E] dark:text-[#B5B7BB]">
-      {/* Pre-Footer Dual Entry Band */}
-      <div className="border-b border-[#D8D4CA] dark:border-[#343941] bg-[#ECE9E0] dark:bg-[#0D0F12]">
+    <footer className="border-t border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] text-[#58605A] dark:text-[#B4C2BC]">
+      {/* Pre-Footer Action Band */}
+      <div className="border-b border-[#D8D4C7] dark:border-[#1E4438] bg-[#F6F2E8] dark:bg-[#071E17]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-1.5 max-w-2xl">
-            <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#171717] dark:text-[#F1EFE8] [text-wrap:balance]">
-              Ready to plan a home project or dispatch FixSoon roadside help?
+            <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#171B19] dark:text-[#F6F2E8] [text-wrap:balance]">
+              Ready to request Home help, compare Auto quotes, or get FixSoon roadside support?
             </h2>
-            <p className="text-sm text-[#55534E] dark:text-[#B5B7BB]">
-              Serving homeowners, drivers, and fleets across the GTA, Greater Hamilton Area, and Niagara Region.
+            <p className="text-sm text-[#58605A] dark:text-[#B4C2BC]">
+              Your Home. Your Vehicle. One Trusted Place for Help across the GTA, Greater Hamilton Area, and Niagara Region.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               type="button"
-              onClick={() => onNavigate('/request?cat=cat_auto&sub=sub_roadside&urgency=emergency')}
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#171717] text-[#D8B45A] dark:bg-[#D8B45A] dark:text-[#0D0F12] hover:opacity-90 transition-opacity inline-flex items-center gap-2 whitespace-nowrap shrink-0 cursor-pointer"
+              onClick={() => onNavigate('/request-service')}
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] hover:opacity-90 transition-opacity inline-flex items-center gap-2 whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <span>Get Help Now (FixSoon)</span>
+              <span>Request Service</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
               type="button"
-              onClick={() => onNavigate('/home')}
-              className="px-4 py-2.5 rounded-lg text-sm font-semibold border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] text-[#171717] dark:text-[#F1EFE8] hover:border-[#A87919] dark:hover:border-[#D8B45A] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              onClick={() => onNavigate('/auto/fixsoon')}
+              className="px-4 py-2.5 rounded-lg text-sm font-semibold border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] text-[#171B19] dark:text-[#F6F2E8] hover:border-[#9F7B37] dark:hover:border-[#C6A45B] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              Explore WorldLeo Home
+              FixSoon Roadside (Auto)
             </button>
             <button
               type="button"
               onClick={() => onNavigate('/for-professionals')}
-              className="px-4 py-2.5 rounded-lg text-sm font-semibold border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] text-[#171717] dark:text-[#F1EFE8] hover:border-[#A87919] dark:hover:border-[#D8B45A] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              className="px-4 py-2.5 rounded-lg text-sm font-semibold border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] text-[#171B19] dark:text-[#F6F2E8] hover:border-[#9F7B37] dark:hover:border-[#C6A45B] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              Join as a Pro
+              For Professionals
             </button>
           </div>
         </div>
@@ -92,47 +91,35 @@ export function Footer({ onNavigate }: FooterProps) {
 
       {/* Main Footer Columns */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 pb-10 border-b border-[#D8D4CA] dark:border-[#343941]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 pb-10 border-b border-[#D8D4C7] dark:border-[#1E4438]">
           <div className="sm:col-span-2 lg:col-span-4 space-y-4">
-            <div className="flex flex-wrap items-center gap-4">
-              <button
-                type="button"
-                onClick={() => onNavigate('/')}
-                className="text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A87919] rounded cursor-pointer"
-                aria-label="WorldLeo Home"
-              >
-                <WorldLeoLogo />
-              </button>
-              <button
-                type="button"
-                onClick={() => onNavigate('/auto/fixsoon')}
-                className="text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A87919] rounded cursor-pointer"
-                aria-label="FixSoon by WorldLeo Auto"
-              >
-                <FixSoonLogo showParentTag />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('/')}
+              className="text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#9F7B37] dark:focus-visible:outline-[#C6A45B] rounded cursor-pointer"
+              aria-label="WorldLeo Home"
+            >
+              <WorldLeoLogo subtitle="Home · Auto · Ontario" />
+            </button>
             <p className="text-sm leading-relaxed max-w-sm">
-              WorldLeo — Find professionals. Plan projects. Get things done. Managed marketplace for WorldLeo Home and WorldLeo Auto, including FixSoon urgent roadside support.
+              Your Home. Your Vehicle. One Trusted Place for Help. WorldLeo connects Ontario homeowners and drivers with verified independent professionals across Home, Auto, AI Design Studio, and FixSoon roadside support.
             </p>
-            <div className="pt-1 text-xs font-medium text-[#171717] dark:text-[#F1EFE8] flex flex-wrap items-center gap-2">
+            <div className="pt-1 text-xs font-medium text-[#171B19] dark:text-[#F6F2E8] flex flex-wrap items-center gap-2">
               <span>WorldLeo Home</span>
-              <span aria-hidden="true" className="text-[#55534E] dark:text-[#B5B7BB]">·</span>
-              <span>WorldLeo Auto</span>
-              <span aria-hidden="true" className="text-[#55534E] dark:text-[#B5B7BB]">·</span>
-              <span>FixSoon Roadside</span>
+              <span aria-hidden="true" className="text-[#6D756F] dark:text-[#B4C2BC]">·</span>
+              <span>WorldLeo Auto (incl. FixSoon)</span>
             </div>
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-sm font-semibold text-[#171717] dark:text-[#F1EFE8] mb-3.5">Home &amp; Design</h3>
+            <h3 className="text-sm font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-3.5">WorldLeo Home</h3>
             <ul className="space-y-2.5 text-sm">
               {homeLinks.map((item) => (
                 <li key={item.path}>
                   <button
                     type="button"
                     onClick={() => onNavigate(item.path)}
-                    className="text-left hover:text-[#171717] dark:hover:text-[#F1EFE8] hover:underline underline-offset-4 decoration-[#A87919] dark:decoration-[#D8B45A] transition-colors cursor-pointer"
+                    className="text-left hover:text-[#171B19] dark:hover:text-[#F6F2E8] hover:underline underline-offset-4 decoration-[#9F7B37] dark:decoration-[#C6A45B] transition-colors cursor-pointer"
                   >
                     {item.label}
                   </button>
@@ -142,14 +129,14 @@ export function Footer({ onNavigate }: FooterProps) {
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-sm font-semibold text-[#171717] dark:text-[#F1EFE8] mb-3.5">Auto &amp; FixSoon</h3>
+            <h3 className="text-sm font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-3.5">WorldLeo Auto</h3>
             <ul className="space-y-2.5 text-sm">
               {autoLinks.map((item) => (
                 <li key={item.path}>
                   <button
                     type="button"
                     onClick={() => onNavigate(item.path)}
-                    className="text-left hover:text-[#171717] dark:hover:text-[#F1EFE8] hover:underline underline-offset-4 decoration-[#A87919] dark:decoration-[#D8B45A] transition-colors cursor-pointer"
+                    className="text-left hover:text-[#171B19] dark:hover:text-[#F6F2E8] hover:underline underline-offset-4 decoration-[#9F7B37] dark:decoration-[#C6A45B] transition-colors cursor-pointer"
                   >
                     {item.label}
                   </button>
@@ -159,14 +146,14 @@ export function Footer({ onNavigate }: FooterProps) {
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-sm font-semibold text-[#171717] dark:text-[#F1EFE8] mb-3.5">Ontario Regions</h3>
+            <h3 className="text-sm font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-3.5">Coverage Areas</h3>
             <ul className="space-y-2.5 text-sm">
               {regionLinks.map((item) => (
                 <li key={item.path}>
                   <button
                     type="button"
                     onClick={() => onNavigate(item.path)}
-                    className="text-left hover:text-[#171717] dark:hover:text-[#F1EFE8] hover:underline underline-offset-4 decoration-[#A87919] dark:decoration-[#D8B45A] transition-colors cursor-pointer"
+                    className="text-left hover:text-[#171B19] dark:hover:text-[#F6F2E8] hover:underline underline-offset-4 decoration-[#9F7B37] dark:decoration-[#C6A45B] transition-colors cursor-pointer"
                   >
                     {item.label}
                   </button>
@@ -176,14 +163,14 @@ export function Footer({ onNavigate }: FooterProps) {
           </div>
 
           <div className="lg:col-span-2">
-            <h3 className="text-sm font-semibold text-[#171717] dark:text-[#F1EFE8] mb-3.5">Platform</h3>
+            <h3 className="text-sm font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-3.5">Marketplace</h3>
             <ul className="space-y-2.5 text-sm">
               {platformLinks.map((item) => (
                 <li key={item.path}>
                   <button
                     type="button"
                     onClick={() => onNavigate(item.path)}
-                    className="text-left hover:text-[#171717] dark:hover:text-[#F1EFE8] hover:underline underline-offset-4 decoration-[#A87919] dark:decoration-[#D8B45A] transition-colors cursor-pointer"
+                    className="text-left hover:text-[#171B19] dark:hover:text-[#F6F2E8] hover:underline underline-offset-4 decoration-[#9F7B37] dark:decoration-[#C6A45B] transition-colors cursor-pointer"
                   >
                     {item.label}
                   </button>
@@ -196,28 +183,28 @@ export function Footer({ onNavigate }: FooterProps) {
         {/* Bottom Legal & Theme Row */}
         <div className="pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-            <span className="font-medium text-[#171717] dark:text-[#F1EFE8]">© {new Date().getFullYear()} WorldLeo</span>
+            <span className="font-medium text-[#171B19] dark:text-[#F6F2E8]">© {new Date().getFullYear()} WorldLeo</span>
             <span aria-hidden="true">·</span>
-            <span>GTA, Greater Hamilton &amp; Niagara Region, ON</span>
+            <span>Canadian Managed Service Marketplace (Ontario)</span>
             <span aria-hidden="true">·</span>
             <button
               type="button"
               onClick={() => onNavigate('/contact')}
-              className="hover:text-[#171717] dark:hover:text-[#F1EFE8] underline-offset-4 hover:underline cursor-pointer"
+              className="hover:text-[#171B19] dark:hover:text-[#F6F2E8] underline-offset-4 hover:underline cursor-pointer"
             >
               Contact
             </button>
             <button
               type="button"
               onClick={() => onNavigate('/privacy')}
-              className="hover:text-[#171717] dark:hover:text-[#F1EFE8] underline-offset-4 hover:underline cursor-pointer"
+              className="hover:text-[#171B19] dark:hover:text-[#F6F2E8] underline-offset-4 hover:underline cursor-pointer"
             >
               Privacy Policy
             </button>
             <button
               type="button"
               onClick={() => onNavigate('/terms')}
-              className="hover:text-[#171717] dark:hover:text-[#F1EFE8] underline-offset-4 hover:underline cursor-pointer"
+              className="hover:text-[#171B19] dark:hover:text-[#F6F2E8] underline-offset-4 hover:underline cursor-pointer"
             >
               Terms of Service
             </button>
@@ -226,7 +213,7 @@ export function Footer({ onNavigate }: FooterProps) {
           <div
             role="group"
             aria-label="Color theme"
-            className="flex items-center gap-1 p-1 rounded-lg bg-[#F4F2EC] dark:bg-[#0D0F12] border border-[#D8D4CA] dark:border-[#343941]"
+            className="flex items-center gap-1 p-1 rounded-lg bg-[#F6F2E8] dark:bg-[#071E17] border border-[#D8D4C7] dark:border-[#1E4438]"
           >
             {themes.map((t) => (
               <button
@@ -235,8 +222,8 @@ export function Footer({ onNavigate }: FooterProps) {
                 onClick={() => setMode(t.id)}
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                   mode === t.id
-                    ? 'bg-[#FFFFFF] dark:bg-[#22262D] text-[#171717] dark:text-[#F1EFE8]'
-                    : 'text-[#55534E] dark:text-[#B5B7BB] hover:text-[#171717] dark:hover:text-[#F1EFE8]'
+                    ? 'bg-[#FFFFFF] dark:bg-[#145443] text-[#171B19] dark:text-[#F6F2E8]'
+                    : 'text-[#58605A] dark:text-[#B4C2BC] hover:text-[#171B19] dark:hover:text-[#F6F2E8]'
                 }`}
               >
                 {t.icon}

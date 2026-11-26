@@ -20,25 +20,43 @@ export function resolveRouteSeo(
 
   if (clean === '/') {
     return {
-      title: 'WorldLeo — Find Professionals. Plan Projects. Get Things Done. | Ontario',
+      title: 'WorldLeo — Your Home. Your Vehicle. One Trusted Place for Help.',
       description:
-        'WorldLeo connects homeowners and drivers across the GTA, Greater Hamilton Area, and Niagara Region with independent professionals across WorldLeo Home, WorldLeo Auto, AI Design Studio, and FixSoon rapid roadside help.',
+        'Find qualified professionals, compare transparent quotes, and get dependable support across WorldLeo Home, WorldLeo Auto, AI Design Studio, and FixSoon roadside assistance.',
       canonicalPath: '/',
     };
   }
 
   if (clean === '/home') {
     return {
-      title: 'WorldLeo Home — Home Repairs, Renovations & Project Planning | Ontario',
+      title: 'WorldLeo Home — Home Repairs, Renovations & AI Design Studio | Ontario',
       description:
-        'Plan kitchen, bathroom, and backyard renovations, explore WorldLeo AI Design Studio, and prepare scope requests for Ontario home service professionals.',
+        'Request qualified Ontario home repair professionals, plan renovations, and preview WorldLeo AI Design Studio.',
       canonicalPath: '/home',
+    };
+  }
+
+  if (clean === '/home/repairs') {
+    return {
+      title: 'Home Repairs, Plumbing, Electrical & Appliance Trades | WorldLeo Home',
+      description:
+        'Find verified independent tradespeople for plumbing, electrical, appliance repair, painting, and flooring across Ontario.',
+      canonicalPath: '/home/repairs',
+    };
+  }
+
+  if (clean === '/home/renovations') {
+    return {
+      title: 'Home Renovations & Remodelling | WorldLeo Home',
+      description:
+        'Plan kitchen, bathroom, and outdoor renovation scopes and compare written contractor quotes on WorldLeo Home.',
+      canonicalPath: '/home/renovations',
     };
   }
 
   if (clean === '/home/ai-design') {
     return {
-      title: 'WorldLeo AI Design Studio — Project Concepts & Planning Packs',
+      title: 'WorldLeo AI Design Studio — Renovation Concepts & Planning Packs',
       description:
         'Preview Free AI Inspiration and CAD $39 Planning Packs for kitchen, bathroom, and backyard projects on WorldLeo Home.',
       canonicalPath: '/home/ai-design',
@@ -76,14 +94,14 @@ export function resolveRouteSeo(
     return {
       title: 'WorldLeo Auto — Mobile Mechanics, Tires & FixSoon Roadside | Ontario',
       description:
-        'Find independent mobile mechanics, flat tire specialists, battery services, and FixSoon urgent roadside assistance across Toronto, GTA, Hamilton, and Niagara.',
+        'Find independent mobile mechanics, flat tire specialists, battery services, and FixSoon rapid roadside assistance across Toronto, GTA, Hamilton, and Niagara.',
       canonicalPath: '/auto',
     };
   }
 
   if (clean === '/auto/fixsoon') {
     return {
-      title: 'FixSoon by WorldLeo Auto — Urgent Roadside & Mobile Help',
+      title: 'FixSoon by WorldLeo Auto — Rapid Roadside Assistance',
       description:
         'Get rapid mobile mechanic, flat tire, battery boost, and roadside dispatch across Ontario through FixSoon, part of WorldLeo Auto.',
       canonicalPath: '/auto/fixsoon',
@@ -92,9 +110,9 @@ export function resolveRouteSeo(
 
   if (clean === '/services') {
     return {
-      title: 'All Active Services — WorldLeo Marketplace | GTA, Hamilton & Niagara',
+      title: 'All Services — WorldLeo Home & WorldLeo Auto | Ontario',
       description:
-        'Browse active mobile mechanic, flat tire repair, battery boost, and roadside services across the GTA, Greater Hamilton Area, and Niagara Region.',
+        'Browse WorldLeo Home trades, renovations, mobile mechanics, flat tire repair, battery boost, and FixSoon roadside services across Ontario.',
       canonicalPath: '/services',
     };
   }
@@ -106,7 +124,7 @@ export function resolveRouteSeo(
       title: cat ? `${cat.name} | WorldLeo` : 'Service Category | WorldLeo',
       description: cat
         ? cat.seo_description
-        : 'Explore independent repair and maintenance professionals across Ontario.',
+        : 'Explore independent home and automotive service professionals across Ontario.',
       canonicalPath: clean,
     };
   }
@@ -115,10 +133,10 @@ export function resolveRouteSeo(
     const slug = clean.replace('/services/', '');
     const sub = context.subcategories.find((s) => s.slug === slug);
     return {
-      title: sub ? `${sub.name} | WorldLeo Auto & FixSoon` : `${slug.replace(/-/g, ' ')} | WorldLeo`,
+      title: sub ? `${sub.name} | WorldLeo` : `${slug.replace(/-/g, ' ')} | WorldLeo`,
       description: sub
         ? sub.seo_description
-        : 'Request quotes from independent professionals in Toronto and the GTA on WorldLeo.',
+        : 'Request quotes from verified independent professionals in Ontario on WorldLeo.',
       canonicalPath: clean,
     };
   }
@@ -138,9 +156,9 @@ export function resolveRouteSeo(
 
   if (clean === '/professionals') {
     return {
-      title: 'Service Provider Directory | WorldLeo',
+      title: 'Find Verified Professionals | WorldLeo',
       description:
-        'Browse verified independent service professionals across the GTA, Greater Hamilton Area, and Niagara Region.',
+        'Browse verified independent Home and Auto professionals across the GTA, Greater Hamilton Area, and Niagara Region.',
       canonicalPath: '/professionals',
     };
   }
@@ -173,9 +191,9 @@ export function resolveRouteSeo(
 
   if (clean === '/how-it-works') {
     return {
-      title: 'How WorldLeo Works — Direct & Marketplace Requests | WorldLeo',
+      title: 'How WorldLeo Works — From Request to Verified Completion | WorldLeo',
       description:
-        'Learn how WorldLeo connects customers with independent Home and Auto professionals using Model A+ direct dispatch or Model B multi-quote comparison.',
+        'Learn how WorldLeo connects customers with independent Home and Auto professionals using transparent written quotes and verification.',
       canonicalPath: '/how-it-works',
     };
   }
@@ -185,7 +203,7 @@ export function resolveRouteSeo(
       title: 'For Professionals — Join WorldLeo Home & Auto | WorldLeo',
       description:
         'Receive qualified local service requests across the GTA, Greater Hamilton Area, and Niagara Region on WorldLeo.',
-      canonicalPath: clean,
+      canonicalPath: '/for-professionals',
     };
   }
 
@@ -222,21 +240,12 @@ export function resolveRouteSeo(
     };
   }
 
-  if (clean === '/android-blueprint') {
+  if (clean === '/request-service' || clean === '/request') {
     return {
-      title: 'Mobile & Shared REST API Architecture | WorldLeo',
+      title: 'Request Service — Home or Auto | WorldLeo',
       description:
-        'Inspect the shared versioned /api/v1 REST endpoints powering WorldLeo web and planned Expo + React Native clients.',
-      canonicalPath: '/android-blueprint',
-    };
-  }
-
-  if (clean === '/request') {
-    return {
-      title: 'Request Service or FixSoon Help | WorldLeo',
-      description:
-        'Describe what needs fixing in plain language and receive written quotes from verified independent professionals on WorldLeo.',
-      canonicalPath: '/request',
+        'Describe your Home or Auto service need and compare written quotes from verified independent professionals on WorldLeo.',
+      canonicalPath: '/request-service',
     };
   }
 
@@ -249,11 +258,11 @@ export function resolveRouteSeo(
     };
   }
 
-  if (clean === '/customer-dashboard') {
+  if (clean === '/dashboard' || clean === '/customer-dashboard') {
     return {
       title: 'Customer Dashboard | WorldLeo',
       description: 'Track your service requests, compare quotes, and monitor active jobs.',
-      canonicalPath: '/customer-dashboard',
+      canonicalPath: clean,
       noIndex: true,
     };
   }
@@ -279,14 +288,14 @@ export function resolveRouteSeo(
   if (clean === '/admin') {
     return {
       title: 'Operations Console | WorldLeo',
-      description: 'WorldLeo administrator verification and marketplace operations console.',
+      description: 'WorldLeo operations, verification, and finance console.',
       canonicalPath: '/admin',
       noIndex: true,
     };
   }
 
   return {
-    title: 'WorldLeo — Find Professionals. Plan Projects. Get Things Done.',
+    title: 'WorldLeo — Your Home. Your Vehicle. One Trusted Place for Help.',
     description:
       'WorldLeo connects homeowners and drivers across Ontario with verified professionals across Home, Auto, and FixSoon.',
     canonicalPath: clean,

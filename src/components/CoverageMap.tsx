@@ -28,12 +28,12 @@ export function CoverageMap({ providers, onNavigate }: CoverageMapProps) {
 
   if (!apiKey) {
     return (
-      <div className="h-[360px] rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] flex items-center justify-center p-6 text-center">
+      <div className="h-[360px] rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] flex items-center justify-center p-6 text-center">
         <div className="max-w-md space-y-2">
-          <div className="font-display text-base font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-            GTA Service Coverage Map
+          <div className="font-display text-base font-bold text-[#171B19] dark:text-[#F6F2E8]">
+            Ontario Service Coverage Map
           </div>
-          <p className="text-xs text-[#475569] dark:text-[#94A3B8]">
+          <p className="text-xs text-[#58605A] dark:text-[#B4C2BC]">
             Interactive Google Maps view requires a configured Google Maps API key in the environment.
           </p>
         </div>
@@ -44,7 +44,7 @@ export function CoverageMap({ providers, onNavigate }: CoverageMapProps) {
   const selectedProvider = providers.find((p) => p.id === selectedId) || null;
 
   return (
-    <div className="h-[380px] w-full rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#1E293B]">
+    <div className="h-[380px] w-full rounded-xl overflow-hidden border border-[#D8D4C7] dark:border-[#1E4438]">
       <APIProvider apiKey={apiKey} language="en" region="CA">
         <GoogleMap
           style={{ width: '100%', height: '100%' }}
@@ -67,7 +67,7 @@ export function CoverageMap({ providers, onNavigate }: CoverageMapProps) {
                 onClick={() => setSelectedId(prov.id)}
                 title={prov.business_name}
               >
-                <Pin background="#0F172A" borderColor="#F59E0B" glyphColor="#F59E0B" />
+                <Pin background="#063B2B" borderColor="#C6A45B" glyphColor="#F6F2E8" />
               </AdvancedMarker>
             );
           })}
@@ -77,15 +77,15 @@ export function CoverageMap({ providers, onNavigate }: CoverageMapProps) {
               position={CITY_COORDS[selectedProvider.primary_city] || CITY_COORDS.Toronto}
               onCloseClick={() => setSelectedId(null)}
             >
-              <div className="p-1 text-[#0F172A] space-y-1 max-w-[220px]">
+              <div className="p-1 text-[#171B19] space-y-1 max-w-[220px]">
                 <div className="font-bold text-sm">{selectedProvider.business_name}</div>
-                <div className="text-xs text-[#475569]">
+                <div className="text-xs text-[#58605A]">
                   {selectedProvider.primary_city} · {selectedProvider.years_experience} yrs exp
                 </div>
                 <button
                   type="button"
                   onClick={() => onNavigate(`/professionals/${selectedProvider.slug}`)}
-                  className="text-xs font-semibold text-[#B45309] underline"
+                  className="text-xs font-semibold text-[#063B2B] underline cursor-pointer"
                 >
                   View Profile &amp; Request
                 </button>

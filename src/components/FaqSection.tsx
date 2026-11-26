@@ -85,27 +85,27 @@ export function FaqSection({ onNavigate, onFaqsLoaded }: FaqSectionProps) {
   return (
     <section
       aria-labelledby="faq-heading"
-      className="border-t border-[#D8D4CA] dark:border-[#343941] bg-[#F4F2EC] dark:bg-[#0D0F12] py-14"
+      className="border-t border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] py-14"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           <div className="lg:col-span-4 space-y-5">
             <div className="space-y-2">
-              <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#A87919] dark:text-[#D8B45A]">
+              <div className="text-xs font-mono uppercase tracking-[0.14em] text-[#9F7B37] dark:text-[#D8B66F]">
                 Common Questions
               </div>
               <h2
                 id="faq-heading"
-                className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#171717] dark:text-[#F1EFE8] [text-wrap:balance]"
+                className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#171B19] dark:text-[#F6F2E8] [text-wrap:balance]"
               >
                 WorldLeo Home, Auto &amp; FixSoon explained
               </h2>
-              <p className="text-sm text-[#55534E] dark:text-[#B5B7BB] leading-relaxed">
-                Clear answers on Ontario coverage, written quotes, AI Design Studio preview, and verification standards.
+              <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
+                Clear answers on Ontario coverage, written quotes, AI Design Studio, and verification standards.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-1.5 p-1 rounded-lg bg-[#FFFFFF] dark:bg-[#171A1F] border border-[#D8D4CA] dark:border-[#343941]">
+            <div className="flex flex-wrap gap-1.5 p-1 rounded-lg bg-[#FFFFFF] dark:bg-[#0B261E] border border-[#D8D4C7] dark:border-[#1E4438]">
               {categories.map((cat) => (
                 <button
                   key={cat}
@@ -113,8 +113,8 @@ export function FaqSection({ onNavigate, onFaqsLoaded }: FaqSectionProps) {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                     activeCategory === cat
-                      ? 'bg-[#171717] text-[#D8B45A] dark:bg-[#D8B45A] dark:text-[#0D0F12]'
-                      : 'text-[#55534E] dark:text-[#B5B7BB] hover:text-[#171717] dark:hover:text-[#F1EFE8]'
+                      ? 'bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17]'
+                      : 'text-[#58605A] dark:text-[#B4C2BC] hover:text-[#171B19] dark:hover:text-[#F6F2E8]'
                   }`}
                 >
                   {cat}
@@ -125,8 +125,8 @@ export function FaqSection({ onNavigate, onFaqsLoaded }: FaqSectionProps) {
             <div className="pt-1">
               <button
                 type="button"
-                onClick={() => onNavigate('/request')}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#171717] dark:text-[#F1EFE8] hover:text-[#A87919] dark:hover:text-[#D8B45A] cursor-pointer"
+                onClick={() => onNavigate('/request-service')}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#063B2B] dark:text-[#D8B66F] hover:underline cursor-pointer"
               >
                 <span>Ready to get started? Post a request</span>
                 <ArrowRight className="w-4 h-4" />
@@ -140,24 +140,24 @@ export function FaqSection({ onNavigate, onFaqsLoaded }: FaqSectionProps) {
                 {[1, 2, 3, 4].map((n) => (
                   <div
                     key={n}
-                    className="h-16 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] animate-pulse"
+                    className="h-16 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] animate-pulse"
                   />
                 ))}
               </div>
             ) : error ? (
-              <div className="p-6 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] text-sm text-[#55534E] dark:text-[#B5B7BB]">
+              <div className="p-6 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] text-sm text-[#58605A] dark:text-[#B4C2BC]">
                 Unable to load FAQs right now. You can still browse{' '}
                 <button
                   type="button"
                   onClick={() => onNavigate('/how-it-works')}
-                  className="font-semibold text-[#A87919] dark:text-[#D8B45A] underline cursor-pointer"
+                  className="font-semibold text-[#9F7B37] dark:text-[#D8B66F] underline cursor-pointer"
                 >
                   How WorldLeo Works
                 </button>
                 .
               </div>
             ) : (
-              <div className="divide-y divide-[#D8D4CA] dark:divide-[#343941] border-y border-[#D8D4CA] dark:border-[#343941]">
+              <div className="divide-y divide-[#D8D4C7] dark:divide-[#1E4438] border-y border-[#D8D4C7] dark:border-[#1E4438]">
                 {filtered.map((item) => {
                   const isOpen = openId === item.id;
                   return (
@@ -170,23 +170,23 @@ export function FaqSection({ onNavigate, onFaqsLoaded }: FaqSectionProps) {
                         className="w-full py-4 sm:py-5 text-left flex items-start justify-between gap-4 group cursor-pointer"
                       >
                         <div className="space-y-1">
-                          <div className="text-xs font-mono text-[#A87919] dark:text-[#D8B45A]">
+                          <div className="text-xs font-mono text-[#9F7B37] dark:text-[#D8B66F]">
                             {item.category}
                           </div>
-                          <div className="font-display text-base sm:text-lg font-semibold text-[#171717] dark:text-[#F1EFE8] group-hover:text-[#A87919] dark:group-hover:text-[#D8B45A] transition-colors">
+                          <div className="font-display text-base sm:text-lg font-semibold text-[#171B19] dark:text-[#F6F2E8] group-hover:text-[#063B2B] dark:group-hover:text-[#D8B66F] transition-colors">
                             {item.question}
                           </div>
                         </div>
                         <ChevronDown
-                          className={`w-5 h-5 text-[#55534E] dark:text-[#B5B7BB] shrink-0 mt-1 transition-transform duration-150 ${
-                            isOpen ? 'rotate-180 text-[#A87919] dark:text-[#D8B45A]' : ''
+                          className={`w-5 h-5 text-[#58605A] dark:text-[#B4C2BC] shrink-0 mt-1 transition-transform duration-150 ${
+                            isOpen ? 'rotate-180 text-[#063B2B] dark:text-[#D8B66F]' : ''
                           }`}
                         />
                       </button>
                       {isOpen && (
                         <div
                           id={`faq-panel-${item.id}`}
-                          className="pb-5 pr-8 text-sm text-[#55534E] dark:text-[#B5B7BB] leading-relaxed"
+                          className="pb-5 pr-8 text-sm text-[#58605A] dark:text-[#B4C2BC] leading-relaxed"
                         >
                           {item.answer}
                         </div>

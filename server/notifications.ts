@@ -212,7 +212,7 @@ class NotificationService {
     return this.emit({
       userId: params.providerUserId,
       title: 'Provider verification update',
-      body: `Your FixSoon profile status is now: ${params.status.replace(/_/g, ' ')}.`,
+      body: `Your WorldLeo profile status is now: ${params.status.replace(/_/g, ' ')}.`,
       link: '/provider-dashboard',
     });
   }

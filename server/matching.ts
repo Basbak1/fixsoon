@@ -51,6 +51,8 @@ export function classifyProblemText(query: string): ClassificationResult {
 
 export function scoreProviderForRequest(provider: ProviderProfile, request: ServiceRequest): number {
   if (provider.status !== 'approved') return 0;
+  // Never match a provider to their own customer request
+  if (provider.user_id === request.customer_id) return 0;
 
   const hasCategory = provider.category_ids.includes(request.category_id);
   const hasSubcategory = provider.subcategory_ids.includes(request.subcategory_id);
@@ -59,14 +61,13 @@ export function scoreProviderForRequest(provider: ProviderProfile, request: Serv
   let score = 40;
   if (hasSubcategory) score += 25;
 
-  const cityMatch = provider.coverage_cities.some(
-    (c) => c.toLowerCase() === request.city.toLowerCase()
-  ) || provider.primary_city.toLowerCase() === request.city.toLowerCase();
+  const cityMatch =
+    provider.coverage_cities.some((c) => c.toLowerCase() === request.city.toLowerCase()) ||
+    provider.primary_city.toLowerCase() === request.city.toLowerCase();
 
   if (cityMatch) {
     score += 20;
   } else {
-    // Do not spam providers outside their coverage area
     return 0;
   }
 
@@ -80,13 +81,21 @@ export function scoreProviderForRequest(provider: ProviderProfile, request: Serv
 }
 
 export function createMatchesForRequest(request: ServiceRequest): ProviderProfile[] {
-  const now = new Date().toISOString();
+  const existingProviderIds = new Set(
+    db.data.request_matches
+      .filter((m) => m.request_id === request.id)
+      .map((m) => m.provider_id)
+  );
 
   if (request.request_type === 'direct' && request.target_provider_id) {
     const target = db.data.provider_profiles.find(
-      (p) => p.id === request.target_provider_id && p.status === 'approved'
+      (p) =>
+        p.id === request.target_provider_id &&
+        p.status === 'approved' &&
+        p.user_id !== request.customer_id
     );
     if (!target) return [];
+    if (existingProviderIds.has(target.id)) return [target];
 
     db.data.request_matches.push({
       id: db.newId('match'),
@@ -107,9 +116,9 @@ export function createMatchesForRequest(request: ServiceRequest): ProviderProfil
     return [target];
   }
 
-  // General marketplace matching
   const matched: { provider: ProviderProfile; score: number }[] = [];
   for (const provider of db.data.provider_profiles) {
+    if (existingProviderIds.has(provider.id)) continue;
     const score = scoreProviderForRequest(provider, request);
     if (score > 0) {
       matched.push({ provider, score });

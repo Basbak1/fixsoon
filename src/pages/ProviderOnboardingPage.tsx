@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { apiFetch } from '../lib/api';
+import { apiFetch, setInMemorySessionToken } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import type {
   GtaLocation,
@@ -22,7 +22,7 @@ export function ProviderOnboardingPage({
   locations,
   onNavigate,
 }: ProviderOnboardingPageProps) {
-  const { user, providerProfile, setProviderProfile } = useAuth();
+  const { user, providerProfile, setProviderProfile, refreshMe } = useAuth();
 
   const [displayName, setDisplayName] = useState(providerProfile?.display_name || user?.name || '');
   const [businessName, setBusinessName] = useState(providerProfile?.business_name || '');
@@ -67,28 +67,35 @@ export function ProviderOnboardingPage({
     setError('');
     setSaving(true);
     try {
-      const res = await apiFetch<{ providerProfile: ProviderProfile }>('/api/provider/onboarding', {
-        method: 'POST',
-        body: JSON.stringify({
-          display_name: displayName,
-          business_name: businessName || displayName,
-          provider_type: providerType,
-          category_ids: selectedCats,
-          subcategory_ids: selectedSubs,
-          primary_city: primaryCity,
-          coverage_cities: coverageCities.length ? coverageCities : [primaryCity],
-          coverage_radius_km: Number(radiusKm),
-          years_experience: Number(yearsExp),
-          bio,
-          starting_price: startingPrice ? Number(startingPrice) : null,
-          diagnostic_fee: diagnosticFee ? Number(diagnosticFee) : null,
-          free_estimates: freeEstimates,
-          operating_hours: operatingHours,
-          emergency_available: emergencyAvailable,
-          is_available_now: true,
-        }),
-      });
+      const res = await apiFetch<{ providerProfile: ProviderProfile; token?: string }>(
+        '/api/provider/onboarding',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            display_name: displayName,
+            business_name: businessName || displayName,
+            provider_type: providerType,
+            category_ids: selectedCats,
+            subcategory_ids: selectedSubs,
+            primary_city: primaryCity,
+            coverage_cities: coverageCities.length ? coverageCities : [primaryCity],
+            coverage_radius_km: Number(radiusKm),
+            years_experience: Number(yearsExp),
+            bio,
+            starting_price: startingPrice ? Number(startingPrice) : null,
+            diagnostic_fee: diagnosticFee ? Number(diagnosticFee) : null,
+            free_estimates: freeEstimates,
+            operating_hours: operatingHours,
+            emergency_available: emergencyAvailable,
+            is_available_now: true,
+          }),
+        }
+      );
+      if (res.token) {
+        setInMemorySessionToken(res.token);
+      }
       setProviderProfile(res.providerProfile);
+      await refreshMe();
       onNavigate('/provider-dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to save profile');
@@ -100,23 +107,23 @@ export function ProviderOnboardingPage({
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6">
       <div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-          Professional Profile &amp; Verification Setup
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
+          WorldLeo Professional Profile &amp; Verification Setup
         </h1>
-        <p className="text-sm text-[#475569] dark:text-[#94A3B8] mt-1">
-          Complete your services, GTA coverage areas, and experience. Profiles are reviewed by FixSoon Operations before appearing in public searches.
+        <p className="text-sm text-[#6D756F] dark:text-[#A3ABA5] mt-1">
+          Complete your Home or Auto services, Ontario coverage areas, and experience. Profiles are reviewed by WorldLeo Operations before appearing in public searches.
         </p>
       </div>
 
       {!user && (
-        <div className="p-4 rounded-xl border border-[#B45309]/50 bg-[#FFFFFF] dark:bg-[#111827] flex items-center justify-between gap-4">
-          <span className="text-sm text-[#0F172A] dark:text-[#F8FAFC]">
+        <div className="p-4 rounded-xl border border-[#C6A45B]/60 bg-[#FFFFFF] dark:bg-[#0B261E] flex items-center justify-between gap-4">
+          <span className="text-sm text-[#171B19] dark:text-[#F6F2E8]">
             Create a provider account or sign in first to submit your profile.
           </span>
           <button
             type="button"
             onClick={() => onNavigate('/auth')}
-            className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A]"
+            className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] cursor-pointer"
           >
             Sign In / Register
           </button>
@@ -125,7 +132,7 @@ export function ProviderOnboardingPage({
 
       <form
         onSubmit={handleSubmit}
-        className="p-6 sm:p-8 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-6"
+        className="p-6 sm:p-8 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-6"
       >
         {error && (
           <div className="p-3 rounded-lg border border-red-300 bg-red-50 text-sm text-red-700">{error}</div>
@@ -139,7 +146,7 @@ export function ProviderOnboardingPage({
               required
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
             />
           </div>
           <div>
@@ -149,7 +156,7 @@ export function ProviderOnboardingPage({
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
               placeholder="Optional if operating under your name"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
             />
           </div>
         </div>
@@ -159,7 +166,7 @@ export function ProviderOnboardingPage({
           <select
             value={providerType}
             onChange={(e) => setProviderType(e.target.value as ProviderType)}
-            className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+            className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
           >
             <option value="independent_professional">Independent Professional</option>
             <option value="mobile_technician">Mobile Technician</option>
@@ -177,10 +184,10 @@ export function ProviderOnboardingPage({
                 key={c.id}
                 type="button"
                 onClick={() => toggleItem(selectedCats, setSelectedCats, c.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer ${
                   selectedCats.includes(c.id)
-                    ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/15'
-                    : 'border-[#E2E8F0] dark:border-[#1E293B]'
+                    ? 'border-[#9F7B37] dark:border-[#C6A45B] bg-[#C6A45B]/15 text-[#063B2B] dark:text-[#D8B66F]'
+                    : 'border-[#D8D4C7] dark:border-[#1E4438]'
                 }`}
               >
                 {c.name}
@@ -199,10 +206,10 @@ export function ProviderOnboardingPage({
                   key={s.id}
                   type="button"
                   onClick={() => toggleItem(selectedSubs, setSelectedSubs, s.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border cursor-pointer ${
                     selectedSubs.includes(s.id)
-                      ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/15'
-                      : 'border-[#E2E8F0] dark:border-[#1E293B]'
+                      ? 'border-[#9F7B37] dark:border-[#C6A45B] bg-[#C6A45B]/15 text-[#063B2B] dark:text-[#D8B66F]'
+                      : 'border-[#D8D4C7] dark:border-[#1E4438]'
                   }`}
                 >
                   {s.name}
@@ -213,11 +220,11 @@ export function ProviderOnboardingPage({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold mb-1">Primary GTA City *</label>
+            <label className="block text-xs font-semibold mb-1">Primary Ontario City *</label>
             <select
               value={primaryCity}
               onChange={(e) => setPrimaryCity(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
             >
               {locations.map((l) => (
                 <option key={l.slug} value={l.name}>
@@ -234,7 +241,7 @@ export function ProviderOnboardingPage({
               max={150}
               value={radiusKm}
               onChange={(e) => setRadiusKm(Number(e.target.value))}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
             />
           </div>
         </div>
@@ -247,10 +254,10 @@ export function ProviderOnboardingPage({
                 key={l.slug}
                 type="button"
                 onClick={() => toggleItem(coverageCities, setCoverageCities, l.name)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border cursor-pointer ${
                   coverageCities.includes(l.name)
-                    ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/15'
-                    : 'border-[#E2E8F0] dark:border-[#1E293B]'
+                    ? 'border-[#9F7B37] dark:border-[#C6A45B] bg-[#C6A45B]/15 text-[#063B2B] dark:text-[#D8B66F]'
+                    : 'border-[#D8D4C7] dark:border-[#1E4438]'
                 }`}
               >
                 {l.name}
@@ -267,7 +274,7 @@ export function ProviderOnboardingPage({
               min={0}
               value={yearsExp}
               onChange={(e) => setYearsExp(Number(e.target.value))}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
             />
           </div>
           <div>
@@ -277,7 +284,7 @@ export function ProviderOnboardingPage({
               value={startingPrice}
               onChange={(e) => setStartingPrice(e.target.value)}
               placeholder="e.g. 75"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
             />
           </div>
           <div>
@@ -287,7 +294,7 @@ export function ProviderOnboardingPage({
               value={diagnosticFee}
               onChange={(e) => setDiagnosticFee(e.target.value)}
               placeholder="e.g. 85"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
             />
           </div>
         </div>
@@ -300,7 +307,7 @@ export function ProviderOnboardingPage({
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             placeholder="Describe your experience, certifications, tools, and types of repairs you handle..."
-            className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+            className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
           />
         </div>
 
@@ -311,7 +318,7 @@ export function ProviderOnboardingPage({
               type="text"
               value={operatingHours}
               onChange={(e) => setOperatingHours(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm"
             />
           </div>
           <div className="space-y-2 pt-4 sm:pt-0 text-xs">
@@ -320,7 +327,7 @@ export function ProviderOnboardingPage({
                 type="checkbox"
                 checked={freeEstimates}
                 onChange={(e) => setFreeEstimates(e.target.checked)}
-                className="accent-[#B45309]"
+                className="accent-[#9F7B37] dark:accent-[#C6A45B]"
               />
               <span>I provide free initial estimates</span>
             </label>
@@ -329,9 +336,9 @@ export function ProviderOnboardingPage({
                 type="checkbox"
                 checked={emergencyAvailable}
                 onChange={(e) => setEmergencyAvailable(e.target.checked)}
-                className="accent-[#B45309]"
+                className="accent-[#9F7B37] dark:accent-[#C6A45B]"
               />
-              <span>Available for urgent roadside / emergency calls</span>
+              <span>Available for urgent FixSoon roadside / emergency calls</span>
             </label>
           </div>
         </div>
@@ -340,7 +347,7 @@ export function ProviderOnboardingPage({
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-3 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A] disabled:opacity-50"
+            className="px-6 py-3 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] hover:bg-[#145443] dark:bg-[#C6A45B] dark:text-[#071E17] dark:hover:bg-[#D8B66F] disabled:opacity-50 cursor-pointer"
           >
             {saving ? 'Submitting...' : 'Submit Profile for Verification'}
           </button>

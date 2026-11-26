@@ -1,82 +1,51 @@
-# WorldLeo — Product Specification (Phase 1)
+# WorldLeo — Product Specification (Stage 2 Baseline)
 
-**Document Status:** Phase 1 Baseline (Living Specification)  
+**Document Status:** Stage 2 — Batches 2.1 & 2.2 Baseline (Living Specification)  
 **Target Region:** Ontario, Canada — Greater Toronto Area (GTA), Greater Hamilton Area, and Niagara Region  
-**Platform Identity:** **WorldLeo** (Parent Marketplace) · **WorldLeo Home** · **WorldLeo Auto** · **FixSoon** (Urgent Roadside Sub-Brand)
+**Platform Identity:** **WorldLeo** (Parent Marketplace) · **WorldLeo Home** · **WorldLeo Auto** · **FixSoon** (Urgent Roadside Feature)
 
 ---
 
 ## 1. Product Vision & Brand Hierarchy
 
-WorldLeo is a managed two-sided service marketplace built around one promise:
+WorldLeo is a professionally managed Canadian marketplace connecting customers with independent Home and Automotive service providers:
 
-> **"WorldLeo — Find professionals. Plan projects. Get things done."**
+> **"Your Home. Your Vehicle. One Trusted Place for Help."**
 
-Instead of forcing customers to navigate separate websites for home improvements and vehicle emergencies, WorldLeo unifies two specialized verticals under one account, one verification framework, and one service assurance model:
+WorldLeo unifies two specialized divisions under one website, database, authentication system, verification standard, and customer experience:
 
 1. **WorldLeo** (Parent Brand)
-   - Neutral, elevated identity (Luxury Black, Refined Gold, Warm Off-White, Neutral Grey).
-   - Owns account identity, customer/provider workspaces, verification standards, privacy protection, and future payment/dispatch governance.
-2. **WorldLeo Home** (`/home`)
-   - Covers home repairs, renovations, exterior improvements, and project planning.
-   - Includes **WorldLeo AI Design Studio** (`/home/ai-design`) and curated project entry points (`/home/kitchen-renovation`, `/home/bathroom-renovation`, `/home/backyard-design`).
-   - *Phase 1 Status:* Landing pages and AI Design Studio preview are live in Development Preview; Home contractor categories are staged for Phase 2–4 activation.
+   - Forest Green (`#063B2B` / `#071E17`) and Warm Muted Gold (`#C6A45B`) corporate identity anchored by the **bold W + smooth orbit + calm friendly Leo head** symbol.
+   - Owns account identity, customer/provider workspaces, verification standards, privacy protection, and future marketplace governance.
+2. **WorldLeo Home** (`/home`, `/home/repairs`, `/home/renovations`)
+   - Covers home repairs, renovations, skilled trades, and property improvements.
+   - Includes **AI Design Studio** (`/home/ai-design`) featuring brand ambassador **Leo** and curated entry points (`/home/kitchen-renovation`, `/home/bathroom-renovation`, `/home/backyard-design`).
 3. **WorldLeo Auto** (`/auto`)
-   - Covers mobile mechanics, flat tire specialists (cars, trucks, Bobcats/skid steers, trailers), battery boosts, battery replacement, and vehicle/equipment diagnostics.
-   - *Phase 1 Status:* Core marketplace request, matching, quoting, and job-tracking workflow is operational using demo/local data.
+   - Covers mobile mechanics, vehicle repairs, tire and battery services, maintenance, and **FixSoon** rapid roadside assistance.
 4. **FixSoon** (`/auto/fixsoon`)
-   - Compact rapid-response sub-brand inside **WorldLeo Auto** for urgent roadside breakdowns and emergencies.
-   - Always spelled **FixSoon** (one word, capital `F` and `S`).
-   - Primary urgent action: **Get Help Now**.
+   - Signature rapid roadside-assistance feature nested inside **WorldLeo Auto** (`WorldLeo Auto → FixSoon`).
+   - Never promoted above **WorldLeo** as a competing corporate header/footer brand.
 
 ---
 
 ## 2. Two-Sided Operating Models
 
-WorldLeo supports two transparent request-and-fulfillment modes so customers can balance speed against price comparison:
-
-### Model A+ — Direct Dispatch / Managed Platform Access (Planned Full Automation in Phase 3)
-- Designed for urgent **FixSoon** roadside requests or customers selecting a specific verified professional directly.
-- In Phase 1, customers can submit a **Direct Request** to an approved provider from the directory (`/professionals/:slug` -> `/request?provider=...`) and convert to a general marketplace request in one click if the provider is unavailable.
-- Full automated platform pricing, escrow checkout, and live GPS dispatch tracking are planned for Phases 3–4 and marked clearly as **Development Preview**.
-
-### Model B — Multi-Quote Marketplace
-- Customer submits a structured request describing the issue in plain language or selecting a category (`/request`).
-- Matched, approved professionals in the customer's Ontario service area receive the request with **exact street address and phone masked**.
-- Professionals submit itemized written quotes (service fee, line-item parts, ETA, duration, warranty terms).
-- Customer compares quotes side by side and accepts one; only then is the exact service address shared with the assigned professional.
+1. **Direct Request (Model A+ Direction):** Customers can request a specific verified professional directly (`/professionals/:slug` -> `/request-service?provider=...`) or request urgent roadside support under FixSoon, with one-click fallback to the general marketplace if needed.
+2. **Multi-Quote Marketplace (Model B):** Customers submit a structured request selecting **WorldLeo Home** or **WorldLeo Auto** at Step 1 (`/request-service`). Exact street address and phone stay masked until a quote is accepted and assigned.
 
 ---
 
 ## 3. WorldLeo AI Design Studio (`/home/ai-design`)
 
 Planned two-tier experience for **WorldLeo Home** planning:
-- **Free AI Inspiration Preview:** Concept visual direction and initial scope ideas from room photos and dimensions *(Development Preview — live image generation not active in Phase 1)*.
-- **Planning Pack (CAD $39, admin-configurable):** Structured concept pack with preliminary scope checklist and indicative 2D spatial layout intended to help customers brief contractors cleanly *(Development Preview — live payments & PDF pack generation not active in Phase 1)*.
+- **Free AI Inspiration Preview** and **Planning Pack (CAD $39, admin-configurable)** remain labeled **Development Preview** in Stage 2 (live image generation and live checkout are excluded from Stage 2).
 - **Mandatory Engineering Disclaimer:** Any AI-assisted visual concept or preliminary 2D spatial layout is for planning discussion only and **must be verified on-site by a qualified contractor, designer, or licensed engineer** before ordering materials, applying for permits, or starting construction.
 
 ---
 
 ## 4. Trust, Verification & Honest Metrics Policy
 
-WorldLeo enforces strict honesty across every public surface:
-- **No Fabricated Numbers:** Zero invented customer counts, fake completion counters, synthetic 5-star badges, or unverified "instant arrival" promises.
-- **Demo Labeling:** Seeded profiles (`Marcus Miller`, `Sarah Jenkins`, `David Patel`) and demo accounts are explicitly labeled **Demo Profile** or **Demo Environment**.
-- **Separated Credentials:** Self-reported bios and years of experience are separated from operations-reviewed checks (`email_verified`, `phone_verified`, `business_verified`, `insurance_verified`, `license_verified`, `profile_reviewed`).
-- **Verified Job Reviews:** Reviews are restricted to completed jobs on the platform; seeded sample reviews are clearly contextualized with demo profiles.
-
----
-
-## 5. Ontario Geographic Scope (Phase 1)
-
-Active seeded municipalities along the QEW, 401, 403, 407, and 400-series corridors:
-- **Greater Toronto Area (GTA):** Toronto, Mississauga, Brampton, Markham, Vaughan, Oakville
-- **Greater Hamilton Area:** Burlington, Hamilton
-- **Niagara Region:** Grimsby, St. Catharines, Niagara Falls, Welland
-
----
-
-## 6. Supported Channels & Client Roadmap
-
-- **Web Application (Phase 1 Active):** Responsive React + Vite SPA served by Express on port 3000 with PWA installability and Light/Dark/System themes.
-- **Mobile Clients (Planned — Expo + React Native):** Android and iOS native experiences will share versioned REST contracts (`/api/v1/*`) exposed by the backend. Native Expo directories are intentionally deferred until Phase 5 after core backend persistence and auth hardening are completed.
+- **No Fabricated Numbers:** Zero invented customer counts, fake completion counters, or synthetic reviews.
+- **Demo Labeling:** Seeded profiles (`Marcus Miller`, `Sarah Jenkins`, `David Patel`) are explicitly labeled **Demo Profile**.
+- **WorldLeo Verified Badge:** The retained shield+checkmark emblem (`WorldLeoVerifiedBadge`) renders ONLY when `business_verified && insurance_verified && profile_reviewed` are all verified.
+- **No Live Payments in Stage 2:** Progressive fee schedules are visible strictly for Operations/Finance planning (`AdminDashboard.tsx`); live payment collection remains disabled.

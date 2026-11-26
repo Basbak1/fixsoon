@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { apiFetch } from '../lib/api';
+import { isFirebaseClientConfigured } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
-import type { UserRole } from '../types/fixsoon';
+import type { PlatformConfigResponse, UserRole } from '../types/fixsoon';
 
 interface AuthPageProps {
   onNavigate: (path: string) => void;
@@ -11,11 +13,11 @@ const DEMO_ACCOUNTS = [
   { label: 'Customer (Alex Chen)', email: 'alex.customer@fixsoon.demo', role: 'Customer' },
   { label: 'Provider (Marcus Miller Auto)', email: 'marcus.auto@fixsoon.demo', role: 'Provider' },
   { label: 'Provider (Sarah Jenkins Multi-Trade)', email: 'sarah.tech@fixsoon.demo', role: 'Provider' },
-  { label: 'Admin (FixSoon Operations)', email: 'admin@fixsoon.demo', role: 'Admin' },
+  { label: 'Admin (WorldLeo Operations)', email: 'admin@fixsoon.demo', role: 'Admin' },
 ];
 
 export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
-  const { login, loginWithGoogle, register } = useAuth();
+  const { login, loginDemo, loginWithGoogle, register } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -25,11 +27,22 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
   const [role, setRole] = useState<UserRole>('customer');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [localEmulatorEnabled, setLocalEmulatorEnabled] = useState(false);
+
+  useEffect(() => {
+    apiFetch<PlatformConfigResponse>('/api/config')
+      .then((cfg) => {
+        setLocalEmulatorEnabled(Boolean(cfg.featureFlags?.localEmulatorAuthEnabled));
+      })
+      .catch(() => {
+        setLocalEmulatorEnabled(false);
+      });
+  }, []);
 
   const routeForRole = (r: UserRole) => {
     if (redirectAfter) return redirectAfter;
-    if (r === 'admin') return '/admin';
-    if (r === 'provider') return '/provider-dashboard';
+    if (r === 'admin' || r === 'coordinator' || r === 'finance') return '/admin';
+    if (r === 'provider' || r === 'company_member') return '/provider-dashboard';
     return '/customer-dashboard';
   };
 
@@ -60,7 +73,7 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
     setError('');
     setSubmitting(true);
     try {
-      const u = await login(demoEmail, 'FixSoon2026!');
+      const u = await loginDemo(demoEmail);
       onNavigate(routeForRole(u.role));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Demo sign in failed');
@@ -71,6 +84,10 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
 
   const handleGoogleLogin = async () => {
     setError('');
+    if (!isFirebaseClientConfigured()) {
+      setError('Firebase Authentication is currently unavailable (missing project configuration).');
+      return;
+    }
     setSubmitting(true);
     try {
       const u = await loginWithGoogle();
@@ -84,16 +101,18 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-7 p-6 sm:p-8 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F]">
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-[#F4F2EC] dark:bg-[#0D0F12] mb-6">
+      <div className={`grid grid-cols-1 ${localEmulatorEnabled ? 'lg:grid-cols-12' : ''} gap-8`}>
+        <div
+          className={`${localEmulatorEnabled ? 'lg:col-span-7' : 'max-w-xl mx-auto w-full'} p-6 sm:p-8 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E]`}
+        >
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-[#F6F2E8] dark:bg-[#071E17] mb-6">
             <button
               type="button"
               onClick={() => setMode('login')}
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
                 mode === 'login'
-                  ? 'bg-[#FFFFFF] dark:bg-[#22262D] text-[#171717] dark:text-[#F1EFE8]'
-                  : 'text-[#55534E] dark:text-[#B5B7BB]'
+                  ? 'bg-[#FFFFFF] dark:bg-[#145443] text-[#171B19] dark:text-[#F6F2E8]'
+                  : 'text-[#6D756F] dark:text-[#B4C2BC]'
               }`}
             >
               Sign In
@@ -103,20 +122,20 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
               onClick={() => setMode('register')}
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors cursor-pointer ${
                 mode === 'register'
-                  ? 'bg-[#FFFFFF] dark:bg-[#22262D] text-[#171717] dark:text-[#F1EFE8]'
-                  : 'text-[#55534E] dark:text-[#B5B7BB]'
+                  ? 'bg-[#FFFFFF] dark:bg-[#145443] text-[#171B19] dark:text-[#F6F2E8]'
+                  : 'text-[#6D756F] dark:text-[#B4C2BC]'
               }`}
             >
               Create Account
             </button>
           </div>
 
-          <h1 className="font-display text-2xl font-bold text-[#171717] dark:text-[#F1EFE8] mb-2">
+          <h1 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8] mb-2">
             {mode === 'login' ? 'Welcome back to WorldLeo' : 'Create your WorldLeo account'}
           </h1>
-          <p className="text-sm text-[#55534E] dark:text-[#B5B7BB] mb-6">
+          <p className="text-sm text-[#6D756F] dark:text-[#B4C2BC] mb-5">
             {mode === 'login'
-              ? 'Access your requests, quotes, or service provider workspace across Home, Auto & FixSoon.'
+              ? 'Sign in with your verified Firebase Google account or registered credentials to manage Home and Auto requests.'
               : 'Request help as a customer or register as an independent service professional.'}
           </p>
 
@@ -126,21 +145,35 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
             </div>
           )}
 
+          <div className="mb-5 pb-5 border-b border-[#D8D4C7] dark:border-[#1E4438] space-y-2">
+            <button
+              type="button"
+              disabled={submitting || !isFirebaseClientConfigured()}
+              onClick={handleGoogleLogin}
+              className="w-full py-3 px-4 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F8F7F2] dark:bg-[#C6A45B] dark:text-[#071E17] hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
+            >
+              Continue with Google (Firebase Auth)
+            </button>
+            <p className="text-[11px] text-center text-[#6D756F] dark:text-[#B4C2BC]">
+              Verified identity enforced server-side via Firebase Admin SDK.
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'register' && (
               <>
                 <div>
-                  <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1.5">
+                  <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1.5">
                     Account type
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setRole('customer')}
-                      className={`py-2.5 px-3 rounded-lg text-sm font-medium border ${
+                      className={`py-2.5 px-3 rounded-lg text-sm font-medium border cursor-pointer transition-colors ${
                         role === 'customer'
-                          ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/10 text-[#0F172A] dark:text-[#F8FAFC]'
-                          : 'border-[#E2E8F0] dark:border-[#1E293B] text-[#475569] dark:text-[#94A3B8]'
+                          ? 'border-[#063B2B] dark:border-[#C6A45B] bg-[#063B2B]/10 dark:bg-[#C6A45B]/15 text-[#171B19] dark:text-[#F6F2E8]'
+                          : 'border-[#D8D4C7] dark:border-[#1E4438] text-[#6D756F] dark:text-[#B4C2BC]'
                       }`}
                     >
                       I need a service
@@ -148,10 +181,10 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
                     <button
                       type="button"
                       onClick={() => setRole('provider')}
-                      className={`py-2.5 px-3 rounded-lg text-sm font-medium border ${
+                      className={`py-2.5 px-3 rounded-lg text-sm font-medium border cursor-pointer transition-colors ${
                         role === 'provider'
-                          ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/10 text-[#0F172A] dark:text-[#F8FAFC]'
-                          : 'border-[#E2E8F0] dark:border-[#1E293B] text-[#475569] dark:text-[#94A3B8]'
+                          ? 'border-[#063B2B] dark:border-[#C6A45B] bg-[#063B2B]/10 dark:bg-[#C6A45B]/15 text-[#171B19] dark:text-[#F6F2E8]'
+                          : 'border-[#D8D4C7] dark:border-[#1E4438] text-[#6D756F] dark:text-[#B4C2BC]'
                       }`}
                     >
                       I am a professional
@@ -160,7 +193,7 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+                  <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                     Full name
                   </label>
                   <input
@@ -169,13 +202,13 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Jordan Taylor"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+                    <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                       Phone number
                     </label>
                     <input
@@ -183,19 +216,19 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="416-555-0190"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
-                      Primary GTA city
+                    <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
+                      Primary city
                     </label>
                     <input
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Toronto"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                     />
                   </div>
                 </div>
@@ -203,7 +236,7 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+              <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                 Email address
               </label>
               <input
@@ -212,12 +245,12 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+              <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                 Password
               </label>
               <input
@@ -227,61 +260,51 @@ export function AuthPage({ onNavigate, redirectAfter }: AuthPageProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 6 characters"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
               />
             </div>
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 rounded-lg text-sm font-semibold bg-[#171717] text-[#D8B45A] dark:bg-[#D8B45A] dark:text-[#0D0F12] hover:opacity-90 disabled:opacity-50 cursor-pointer"
+              className="w-full py-2.5 rounded-lg text-sm font-semibold border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F6F2E8] dark:bg-[#071E17] text-[#171B19] dark:text-[#F6F2E8] hover:border-[#9F7B37] dark:hover:border-[#C6A45B] disabled:opacity-50 cursor-pointer"
             >
-              {submitting ? 'Please wait...' : mode === 'login' ? 'Sign In' : 'Create Account'}
+              {submitting ? 'Please wait...' : mode === 'login' ? 'Sign In with Email' : 'Create Account'}
             </button>
           </form>
-
-          <div className="mt-4 pt-4 border-t border-[#D8D4CA] dark:border-[#343941]">
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={handleGoogleLogin}
-              className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold border border-[#D8D4CA] dark:border-[#343941] bg-[#F4F2EC] dark:bg-[#0D0F12] text-[#171717] dark:text-[#F1EFE8] hover:border-[#A87919] dark:hover:border-[#D8B45A] transition-colors disabled:opacity-50 cursor-pointer"
-            >
-              Continue with Google (Firebase Auth)
-            </button>
-          </div>
         </div>
 
-        {/* Demo Environment Quick Access */}
-        <div className="lg:col-span-5 p-6 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] space-y-4 h-fit">
-          <div>
-            <h2 className="font-display text-lg font-bold text-[#171717] dark:text-[#F1EFE8]">
-              Demo Environment Accounts
-            </h2>
-            <p className="text-xs text-[#55534E] dark:text-[#B5B7BB] mt-1 leading-relaxed">
-              Test the complete two-sided WorldLeo &amp; FixSoon marketplace workflow immediately using any seeded demo role below.
-            </p>
-          </div>
+        {localEmulatorEnabled && (
+          <div className="lg:col-span-5 p-6 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-4 h-fit">
+            <div>
+              <h2 className="font-display text-lg font-bold text-[#171B19] dark:text-[#F6F2E8]">
+                Local Emulator Test Accounts
+              </h2>
+              <p className="text-xs text-[#6D756F] dark:text-[#B4C2BC] mt-1 leading-relaxed">
+                Available strictly in local loopback Firebase Auth Emulator / test environments. Disabled in preview and production.
+              </p>
+            </div>
 
-          <div className="space-y-2.5">
-            {DEMO_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.email}
-                type="button"
-                disabled={submitting}
-                onClick={() => handleDemoLogin(acc.email)}
-                className="w-full text-left p-3 rounded-lg border border-[#D8D4CA] dark:border-[#343941] bg-[#F4F2EC] dark:bg-[#0D0F12] hover:border-[#A87919] dark:hover:border-[#D8B45A] transition-colors cursor-pointer"
-              >
-                <div className="text-sm font-semibold text-[#171717] dark:text-[#F1EFE8]">
-                  {acc.label}
-                </div>
-                <div className="text-xs font-mono text-[#55534E] dark:text-[#B5B7BB] mt-0.5">
-                  {acc.email}
-                </div>
-              </button>
-            ))}
+            <div className="space-y-2.5">
+              {DEMO_ACCOUNTS.map((acc) => (
+                <button
+                  key={acc.email}
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => handleDemoLogin(acc.email)}
+                  className="w-full text-left p-3 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F6F2E8] dark:bg-[#071E17] hover:border-[#9F7B37] dark:hover:border-[#C6A45B] transition-colors cursor-pointer"
+                >
+                  <div className="text-sm font-semibold text-[#171B19] dark:text-[#F6F2E8]">
+                    {acc.label}
+                  </div>
+                  <div className="text-xs font-mono text-[#6D756F] dark:text-[#B4C2BC] mt-0.5">
+                    {acc.email}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

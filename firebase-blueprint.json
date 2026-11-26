@@ -2,13 +2,13 @@
   "entities": {
     "UserProfile": {
       "title": "UserProfile",
-      "description": "Authenticated FixSoon user profile stored in Firestore",
+      "description": "Authenticated WorldLeo user profile stored in Firestore",
       "type": "object",
       "properties": {
         "uid": { "type": "string", "maxLength": 128 },
         "name": { "type": "string", "maxLength": 120 },
         "email": { "type": "string", "format": "email", "maxLength": 180 },
-        "role": { "type": "string", "enum": ["customer", "provider", "admin"] },
+        "role": { "type": "string", "enum": ["customer", "provider"] },
         "city": { "type": "string", "maxLength": 80 },
         "savedProviderIds": { "type": "array" },
         "createdAt": { "type": "string", "format": "date-time" },
@@ -24,6 +24,7 @@
         "requestId": { "type": "string", "maxLength": 128 },
         "referenceCode": { "type": "string", "maxLength": 32 },
         "customerUid": { "type": "string", "maxLength": 128 },
+        "division": { "type": "string", "enum": ["home", "auto"] },
         "requestType": { "type": "string", "enum": ["marketplace", "direct"] },
         "serviceName": { "type": "string", "maxLength": 120 },
         "problemSummary": { "type": "string", "maxLength": 400 },
@@ -36,7 +37,7 @@
     },
     "VerifiedReview": {
       "title": "VerifiedReview",
-      "description": "Verified customer rating and review for a completed FixSoon job",
+      "description": "Verified customer rating and review for a completed WorldLeo job",
       "type": "object",
       "properties": {
         "reviewId": { "type": "string", "maxLength": 128 },

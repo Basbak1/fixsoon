@@ -27,11 +27,16 @@ export interface UserRecord {
   role: UserRole;
   password_hash: string;
   city: string;
+  company_id?: string | null;
+  firebase_uid?: string;
+  is_demo?: boolean;
+  is_active?: boolean;
   saved_provider_ids: string[];
   created_at: string;
 }
 
 export interface DatabaseState {
+  schema_version?: number;
   users: UserRecord[];
   service_categories: ServiceCategory[];
   service_subcategories: ServiceSubcategory[];
@@ -49,9 +54,13 @@ export interface DatabaseState {
 }
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
-const DB_FILE = path.join(DATA_DIR, 'fixsoon.json');
+const DEFAULT_DB_FILE = process.env.WORLDLEO_DB_FILE
+  ? path.resolve(process.env.WORLDLEO_DB_FILE)
+  : path.join(DATA_DIR, 'fixsoon.json');
 
-function createSeedState(): DatabaseState {
+export const CURRENT_SCHEMA_VERSION = 2;
+
+export function createSeedState(): DatabaseState {
   const demoPass = hashPassword('FixSoon2026!');
   const now = new Date().toISOString();
 
@@ -59,12 +68,15 @@ function createSeedState(): DatabaseState {
     {
       id: 'cat_auto',
       slug: 'automotive-roadside',
-      name: 'Mobile Mechanic & Flat Tire Services',
-      description: 'On-site mobile mechanics, flat tire repair & replacement, battery boosts, and diagnostics for cars, trucks, Bobcats, skid steers, and trailers.',
+      division: 'auto',
+      name: 'Auto Services & FixSoon Roadside',
+      description:
+        'Mobile mechanics, flat tire repair & replacement, battery boosts, diagnostics, and FixSoon rapid roadside assistance across Ontario.',
       image_url: '/src/assets/images/category_automotive_1794446299137.jpg',
       is_active: true,
-      seo_title: 'Mobile Mechanic & Flat Tire Service (Cars, Trucks, Bobcat & Trailers) | FixSoon',
-      seo_description: 'Connect with independent mobile mechanics and flat tire specialists for cars, trucks, Bobcats, and trailers across Toronto and the GTA.',
+      seo_title: 'WorldLeo Auto & FixSoon Roadside — Mobile Mechanics & Flat Tire Service | Ontario',
+      seo_description:
+        'Connect with independent mobile mechanics, tire specialists, and FixSoon roadside responders for cars, trucks, Bobcats, and trailers across Ontario.',
       dynamic_fields: [
         {
           key: 'equipment_type',
@@ -82,23 +94,56 @@ function createSeedState(): DatabaseState {
         { key: 'vehicle_year', label: 'Year', type: 'text', required: true, placeholder: 'e.g. 2019' },
         { key: 'vehicle_make', label: 'Make / Brand', type: 'text', required: true, placeholder: 'e.g. Honda, Ford, Bobcat, Load Trail' },
         { key: 'vehicle_model', label: 'Model', type: 'text', required: true, placeholder: 'e.g. Civic, F-250, S650, 14ft Dump' },
-        { key: 'can_vehicle_move', label: 'Can it be driven or moved safely?', type: 'select', required: true, options: ['No, it will not start or move', 'Yes, but warning light or noise present', 'Not sure'] },
+        {
+          key: 'can_vehicle_move',
+          label: 'Can it be driven or moved safely?',
+          type: 'select',
+          required: true,
+          options: ['No, it will not start or move', 'Yes, but warning light or noise present', 'Not sure'],
+        },
       ],
     },
     {
       id: 'cat_home',
       slug: 'home-services',
-      name: 'Home & Appliance Services',
-      description: 'Future expansion category: independent appliance repair, plumbing fixtures, electrical troubleshooting, and general home maintenance.',
+      division: 'home',
+      name: 'Home Services & Renovations',
+      description:
+        'Home repairs and maintenance, kitchen and bathroom renovations, plumbing, electrical, painting, flooring, landscaping, and AI Design Studio project quotes.',
       image_url: '/src/assets/images/category_home_appliance_1794446298673.jpg',
-      is_active: false,
-      seo_title: 'Home Appliance Repair, Plumbing & Electrical Services | FixSoon',
-      seo_description: 'Find independent appliance repair technicians, plumbers, and electricians in the Greater Toronto Area.',
+      is_active: true,
+      seo_title: 'WorldLeo Home — Repairs, Renovations, Trades & AI Design Studio | Ontario',
+      seo_description:
+        'Compare transparent quotes from independent home repair specialists, plumbers, electricians, and renovation contractors across Ontario.',
       dynamic_fields: [
-        { key: 'appliance_or_fixture', label: 'Appliance or fixture type', type: 'text', required: true, placeholder: 'e.g. Front-load washing machine, kitchen faucet' },
-        { key: 'manufacturer', label: 'Brand / Manufacturer (if known)', type: 'text', required: false, placeholder: 'e.g. LG, Samsung, Moen' },
-        { key: 'model_number', label: 'Model number (optional)', type: 'text', required: false, placeholder: 'e.g. WM3900HWA' },
-        { key: 'property_type', label: 'Property type', type: 'select', required: true, options: ['Detached / Semi-detached house', 'Townhouse', 'Condo / Apartment', 'Commercial space'] },
+        {
+          key: 'property_type',
+          label: 'Property type',
+          type: 'select',
+          required: true,
+          options: ['Detached / Semi-detached house', 'Townhouse', 'Condo / Apartment', 'Commercial space'],
+        },
+        {
+          key: 'project_area',
+          label: 'Room or home area',
+          type: 'text',
+          required: true,
+          placeholder: 'e.g. Kitchen, Main Bathroom, Basement, Backyard',
+        },
+        {
+          key: 'project_scope',
+          label: 'Scope of work',
+          type: 'select',
+          required: true,
+          options: ['Small repair or installation', 'Targeted upgrade', 'Full renovation / remodel', 'Planning from AI Design Studio'],
+        },
+        {
+          key: 'timeline_window',
+          label: 'Target timeline',
+          type: 'select',
+          required: false,
+          options: ['As soon as possible', 'Within 1–2 weeks', 'Within 1–3 months', 'Planning / budgeting stage'],
+        },
       ],
     },
   ];
@@ -109,66 +154,190 @@ function createSeedState(): DatabaseState {
       category_id: 'cat_auto',
       slug: 'mobile-mechanic',
       name: 'Mobile Mechanic (Cars, Trucks, Bobcat & Trailers)',
-      description: 'On-site diagnostics, starter/alternator repairs, brakes, hydraulic & diesel troubleshooting, and inspections for cars, trucks, Bobcats, and trailers.',
-      keywords: ['mechanic', 'repair', 'engine', 'noise', 'brake', 'alternator', 'starter', 'inspection', 'truck', 'bobcat', 'skid steer', 'trailer', 'diesel', 'hydraulic', 'equipment'],
+      description:
+        'On-site diagnostics, starter/alternator repairs, brakes, hydraulic & diesel troubleshooting, and inspections for cars, trucks, Bobcats, and trailers.',
+      keywords: [
+        'mechanic',
+        'repair',
+        'engine',
+        'noise',
+        'brake',
+        'alternator',
+        'starter',
+        'inspection',
+        'truck',
+        'bobcat',
+        'skid steer',
+        'trailer',
+        'diesel',
+        'hydraulic',
+        'equipment',
+      ],
       typical_duration: '1–2 hours',
-      seo_title: 'Mobile Mechanic for Cars, Trucks, Bobcat & Trailers in the GTA | FixSoon',
-      seo_description: 'Compare quotes from independent mobile mechanics for cars, trucks, Bobcats, and trailers in Toronto, Mississauga, and Brampton.',
+      seo_title: 'Mobile Mechanic for Cars, Trucks, Bobcat & Trailers | WorldLeo Auto',
+      seo_description:
+        'Compare quotes from independent mobile mechanics for cars, trucks, Bobcats, and trailers across the GTA, Hamilton, and Niagara.',
     },
     {
       id: 'sub_flat_tire',
       category_id: 'cat_auto',
       slug: 'flat-tire-assistance',
       name: 'Flat Tire Service (Cars, Trucks, Bobcat & Trailers)',
-      description: 'Mobile flat tire repair, spare mounting, heavy-duty truck & trailer tire swaps, Bobcat/skid-steer tire service, and blowout assistance.',
-      keywords: ['flat tire', 'flat', 'tire', 'puncture', 'nail', 'blowout', 'spare tire', 'tire change', 'rim', 'truck', 'trailer', 'bobcat', 'skid steer', 'lug', 'patch', 'plug'],
+      description:
+        'Mobile flat tire repair, spare mounting, heavy-duty truck & trailer tire swaps, Bobcat/skid-steer tire service, and blowout assistance.',
+      keywords: [
+        'flat tire',
+        'flat',
+        'tire',
+        'puncture',
+        'nail',
+        'blowout',
+        'spare tire',
+        'tire change',
+        'rim',
+        'truck',
+        'trailer',
+        'bobcat',
+        'skid steer',
+        'lug',
+        'patch',
+        'plug',
+      ],
       typical_duration: '30–60 mins',
-      seo_title: 'Flat Tire Service for Cars, Trucks, Bobcat & Trailers GTA | FixSoon',
-      seo_description: 'Flat tire on a car, truck, Bobcat, or trailer in the GTA? Request an independent mobile tire technician on FixSoon.',
+      seo_title: 'Flat Tire Service for Cars, Trucks, Bobcat & Trailers | WorldLeo Auto & FixSoon',
+      seo_description:
+        'Flat tire on a car, truck, Bobcat, or trailer in Ontario? Request an independent mobile tire technician via WorldLeo Auto & FixSoon.',
     },
     {
       id: 'sub_roadside',
       category_id: 'cat_auto',
       slug: 'roadside-assistance',
-      name: 'Roadside Assistance',
-      description: 'On-the-spot emergency help for stranded cars, work trucks, and trailers including boosts, lockouts, and urgent roadside support.',
-      keywords: ['stranded', 'roadside', 'emergency', 'tow', 'stuck', 'help', 'highway', 'truck', 'trailer'],
+      name: 'FixSoon Rapid Roadside Assistance',
+      description:
+        'Urgent roadside help under WorldLeo Auto for stranded cars, work trucks, and trailers including boosts, lockouts, and emergency mobile assistance.',
+      keywords: ['stranded', 'roadside', 'emergency', 'tow', 'stuck', 'help', 'highway', 'truck', 'trailer', 'fixsoon'],
       typical_duration: '30–60 mins',
-      seo_title: 'Roadside Assistance in Toronto & GTA | FixSoon',
-      seo_description: 'Request fast roadside assistance from independent professionals across Toronto, Mississauga, Brampton, and the GTA.',
+      seo_title: 'FixSoon Rapid Roadside Assistance in Ontario | WorldLeo Auto',
+      seo_description:
+        'Request fast FixSoon roadside assistance from independent mobile professionals across Toronto, Mississauga, Brampton, Hamilton, and Niagara.',
     },
     {
       id: 'sub_battery_boost',
       category_id: 'cat_auto',
       slug: 'battery-boost',
       name: 'Battery Boost & Jumpstart',
-      description: 'Safe commercial-grade 12V/24V jumpstart and charging system check for cars, trucks, Bobcats, and equipment.',
+      description:
+        'Safe commercial-grade 12V/24V jumpstart and charging system check for cars, trucks, Bobcats, and equipment.',
       keywords: ['wont start', "won't start", 'dead battery', 'jump', 'boost', 'click', 'no crank', 'car dead', 'truck', 'bobcat'],
       typical_duration: '20–40 mins',
-      seo_title: 'Battery Boost & Jumpstart Service in the GTA | FixSoon',
-      seo_description: 'Dead battery on a car, truck, or job-site equipment? Find independent technicians for a safe boost and charging test.',
+      seo_title: 'Battery Boost & Jumpstart Service in Ontario | WorldLeo Auto',
+      seo_description:
+        'Dead battery on a car, truck, or job-site equipment? Find independent technicians for a safe boost and charging test.',
     },
     {
       id: 'sub_battery_replace',
       category_id: 'cat_auto',
       slug: 'battery-replacement',
       name: 'Mobile Battery Replacement',
-      description: 'On-site battery testing, removal, and installation of a compatible replacement battery for cars, trucks, and equipment.',
+      description:
+        'On-site battery testing, removal, and installation of a compatible replacement battery for cars, trucks, and equipment.',
       keywords: ['battery replacement', 'new battery', 'battery dead', 'corroded', 'replace battery', 'truck', 'bobcat'],
       typical_duration: '30–60 mins',
-      seo_title: 'Mobile Battery Replacement in Toronto & GTA | FixSoon',
-      seo_description: 'Get quotes for mobile battery replacement at home, job site, or roadside in the GTA.',
+      seo_title: 'Mobile Battery Replacement in Toronto & GTA | WorldLeo Auto',
+      seo_description: 'Get quotes for mobile battery replacement at home, job site, or roadside in Ontario.',
     },
     {
       id: 'sub_diagnostics',
       category_id: 'cat_auto',
       slug: 'vehicle-diagnostics',
       name: 'Vehicle & Equipment Diagnostics',
-      description: 'OBD-II & heavy-duty fault code scanning, electrical tracing, trailer wiring checks, and pre-purchase inspections.',
+      description:
+        'OBD-II & heavy-duty fault code scanning, electrical tracing, trailer wiring checks, and pre-purchase inspections.',
       keywords: ['check engine', 'light', 'diagnostic', 'scan', 'code', 'electrical', 'inspection', 'trailer wiring', 'bobcat', 'truck'],
       typical_duration: '45–90 mins',
-      seo_title: 'Mobile Vehicle & Equipment Diagnostics in the GTA | FixSoon',
-      seo_description: 'Book an independent mobile technician for diagnostics and pre-purchase inspections in the GTA.',
+      seo_title: 'Mobile Vehicle & Equipment Diagnostics | WorldLeo Auto',
+      seo_description: 'Book an independent mobile technician for diagnostics and pre-purchase inspections across Ontario.',
+    },
+    {
+      id: 'sub_home_repairs',
+      category_id: 'cat_home',
+      slug: 'home-repairs-maintenance',
+      name: 'Home Repairs & General Maintenance',
+      description:
+        'Interior carpentry, door and trim repairs, drywall patching, hardware installation, and seasonal property upkeep.',
+      keywords: ['repair', 'handyman', 'door', 'trim', 'drywall', 'maintenance', 'shelf', 'mount', 'carpentry'],
+      typical_duration: '1–4 hours',
+      seo_title: 'Home Repairs & Maintenance Professionals | WorldLeo Home',
+      seo_description: 'Connect with trusted home repair and maintenance pros across the GTA, Hamilton, and Niagara.',
+    },
+    {
+      id: 'sub_kitchen_reno',
+      category_id: 'cat_home',
+      slug: 'kitchen-renovation',
+      name: 'Kitchen Renovation & Cabinetry',
+      description:
+        'Cabinet refacing or installation, backsplash tiling, countertop prep, island framing, and AI Design Studio kitchen quote scoping.',
+      keywords: ['kitchen', 'renovation', 'cabinet', 'countertop', 'backsplash', 'remodel', 'island'],
+      typical_duration: '1–4 weeks',
+      seo_title: 'Kitchen Renovation Contractors | WorldLeo Home',
+      seo_description: 'Compare transparent renovation quotes for kitchens across Ontario with WorldLeo Home.',
+    },
+    {
+      id: 'sub_bathroom_reno',
+      category_id: 'cat_home',
+      slug: 'bathroom-renovation',
+      name: 'Bathroom Renovation & Tiling',
+      description:
+        'Vanity upgrades, shower waterproofing and tilework, tub conversions, ventilation, and bathroom renovation planning.',
+      keywords: ['bathroom', 'shower', 'vanity', 'tile', 'waterproofing', 'bath remodel'],
+      typical_duration: '1–3 weeks',
+      seo_title: 'Bathroom Renovation & Tiling Specialists | WorldLeo Home',
+      seo_description: 'Request contractor quotes for bathroom upgrades and full remodels on WorldLeo Home.',
+    },
+    {
+      id: 'sub_backyard',
+      category_id: 'cat_home',
+      slug: 'backyard-landscaping',
+      name: 'Landscaping & Backyard Design',
+      description:
+        'Decks, patios, interlock walkways, fencing, pergolas, and outdoor living projects from concept to quote.',
+      keywords: ['backyard', 'deck', 'patio', 'interlock', 'fence', 'pergola', 'landscaping'],
+      typical_duration: '3 days – 3 weeks',
+      seo_title: 'Backyard, Deck & Interlock Contractors | WorldLeo Home',
+      seo_description: 'Turn backyard concepts into contractor quotes across the GTA, Hamilton, and Niagara.',
+    },
+    {
+      id: 'sub_plumbing',
+      category_id: 'cat_home',
+      slug: 'plumbing-fixtures',
+      name: 'Plumbing & Fixture Repair',
+      description: 'Leaking faucets, toilet repairs, P-trap clearing, shut-off valves, and fixture installations.',
+      keywords: ['faucet', 'leak', 'leaking', 'plumbing', 'toilet', 'sink', 'pipe', 'drain'],
+      typical_duration: '1–2 hours',
+      seo_title: 'Plumbing & Faucet Repair Services | WorldLeo Home',
+      seo_description: 'Connect with local plumbing and fixture repair professionals in Ontario.',
+    },
+    {
+      id: 'sub_electrical',
+      category_id: 'cat_home',
+      slug: 'electrical-handyman',
+      name: 'Electrical & Lighting Installation',
+      description: 'Outlet troubleshooting, smart switches, pot lights, ceiling fans, and interior/exterior fixture installations.',
+      keywords: ['electrical', 'outlet', 'light', 'breaker', 'switch', 'fan', 'lighting'],
+      typical_duration: '1–3 hours',
+      seo_title: 'Electrical & Lighting Professionals | WorldLeo Home',
+      seo_description: 'Find qualified electrical and lighting professionals across the GTA, Hamilton, and Niagara.',
+    },
+    {
+      id: 'sub_painting_flooring',
+      category_id: 'cat_home',
+      slug: 'painting-and-flooring',
+      name: 'Painting, Drywall & Flooring',
+      description: 'Interior painting, drywall finishing, hardwood/vinyl plank flooring, and baseboard trim updates.',
+      keywords: ['paint', 'painting', 'flooring', 'hardwood', 'vinyl', 'laminate', 'drywall'],
+      typical_duration: '1–5 days',
+      seo_title: 'Painting & Flooring Contractors | WorldLeo Home',
+      seo_description: 'Compare written quotes from residential painters and flooring installers on WorldLeo Home.',
     },
     {
       id: 'sub_washer',
@@ -178,8 +347,8 @@ function createSeedState(): DatabaseState {
       description: 'Troubleshooting leaks, drain pump failures, spin issues, and heating problems for laundry appliances.',
       keywords: ['washing machine', 'washer', 'dryer', 'leaking', 'spin', 'drain', 'laundry'],
       typical_duration: '1–2 hours',
-      seo_title: 'Washing Machine & Dryer Repair in the GTA | FixSoon',
-      seo_description: 'Find independent appliance technicians for washing machine and dryer repairs across Toronto and the GTA.',
+      seo_title: 'Washing Machine & Dryer Repair | WorldLeo Home',
+      seo_description: 'Find independent appliance technicians for washing machine and dryer repairs across Ontario.',
     },
     {
       id: 'sub_fridge',
@@ -189,30 +358,8 @@ function createSeedState(): DatabaseState {
       description: 'Cooling diagnostics, thermostat replacement, oven elements, and kitchen appliance servicing.',
       keywords: ['fridge', 'refrigerator', 'freezer', 'stove', 'oven', 'not cooling', 'appliance'],
       typical_duration: '1–2 hours',
-      seo_title: 'Refrigerator & Kitchen Appliance Repair GTA | FixSoon',
-      seo_description: 'Request quotes from independent refrigerator and stove repair specialists in the Greater Toronto Area.',
-    },
-    {
-      id: 'sub_plumbing',
-      category_id: 'cat_home',
-      slug: 'plumbing-fixtures',
-      name: 'Plumbing & Fixture Repair',
-      description: 'Leaking faucets, toilet repairs, P-trap clearing, and fixture installations.',
-      keywords: ['faucet', 'leak', 'leaking', 'plumbing', 'toilet', 'sink', 'pipe', 'drain'],
-      typical_duration: '1–2 hours',
-      seo_title: 'Plumbing & Faucet Repair Services in the GTA | FixSoon',
-      seo_description: 'Connect with local plumbing and fixture repair professionals in Toronto, Mississauga, and Brampton.',
-    },
-    {
-      id: 'sub_electrical',
-      category_id: 'cat_home',
-      slug: 'electrical-handyman',
-      name: 'Electrical & General Maintenance',
-      description: 'Outlet troubleshooting, lighting installation, furniture assembly, and general home maintenance.',
-      keywords: ['electrical', 'outlet', 'light', 'breaker', 'switch', 'handyman', 'assembly'],
-      typical_duration: '1–3 hours',
-      seo_title: 'Electrical & Home Maintenance Professionals GTA | FixSoon',
-      seo_description: 'Find qualified professionals for lighting, electrical troubleshooting, and home maintenance.',
+      seo_title: 'Refrigerator & Kitchen Appliance Repair | WorldLeo Home',
+      seo_description: 'Request quotes from independent refrigerator and stove repair specialists across Ontario.',
     },
   ];
 
@@ -240,6 +387,9 @@ function createSeedState(): DatabaseState {
       role: 'customer',
       password_hash: demoPass,
       city: 'Toronto',
+      company_id: null,
+      is_demo: true,
+      is_active: true,
       saved_provider_ids: ['prov_marcus'],
       created_at: now,
     },
@@ -251,6 +401,9 @@ function createSeedState(): DatabaseState {
       role: 'provider',
       password_hash: demoPass,
       city: 'Toronto',
+      company_id: null,
+      is_demo: true,
+      is_active: true,
       saved_provider_ids: [],
       created_at: now,
     },
@@ -262,6 +415,9 @@ function createSeedState(): DatabaseState {
       role: 'provider',
       password_hash: demoPass,
       city: 'Mississauga',
+      company_id: null,
+      is_demo: true,
+      is_active: true,
       saved_provider_ids: [],
       created_at: now,
     },
@@ -273,17 +429,23 @@ function createSeedState(): DatabaseState {
       role: 'provider',
       password_hash: demoPass,
       city: 'Brampton',
+      company_id: null,
+      is_demo: true,
+      is_active: true,
       saved_provider_ids: [],
       created_at: now,
     },
     {
       id: 'usr_admin_1',
-      name: 'FixSoon Operations',
+      name: 'WorldLeo Operations',
       email: 'admin@fixsoon.demo',
       phone: '416-555-0100',
       role: 'admin',
       password_hash: demoPass,
       city: 'Toronto',
+      company_id: null,
+      is_demo: true,
+      is_active: true,
       saved_provider_ids: [],
       created_at: now,
     },
@@ -293,11 +455,12 @@ function createSeedState(): DatabaseState {
     {
       id: 'prov_marcus',
       user_id: 'usr_prov_1',
+      company_id: null,
       slug: 'marcus-miller-mobile-auto',
       display_name: 'Marcus Miller',
       business_name: 'Miller Mobile Auto & Roadside',
       provider_type: 'mobile_technician',
-      bio: 'Red Seal automotive technician with 11 years of mobile diagnostics, starter/alternator repair, battery replacement, and roadside assistance across Toronto and Mississauga.',
+      bio: 'Red Seal automotive technician with 11 years of mobile diagnostics, starter/alternator repair, battery replacement, and FixSoon roadside assistance across Toronto and Mississauga.',
       avatar_url: '/src/assets/images/provider_avatar_1_1794446298913.jpg',
       primary_city: 'Toronto',
       coverage_cities: ['Toronto', 'Mississauga', 'Etobicoke', 'North York', 'Scarborough'],
@@ -331,6 +494,7 @@ function createSeedState(): DatabaseState {
     {
       id: 'prov_sarah',
       user_id: 'usr_prov_2',
+      company_id: null,
       slug: 'sarah-jenkins-gta-technical',
       display_name: 'Sarah Jenkins',
       business_name: 'Jenkins Fleet & Mobile Tire Care',
@@ -369,11 +533,12 @@ function createSeedState(): DatabaseState {
     {
       id: 'prov_david',
       user_id: 'usr_prov_3',
+      company_id: null,
       slug: 'david-patel-peel-roadside',
       display_name: 'David Patel',
       business_name: 'Peel Tire & Roadside Support',
       provider_type: 'registered_business',
-      bio: 'Mobile tire changes, flat repairs, and battery boosts in Brampton, Vaughan, and Mississauga. Application submitted for FixSoon verification.',
+      bio: 'Mobile tire changes, flat repairs, and battery boosts in Brampton, Vaughan, and Mississauga. Application submitted for WorldLeo verification.',
       avatar_url: '',
       primary_city: 'Brampton',
       coverage_cities: ['Brampton', 'Mississauga', 'Vaughan'],
@@ -416,6 +581,7 @@ function createSeedState(): DatabaseState {
       rating: 5,
       comment: 'Arrived in North York within 35 minutes, tested the alternator and replaced the dead battery on the spot. Clear pricing.',
       service_name: 'Mobile Battery Replacement',
+      is_demo: true,
       created_at: '2026-10-18T14:30:00.000Z',
     },
     {
@@ -427,6 +593,7 @@ function createSeedState(): DatabaseState {
       rating: 5,
       comment: 'Found a seized brake caliper pin during a driveway inspection and showed me the worn part before quoting.',
       service_name: 'Mobile Mechanic',
+      is_demo: true,
       created_at: '2026-10-25T16:15:00.000Z',
     },
     {
@@ -438,11 +605,13 @@ function createSeedState(): DatabaseState {
       rating: 5,
       comment: 'Swapped a blown tandem-axle trailer tire in Mississauga and checked the hub bearings before we got back on the QEW.',
       service_name: 'Flat Tire Service (Cars, Trucks, Bobcat & Trailers)',
+      is_demo: true,
       created_at: '2026-11-02T11:00:00.000Z',
     },
   ];
 
   return {
+    schema_version: CURRENT_SCHEMA_VERSION,
     users,
     service_categories: categories,
     service_subcategories: subcategories,
@@ -460,75 +629,215 @@ function createSeedState(): DatabaseState {
       {
         id: 'aud_1',
         actor_id: 'usr_admin_1',
-        actor_name: 'FixSoon Operations',
+        actor_name: 'WorldLeo Operations',
         action: 'SYSTEM_SEED',
         target_type: 'platform',
-        target_id: 'fixsoon_gta',
-        details: 'Initialized GTA demo marketplace categories, locations, and sample providers.',
+        target_id: 'worldleo_ontario',
+        details: 'Initialized WorldLeo Home, WorldLeo Auto, FixSoon Roadside, locations, and sample demo providers.',
         created_at: now,
       },
     ],
   };
 }
 
-class FixSoonDatabase {
-  private state: DatabaseState;
+export class FixSoonDatabase {
+  private state!: DatabaseState;
+  private filePath: string;
+  private txQueue: Promise<void> = Promise.resolve();
+  private saveCounter = 0;
 
-  constructor() {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+  constructor(filePath: string = DEFAULT_DB_FILE) {
+    this.filePath = path.resolve(filePath);
+    this.loadFromDisk();
+  }
+
+  private ensureDir(): void {
+    const dir = path.dirname(this.filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
-    if (fs.existsSync(DB_FILE)) {
+  }
+
+  private loadFromDisk(): void {
+    this.ensureDir();
+    if (fs.existsSync(this.filePath)) {
       try {
-        const raw = fs.readFileSync(DB_FILE, 'utf8');
-        this.state = JSON.parse(raw) as DatabaseState;
-        const seed = createSeedState();
-        const homeCat = this.state.service_categories.find((c) => c.id === 'cat_home');
-        const autoCat = this.state.service_categories.find((c) => c.id === 'cat_auto');
-        const needsLaunchSync =
-          (homeCat && homeCat.is_active) ||
-          (autoCat && !autoCat.dynamic_fields.some((f) => f.key === 'equipment_type'));
-        const needsLocationSync = !this.state.gta_locations.some((l) => l.slug === 'hamilton');
-        if (needsLaunchSync || needsLocationSync) {
-          this.state.service_categories = seed.service_categories;
-          this.state.service_subcategories = seed.service_subcategories;
-          this.state.gta_locations = seed.gta_locations;
-          const sarah = this.state.provider_profiles.find((p) => p.id === 'prov_sarah');
-          const seedSarah = seed.provider_profiles.find((p) => p.id === 'prov_sarah');
-          if (sarah && seedSarah) {
-            sarah.business_name = seedSarah.business_name;
-            sarah.bio = seedSarah.bio;
-            sarah.category_ids = seedSarah.category_ids;
-            sarah.subcategory_ids = seedSarah.subcategory_ids;
-            sarah.coverage_cities = seedSarah.coverage_cities;
-            sarah.coverage_radius_km = seedSarah.coverage_radius_km;
-          }
-          const rev3 = this.state.reviews.find((r) => r.id === 'rev_3');
-          const seedRev3 = seed.reviews.find((r) => r.id === 'rev_3');
-          if (rev3 && seedRev3) {
-            rev3.comment = seedRev3.comment;
-            rev3.service_name = seedRev3.service_name;
-          }
-          this.save();
-        }
+        const raw = fs.readFileSync(this.filePath, 'utf8');
+        const parsed = JSON.parse(raw) as DatabaseState;
+        this.state = this.migrateNonDestructively(parsed);
+        return;
       } catch {
         this.state = createSeedState();
         this.save();
+        return;
       }
-    } else {
-      this.state = createSeedState();
+    }
+    this.state = createSeedState();
+    this.save();
+  }
+
+  /**
+   * Non-destructive migration: preserves ALL existing user, provider, request,
+   * match, quote, job, message, review, dispute, notification, and audit data.
+   */
+  private migrateNonDestructively(existing: DatabaseState): DatabaseState {
+    const seed = createSeedState();
+    let changed = false;
+
+    const state: DatabaseState = {
+      schema_version: existing.schema_version || 1,
+      users: Array.isArray(existing.users) ? existing.users : seed.users,
+      service_categories: Array.isArray(existing.service_categories) ? existing.service_categories : [],
+      service_subcategories: Array.isArray(existing.service_subcategories) ? existing.service_subcategories : [],
+      gta_locations: Array.isArray(existing.gta_locations) ? existing.gta_locations : seed.gta_locations,
+      provider_profiles: Array.isArray(existing.provider_profiles) ? existing.provider_profiles : [],
+      service_requests: Array.isArray(existing.service_requests) ? existing.service_requests : [],
+      request_matches: Array.isArray(existing.request_matches) ? existing.request_matches : [],
+      quotes: Array.isArray(existing.quotes) ? existing.quotes : [],
+      jobs: Array.isArray(existing.jobs) ? existing.jobs : [],
+      messages: Array.isArray(existing.messages) ? existing.messages : [],
+      reviews: Array.isArray(existing.reviews) ? existing.reviews : [],
+      disputes: Array.isArray(existing.disputes) ? existing.disputes : [],
+      notifications: Array.isArray(existing.notifications) ? existing.notifications : [],
+      audit_logs: Array.isArray(existing.audit_logs) ? existing.audit_logs : [],
+    };
+
+    if ((state.schema_version || 1) < CURRENT_SCHEMA_VERSION) {
+      const backupPath = `${this.filePath}.pre-v${CURRENT_SCHEMA_VERSION}.backup.json`;
+      if (!fs.existsSync(backupPath)) {
+        fs.writeFileSync(backupPath, JSON.stringify(existing, null, 2), 'utf8');
+      }
+      changed = true;
+    }
+
+    // Backfill is_demo & is_active flags without touching passwords or user profiles
+    for (const user of state.users) {
+      if (user.is_active === undefined) {
+        user.is_active = true;
+        changed = true;
+      }
+      if (user.is_demo === undefined && user.email.toLowerCase().endsWith('.demo')) {
+        user.is_demo = true;
+        changed = true;
+      }
+    }
+
+    // Merge canonical categories (cat_auto, cat_home) while keeping any admin-created categories
+    for (const seedCat of seed.service_categories) {
+      const existingCat = state.service_categories.find((c) => c.id === seedCat.id);
+      if (!existingCat) {
+        state.service_categories.push(seedCat);
+        changed = true;
+      } else if ((state.schema_version || 1) < CURRENT_SCHEMA_VERSION) {
+        existingCat.division = seedCat.division;
+        existingCat.name = seedCat.name;
+        existingCat.description = seedCat.description;
+        existingCat.is_active = seedCat.is_active;
+        existingCat.seo_title = seedCat.seo_title;
+        existingCat.seo_description = seedCat.seo_description;
+        existingCat.dynamic_fields = seedCat.dynamic_fields;
+        changed = true;
+      }
+    }
+
+    // Merge missing canonical subcategories while preserving existing ones
+    for (const seedSub of seed.service_subcategories) {
+      const existingSub = state.service_subcategories.find((s) => s.id === seedSub.id);
+      if (!existingSub) {
+        state.service_subcategories.push(seedSub);
+        changed = true;
+      } else if ((state.schema_version || 1) < CURRENT_SCHEMA_VERSION) {
+        existingSub.name = seedSub.name;
+        existingSub.description = seedSub.description;
+        existingSub.seo_title = seedSub.seo_title;
+        existingSub.seo_description = seedSub.seo_description;
+        changed = true;
+      }
+    }
+
+    // Ensure all Ontario locations exist without removing any
+    for (const seedLoc of seed.gta_locations) {
+      if (!state.gta_locations.some((l) => l.slug === seedLoc.slug)) {
+        state.gta_locations.push(seedLoc);
+        changed = true;
+      }
+    }
+
+    if ((state.schema_version || 1) < CURRENT_SCHEMA_VERSION) {
+      state.schema_version = CURRENT_SCHEMA_VERSION;
+      changed = true;
+    }
+
+    this.state = state;
+    if (changed) {
       this.save();
     }
+    return state;
   }
 
   get data(): DatabaseState {
     return this.state;
   }
 
+  get dbPath(): string {
+    return this.filePath;
+  }
+
+  /**
+   * Serializes state mutations through an internal FIFO transaction queue
+   * with full in-memory snapshot rollback on failure and atomic file replacement.
+   */
+  async runTransaction<T>(fn: () => Promise<T> | T): Promise<T> {
+    let release!: () => void;
+    const prevQueue = this.txQueue;
+    this.txQueue = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+
+    await prevQueue;
+    const snapshot = structuredClone(this.state);
+    try {
+      const result = await fn();
+      this.save();
+      return result;
+    } catch (err) {
+      this.state = snapshot;
+      throw err;
+    } finally {
+      release();
+    }
+  }
+
   save(): void {
-    const tmp = `${DB_FILE}.tmp`;
-    fs.writeFileSync(tmp, JSON.stringify(this.state, null, 2), 'utf8');
-    fs.renameSync(tmp, DB_FILE);
+    this.ensureDir();
+    this.saveCounter += 1;
+    const tmp = `${this.filePath}.${process.pid}.${this.saveCounter}.tmp`;
+    const serialized = JSON.stringify(this.state, null, 2);
+    const fd = fs.openSync(tmp, 'w', 0o600);
+    try {
+      fs.writeFileSync(fd, serialized, 'utf8');
+      fs.fsyncSync(fd);
+    } finally {
+      fs.closeSync(fd);
+    }
+    fs.renameSync(tmp, this.filePath);
+  }
+
+  useFileForTests(tempFilePath: string): void {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Cannot switch database file in production.');
+    }
+    this.filePath = path.resolve(tempFilePath);
+    this.txQueue = Promise.resolve();
+    this.loadFromDisk();
+  }
+
+  resetWithSeedForTests(): void {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Cannot reset database in production.');
+    }
+    this.state = createSeedState();
+    this.save();
   }
 
   newId(prefix: string): string {
@@ -536,8 +845,8 @@ class FixSoonDatabase {
   }
 
   newRefCode(): string {
-    const num = Math.floor(100000 + Math.random() * 900000);
-    return `FX-${num}`;
+    const num = Math.floor(100000 + crypto.randomInt(0, 900000));
+    return `WL-${num}`;
   }
 }
 

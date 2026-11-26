@@ -6,10 +6,42 @@
     --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-sans: 'DM Sans', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    /* Approved WorldLeo Brand Palette Tokens */
+    --wl-green-deep: #063B2B;
+    --wl-green-forest: #071E17;
+    --wl-green-secondary: #145443;
+    --wl-gold: #C6A45B;
+    --wl-gold-highlight: #D8B66F;
+    --wl-gold-deep: #9F7B37;
+    --wl-ivory: #F6F2E8;
+    --wl-soft-white: #F8F7F2;
+    --wl-charcoal: #171B19;
+    --wl-grey: #6D756F;
+
+    /* Semantic Light Theme Surface Tokens */
+    --wl-bg-page: #F8F7F2;
+    --wl-bg-section: #F6F2E8;
+    --wl-bg-card: #FFFFFF;
+    --wl-border: #D8D4C7;
+    --wl-text-primary: #171B19;
+    --wl-text-secondary: #58605A;
+  }
+
+  .dark {
+    /* Semantic Dark Theme Surface Tokens */
+    --wl-bg-page: #071E17;
+    --wl-bg-section: #0B261E;
+    --wl-bg-card: #0B261E;
+    --wl-border: #1E4438;
+    --wl-text-primary: #F6F2E8;
+    --wl-text-secondary: #B4C2BC;
   }
 
   body {
     font-family: var(--font-sans);
+    background-color: var(--wl-bg-page);
+    color: var(--wl-text-primary);
     -webkit-tap-highlight-color: transparent;
     padding-bottom: env(safe-area-inset-bottom);
   }

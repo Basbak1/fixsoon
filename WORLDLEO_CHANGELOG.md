@@ -1,23 +1,23 @@
 # WorldLeo — Changelog
 
-## Phase 1 — Foundation & WorldLeo Rebranding (2026-11-23)
+## Stage 2 — Batch 2.1 & Batch 2.2 (2026-11-24)
 
-### Documentation Added
-- Created `WORLDLEO_PRODUCT_SPEC.md`, `WORLDLEO_ARCHITECTURE.md`, `WORLDLEO_ROADMAP.md`, `WORLDLEO_SECURITY_CHECKLIST.md`, and `WORLDLEO_CHANGELOG.md`.
+### Batch 2.1 — Security & Database Foundation
+- Added server-side Google JWKS RS256 Firebase ID token verification in `server/firebaseAuth.ts` and enforced verified claim-only auth in `POST /api/auth/firebase`.
+- Enforced `SESSION_SECRET` (`>=32` bytes) in `NODE_ENV=production`, disabled demo shortcuts in production, switched web sessions to `HttpOnly; SameSite=Lax` cookies, and replaced EventSource query tokens with 30-second single-use SSE tickets (`POST /api/notifications/sse-ticket`).
+- Hardened RBAC across `customer`, `provider`, `company_member`, `coordinator`, `finance`, and `admin` roles; blocked cross-account IDOR reads, unrelated provider disputes, onboarding privilege demotion/escalation, and coordinator access to `/api/admin/financial-summary`.
+- Added serialized write lock + snapshot rollback transactions (`db.runTransaction()`), atomic duplicate quote/job race guards, server-side `ALLOWED_JOB_TRANSITIONS` state machine validation, and automatic pre-v2 database backup (`data/fixsoon.backup.stage2.json`).
+- Added automated security test suite `tests/batch2_1.security.test.ts` (7 test suites).
 
-### Branding & Visual System
-- Created `src/components/WorldLeoLogo.tsx` featuring a refined geometric lion crest and `WorldLeo` wordmark.
-- Updated `src/components/FixSoonLogo.tsx` preserving the exact `FixSoon` spelling with a compact speed/motion emblem tailored to WorldLeo Auto's rapid roadside branch.
-- Applied WorldLeo's Luxury Black & Refined Gold design tokens across Daytime (`#F4F2EC` background, `#FFFFFF` cards, `#171717` text, `#55534E` secondary, `#D8D4CA` borders, `#A87919` gold) and Nighttime (`#0D0F12` background, `#171A1F` cards, `#22262D` elevated, `#F1EFE8` text, `#B5B7BB` secondary, `#343941` borders, `#D8B45A` gold), keeping Light/Dark/Device switching in `ThemeContext` and `Footer`.
+### Batch 2.2 — Final WorldLeo Brand Identity, Navigation & Hierarchy
+- Created approved flat vector **WorldLeo** symbol (**bold W + smooth orbit + calm friendly Leo head**) across `/public/icon.svg` and `src/components/WorldLeoLogo.tsx` (`horizontal`, `compact`, `symbol` variants; `auto`, `light`, `dark`, `monochrome` tones; simplified symbol mode at `<=22px`).
+- Retired the shield/checkmark logo from the corporate mark and isolated it as `WorldLeoVerifiedBadge` (`src/components/WorldLeoVerifiedBadge.tsx`), displayed strictly when `business_verified && insurance_verified && profile_reviewed`.
+- Added `LeoAmbassadorAvatar.tsx` for **Leo** and repositioned **FixSoon** (`FixSoonLogo.tsx`) strictly under **WorldLeo Auto**.
+- Migrated all components, pages, `index.html`, `vite.config.ts`, and `src/index.css` from the interim black/amber palette to the approved Forest Green & Muted Gold palette (`#063B2B`, `#071E17`, `#145443`, `#C6A45B`, `#D8B66F`, `#9F7B37`, `#F6F2E8`, `#F8F7F2`, `#171B19`, `#6D756F`).
+- Updated Header/Footer navigation, added `/home/repairs`, `/home/renovations`, `/request-service` (division-first Step 1), role-based `/dashboard` routing, and Operations Finance tab (`src/lib/commissions.ts` + `AdminDashboard.tsx`).
+- Added automated UI/brand/SEO/commission test suite `tests/batch2_2.ui.test.ts` (4 test suites).
 
-### Pages, Navigation & SEO
-- Rebranded `HomePage.tsx` (`/`) to **WorldLeo** (*"WorldLeo — Find professionals. Plan projects. Get things done."*) with dual entry points for **WorldLeo Home** and **WorldLeo Auto / FixSoon** (direct urgent access without forcing Home content), AI Design Studio preview, Model A+ / Model B explanation, Ontario coverage, and honest demo/verified-only disclosures.
-- Added `src/pages/WorldLeoPages.tsx` for `/home`, `/home/ai-design`, `/home/kitchen-renovation`, `/home/bathroom-renovation`, `/home/backyard-design`, `/auto`, `/auto/fixsoon`, `/contact`, `/privacy`, and `/terms` with honest Development Preview and Pending Legal Review notices.
-- Updated `Header.tsx`, `Footer.tsx`, `Breadcrumbs.tsx`, `src/lib/seo.ts`, `index.html`, `vite.config.ts`, and `server.ts` (`/sitemap.xml`, `/api/faqs`) while preserving all existing marketplace workflows (`/request`, `/professionals/*`, `/services/*`, `/locations/*`, dashboards, onboarding, admin).
+---
 
-### Backend Security & Mobile API Readiness
-- Replaced hardcoded `TOKEN_SECRET` fallback in `server/auth.ts` with runtime `crypto.randomBytes(32)` generation when `SESSION_SECRET` is unset.
-- Added strict participant authorization checks on `GET` and `POST` `/api/requests/:requestId/messages` in `server.ts`.
-- Added privilege/account-takeover guard on `POST /api/auth/firebase`.
-- Added `/api/v1/health`, `/api/v1/config` (exposing safe feature flags and `planningPackPriceCad: 39`), and `/api/v1/*` API aliases for future Expo + React Native mobile apps.
-- Added `?urgency=emergency` query support on `/request` for direct FixSoon rapid-help entry.
+## Stage 1 — Foundation & Initial Rebranding (2026-11-23)
+- Initial repository audit, living documentation creation, `/api/v1/*` mobile API aliases, and initial WorldLeo Home / Auto / FixSoon route scaffolding.

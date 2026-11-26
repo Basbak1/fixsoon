@@ -34,40 +34,55 @@ export function NotificationBell({ onNavigate }: NotificationBellProps) {
       return;
     }
 
+    let cancelled = false;
+    let source: EventSource | null = null;
+
     loadNotifications();
 
-    const token = localStorage.getItem('fixsoon_token');
-    if (!token) return;
-
-    const source = new EventSource(`/api/notifications/stream?token=${encodeURIComponent(token)}`);
-
-    source.addEventListener('init', (event) => {
+    (async () => {
       try {
-        const data = JSON.parse((event as MessageEvent).data) as { unreadCount: number };
-        setUnreadCount(data.unreadCount);
-      } catch {
-        // ignore parse error
-      }
-    });
-
-    source.addEventListener('notification', (event) => {
-      try {
-        const data = JSON.parse((event as MessageEvent).data) as {
-          notification: NotificationItem;
-          unreadCount: number;
-        };
-        setNotifications((prev) => {
-          const withoutDup = prev.filter((n) => n.id !== data.notification.id);
-          return [data.notification, ...withoutDup].slice(0, 25);
+        const { ticket } = await apiFetch<{ ticket: string }>('/api/notifications/sse-ticket', {
+          method: 'POST',
         });
-        setUnreadCount(data.unreadCount);
+        if (cancelled) return;
+
+        source = new EventSource(
+          `/api/notifications/stream?ticket=${encodeURIComponent(ticket)}`,
+          { withCredentials: true }
+        );
+
+        source.addEventListener('init', (event) => {
+          try {
+            const data = JSON.parse((event as MessageEvent).data) as { unreadCount: number };
+            setUnreadCount(data.unreadCount);
+          } catch {
+            // ignore parse error
+          }
+        });
+
+        source.addEventListener('notification', (event) => {
+          try {
+            const data = JSON.parse((event as MessageEvent).data) as {
+              notification: NotificationItem;
+              unreadCount: number;
+            };
+            setNotifications((prev) => {
+              const withoutDup = prev.filter((n) => n.id !== data.notification.id);
+              return [data.notification, ...withoutDup].slice(0, 25);
+            });
+            setUnreadCount(data.unreadCount);
+          } catch {
+            // ignore parse error
+          }
+        });
       } catch {
-        // ignore parse error
+        // SSE optional fallback to polling on open
       }
-    });
+    })();
 
     return () => {
-      source.close();
+      cancelled = true;
+      source?.close();
     };
   }, [user?.id]);
 
@@ -130,11 +145,11 @@ export function NotificationBell({ onNavigate }: NotificationBellProps) {
         }}
         aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
         aria-expanded={open}
-        className="relative p-2 rounded-lg border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] text-[#171717] dark:text-[#F1EFE8] hover:border-[#A87919] dark:hover:border-[#D8B45A] transition-colors cursor-pointer"
+        className="relative p-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] text-[#171B19] dark:text-[#F6F2E8] hover:border-[#9F7B37] dark:hover:border-[#C6A45B] transition-colors cursor-pointer"
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#A87919] dark:bg-[#D8B45A] text-[#FFFFFF] dark:text-[#0D0F12] text-[10px] font-bold flex items-center justify-center tabular-nums">
+          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#063B2B] dark:bg-[#C6A45B] text-[#F8F7F2] dark:text-[#071E17] text-[10px] font-bold flex items-center justify-center tabular-nums">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -144,14 +159,14 @@ export function NotificationBell({ onNavigate }: NotificationBellProps) {
         <div
           role="dialog"
           aria-label="Unread alerts and notifications"
-          className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl border border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF] dark:bg-[#171A1F] shadow-lg z-50 overflow-hidden"
+          className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] shadow-lg z-50 overflow-hidden"
         >
-          <div className="px-4 py-3 border-b border-[#D8D4CA] dark:border-[#343941] flex items-center justify-between gap-2">
+          <div className="px-4 py-3 border-b border-[#D8D4C7] dark:border-[#1E4438] flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="font-display text-sm font-bold text-[#171717] dark:text-[#F1EFE8]">
+              <span className="font-display text-sm font-bold text-[#171B19] dark:text-[#F6F2E8]">
                 Alerts
               </span>
-              <span className="text-xs text-[#55534E] dark:text-[#B5B7BB] tabular-nums">
+              <span className="text-xs text-[#6D756F] dark:text-[#B4C2BC] tabular-nums">
                 {unreadCount} unread
               </span>
             </div>
@@ -159,7 +174,7 @@ export function NotificationBell({ onNavigate }: NotificationBellProps) {
               <button
                 type="button"
                 onClick={markAllRead}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-[#A87919] dark:text-[#D8B45A] hover:underline cursor-pointer"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-[#9F7B37] dark:text-[#D8B66F] hover:underline cursor-pointer"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
                 <span>Mark all read</span>
@@ -167,10 +182,10 @@ export function NotificationBell({ onNavigate }: NotificationBellProps) {
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto divide-y divide-[#D8D4CA] dark:divide-[#343941]">
+          <div className="max-h-80 overflow-y-auto divide-y divide-[#D8D4C7] dark:divide-[#1E4438]">
             {notifications.length === 0 ? (
-              <div className="p-6 text-center text-xs text-[#55534E] dark:text-[#B5B7BB]">
-                No notifications yet. You will see quote, job status, and message alerts here.
+              <div className="p-6 text-center text-xs text-[#6D756F] dark:text-[#B4C2BC]">
+                No notifications yet. Quote, job status, and message alerts appear here.
               </div>
             ) : (
               notifications.map((n) => (
@@ -178,27 +193,27 @@ export function NotificationBell({ onNavigate }: NotificationBellProps) {
                   key={n.id}
                   type="button"
                   onClick={() => markAsRead(n)}
-                  className={`w-full text-left px-4 py-3 hover:bg-[#ECE9E0] dark:hover:bg-[#22262D] transition-colors flex items-start justify-between gap-3 cursor-pointer ${
-                    !n.read ? 'bg-[#ECE9E0]/60 dark:bg-[#22262D]/50' : ''
+                  className={`w-full text-left px-4 py-3 hover:bg-[#F6F2E8] dark:hover:bg-[#145443]/35 transition-colors flex items-start justify-between gap-3 cursor-pointer ${
+                    !n.read ? 'bg-[#F6F2E8]/80 dark:bg-[#145443]/25' : ''
                   }`}
                 >
                   <div className="min-w-0 space-y-0.5">
-                    <div className="text-xs font-semibold text-[#171717] dark:text-[#F1EFE8] flex items-center gap-1.5">
+                    <div className="text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] flex items-center gap-1.5">
                       <span>{n.title}</span>
                       {!n.read && (
-                        <span className="text-[10px] font-mono uppercase text-[#A87919] dark:text-[#D8B45A]">
+                        <span className="text-[10px] font-mono uppercase text-[#9F7B37] dark:text-[#D8B66F]">
                           New
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-[#55534E] dark:text-[#B5B7BB] leading-relaxed">
+                    <p className="text-xs text-[#6D756F] dark:text-[#B4C2BC] leading-relaxed">
                       {n.body}
                     </p>
-                    <div className="text-[11px] text-[#55534E]/80 dark:text-[#B5B7BB]/70 tabular-nums">
+                    <div className="text-[11px] text-[#6D756F]/85 dark:text-[#B4C2BC]/75 tabular-nums">
                       {new Date(n.created_at).toLocaleString()}
                     </div>
                   </div>
-                  {n.read && <Check className="w-3.5 h-3.5 text-[#55534E] dark:text-[#B5B7BB] shrink-0 mt-0.5" />}
+                  {n.read && <Check className="w-3.5 h-3.5 text-[#6D756F] dark:text-[#B4C2BC] shrink-0 mt-0.5" />}
                 </button>
               ))
             )}

@@ -1,4 +1,12 @@
-export type UserRole = 'customer' | 'provider' | 'admin';
+export type UserRole =
+  | 'customer'
+  | 'provider'
+  | 'admin'
+  | 'coordinator'
+  | 'finance'
+  | 'company_member';
+
+export type ServiceDivision = 'home' | 'auto';
 
 export type ProviderType =
   | 'independent_professional'
@@ -47,6 +55,7 @@ export interface DynamicFieldDefinition {
 export interface ServiceCategory {
   id: string;
   slug: string;
+  division?: ServiceDivision;
   name: string;
   description: string;
   image_url: string;
@@ -80,6 +89,7 @@ export interface ProviderVerifications {
 export interface ProviderProfile {
   id: string;
   user_id: string;
+  company_id?: string | null;
   slug: string;
   display_name: string;
   business_name: string;
@@ -116,7 +126,9 @@ export interface PublicUser {
   phone: string;
   role: UserRole;
   city?: string;
+  company_id?: string | null;
   saved_provider_ids?: string[];
+  is_demo?: boolean;
 }
 
 export interface ServiceRequest {
@@ -125,6 +137,7 @@ export interface ServiceRequest {
   customer_id: string;
   customer_name: string;
   customer_phone?: string;
+  division?: ServiceDivision;
   request_type: RequestType;
   target_provider_id: string | null;
   target_provider_name?: string | null;
@@ -141,6 +154,7 @@ export interface ServiceRequest {
   exact_address?: string;
   urgency: 'emergency' | 'today' | 'scheduled';
   status: RequestStatus;
+  is_demo?: boolean;
   created_at: string;
 }
 
@@ -180,6 +194,7 @@ export interface Quote {
   warranty_terms: string;
   message: string;
   status: 'pending' | 'accepted' | 'rejected' | 'withdrawn';
+  is_demo?: boolean;
   created_at: string;
 }
 
@@ -210,6 +225,7 @@ export interface Job {
   status: JobStatus;
   status_history: JobStatusEntry[];
   review_submitted?: boolean;
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -234,6 +250,7 @@ export interface Review {
   comment: string;
   service_name?: string;
   verified_job?: boolean;
+  is_demo?: boolean;
   created_at: string;
 }
 
@@ -285,6 +302,8 @@ export interface PlatformFeatureFlags {
   aiDesignGeneration: boolean;
   paidPlanningPacks: boolean;
   liveProviderRegistration: boolean;
+  localEmulatorAuthEnabled?: boolean;
+  firebaseConfigured?: boolean;
 }
 
 export interface PlatformConfigResponse {
@@ -293,6 +312,7 @@ export interface PlatformConfigResponse {
   subBrandAutoEmergency: string;
   apiVersion: string;
   planningPackPriceCad: number;
+  firebaseProjectId?: string | null;
   regions: string[];
   featureFlags: PlatformFeatureFlags;
 }

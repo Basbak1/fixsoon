@@ -1,11 +1,63 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const firebaseProjectId = (
+    process.env.FIREBASE_PROJECT_ID ||
+    env.FIREBASE_PROJECT_ID ||
+    process.env.VITE_FIREBASE_PROJECT_ID ||
+    env.VITE_FIREBASE_PROJECT_ID ||
+    ''
+  ).trim();
+  const firebaseApiKey = (
+    process.env.FIREBASE_API_KEY ||
+    env.FIREBASE_API_KEY ||
+    process.env.VITE_FIREBASE_API_KEY ||
+    env.VITE_FIREBASE_API_KEY ||
+    ''
+  ).trim();
+  const firebaseAppId = (
+    process.env.FIREBASE_APP_ID ||
+    env.FIREBASE_APP_ID ||
+    process.env.VITE_FIREBASE_APP_ID ||
+    env.VITE_FIREBASE_APP_ID ||
+    ''
+  ).trim();
+  const firebaseAuthDomain = (
+    process.env.FIREBASE_AUTH_DOMAIN ||
+    env.FIREBASE_AUTH_DOMAIN ||
+    process.env.VITE_FIREBASE_AUTH_DOMAIN ||
+    env.VITE_FIREBASE_AUTH_DOMAIN ||
+    ''
+  ).trim();
+  const firebaseDatabaseId = (
+    process.env.FIREBASE_DATABASE_ID ||
+    env.FIREBASE_DATABASE_ID ||
+    process.env.VITE_FIREBASE_DATABASE_ID ||
+    env.VITE_FIREBASE_DATABASE_ID ||
+    ''
+  ).trim();
+  const firebaseAuthEmulatorHost = (
+    process.env.FIREBASE_AUTH_EMULATOR_HOST ||
+    env.FIREBASE_AUTH_EMULATOR_HOST ||
+    process.env.VITE_FIREBASE_AUTH_EMULATOR_HOST ||
+    env.VITE_FIREBASE_AUTH_EMULATOR_HOST ||
+    ''
+  ).trim();
+
   return {
+    define: {
+      'import.meta.env.VITE_FIREBASE_PROJECT_ID': JSON.stringify(firebaseProjectId),
+      'import.meta.env.VITE_FIREBASE_API_KEY': JSON.stringify(firebaseApiKey),
+      'import.meta.env.VITE_FIREBASE_APP_ID': JSON.stringify(firebaseAppId),
+      'import.meta.env.VITE_FIREBASE_AUTH_DOMAIN': JSON.stringify(firebaseAuthDomain),
+      'import.meta.env.VITE_FIREBASE_DATABASE_ID': JSON.stringify(firebaseDatabaseId),
+      'import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_HOST': JSON.stringify(firebaseAuthEmulatorHost),
+    },
     plugins: [
       react(),
       tailwindcss(),
@@ -23,9 +75,9 @@ export default defineConfig(() => {
           name: 'WorldLeo — Home, Auto & FixSoon Roadside Marketplace',
           short_name: 'WorldLeo',
           description:
-            'Find professionals, plan projects, and get things done across WorldLeo Home, WorldLeo Auto, AI Design Studio, and FixSoon roadside assistance in Ontario.',
-          theme_color: '#0D0F12',
-          background_color: '#0D0F12',
+            'Your Home. Your Vehicle. One Trusted Place for Help. Connect with independent professionals across WorldLeo Home, WorldLeo Auto, AI Design Studio, and FixSoon roadside assistance.',
+          theme_color: '#063B2B',
+          background_color: '#071E17',
           display: 'standalone',
           orientation: 'portrait-primary',
           start_url: '/',

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Bookmark, Check, Clock, MapPin, Share2, ShieldCheck, Star } from 'lucide-react';
 import { apiFetch } from '../lib/api';
 import { loadProviderReviewsFromFirestore } from '../lib/firebase';
+import { isWorldLeoVerified } from '../lib/commissions';
 import { useAuth } from '../context/AuthContext';
 import { SeoHead } from '../components/SeoHead';
 import { TrustAndVerification } from '../components/TrustAndVerification';
+import { WorldLeoVerifiedBadge } from '../components/WorldLeoVerifiedBadge';
 import type { ProviderProfile, Review, ServiceSubcategory } from '../types/fixsoon';
 
 interface ProviderProfilePageProps {
@@ -76,7 +78,7 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <div className="h-48 rounded-xl bg-[#FFFFFF] dark:bg-[#111827] border border-[#E2E8F0] dark:border-[#1E293B] animate-pulse" />
+        <div className="h-48 rounded-xl bg-[#FFFFFF] dark:bg-[#0B261E] border border-[#D8D4C7] dark:border-[#1E4438] animate-pulse" />
       </div>
     );
   }
@@ -84,22 +86,24 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
   if (error || !provider) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center space-y-4">
-        <h1 className="font-display text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+        <h1 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
           Professional Profile Not Found
         </h1>
-        <p className="text-sm text-[#475569] dark:text-[#94A3B8]">
+        <p className="text-sm text-[#6D756F] dark:text-[#A3ABA5]">
           This profile may be pending verification or no longer active.
         </p>
         <button
           type="button"
           onClick={() => onNavigate('/professionals')}
-          className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A]"
+          className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] cursor-pointer"
         >
           Browse Directory
         </button>
       </div>
     );
   }
+
+  const verified = isWorldLeoVerified(provider.verifications);
 
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -119,25 +123,25 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       <SeoHead
-        title={`${provider.business_name} – ${provider.primary_city} | FixSoon`}
+        title={`${provider.business_name} – ${provider.primary_city} | WorldLeo`}
         description={provider.bio.slice(0, 155)}
         canonicalPath={`/professionals/${provider.slug}`}
         jsonLd={jsonLd}
       />
 
       {/* Breadcrumbs */}
-      <nav className="text-xs text-[#475569] dark:text-[#94A3B8] flex items-center gap-2">
+      <nav className="text-xs text-[#6D756F] dark:text-[#A3ABA5] flex items-center gap-2">
         <button type="button" onClick={() => onNavigate('/')} className="hover:underline">Home</button>
         <span>/</span>
         <button type="button" onClick={() => onNavigate('/professionals')} className="hover:underline">Professionals</button>
         <span>/</span>
-        <span className="text-[#0F172A] dark:text-[#F8FAFC] font-medium">{provider.business_name}</span>
+        <span className="text-[#171B19] dark:text-[#F6F2E8] font-medium">{provider.business_name}</span>
       </nav>
 
       {/* Profile Header */}
-      <div className="p-6 sm:p-8 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] flex flex-col md:flex-row items-start justify-between gap-6">
+      <div className="p-6 sm:p-8 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] flex flex-col md:flex-row items-start justify-between gap-6">
         <div className="flex items-start gap-5">
-          <div className="w-20 h-20 rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#1E293B] bg-[#1E293B] shrink-0">
+          <div className="w-20 h-20 rounded-xl overflow-hidden border border-[#D8D4C7] dark:border-[#1E4438] bg-[#063B2B] shrink-0">
             {provider.avatar_url ? (
               <img
                 src={provider.avatar_url}
@@ -146,14 +150,14 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-[#F8FAFC]">
+              <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-[#F6F2E8]">
                 {provider.display_name.charAt(0)}
               </div>
             )}
           </div>
 
           <div className="space-y-1.5">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-[#475569] dark:text-[#94A3B8]">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-[#6D756F] dark:text-[#A3ABA5]">
               <span>{provider.primary_city}</span>
               <span aria-hidden="true">·</span>
               <span>{provider.years_experience} years experience</span>
@@ -164,20 +168,23 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
                 </>
               )}
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-              {provider.business_name}
-            </h1>
-            <div className="text-sm text-[#475569] dark:text-[#94A3B8]">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
+                {provider.business_name}
+              </h1>
+              {verified && <WorldLeoVerifiedBadge verifications={provider.verifications} />}
+            </div>
+            <div className="text-sm text-[#6D756F] dark:text-[#A3ABA5]">
               Technician: {provider.display_name} · Languages: {provider.languages.join(', ')}
             </div>
             <div className="flex flex-wrap items-center gap-4 pt-1 text-xs">
-              <span className="inline-flex items-center gap-1 font-semibold text-[#0F172A] dark:text-[#F8FAFC] tabular-nums">
-                <Star className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B] fill-current" />
+              <span className="inline-flex items-center gap-1 font-semibold text-[#171B19] dark:text-[#F6F2E8] tabular-nums">
+                <Star className="w-4 h-4 text-[#9F7B37] dark:text-[#C6A45B] fill-current" />
                 {provider.review_count > 0
                   ? `${provider.rating_avg} (${provider.review_count} verified reviews)`
                   : 'No reviews yet'}
               </span>
-              <span className="inline-flex items-center gap-1 text-[#475569] dark:text-[#94A3B8]">
+              <span className="inline-flex items-center gap-1 text-[#6D756F] dark:text-[#A3ABA5]">
                 <Clock className="w-3.5 h-3.5" />
                 {provider.operating_hours}
               </span>
@@ -189,11 +196,11 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
           <button
             type="button"
             onClick={handleShare}
-            className="px-3.5 py-2.5 rounded-lg text-xs font-semibold border border-[#E2E8F0] dark:border-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#B45309] dark:hover:border-[#F59E0B] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            className="px-3.5 py-2.5 rounded-lg text-xs font-semibold border border-[#D8D4C7] dark:border-[#1E4438] text-[#171B19] dark:text-[#F6F2E8] hover:border-[#9F7B37] dark:hover:border-[#C6A45B] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
           >
             {shareCopied ? (
               <>
-                <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                <Check className="w-4 h-4 text-[#145443] dark:text-[#D8B66F]" />
                 <span>Link Copied</span>
               </>
             ) : (
@@ -206,15 +213,15 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
           <button
             type="button"
             onClick={toggleSave}
-            className="px-3.5 py-2.5 rounded-lg text-xs font-semibold border border-[#E2E8F0] dark:border-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#B45309] dark:hover:border-[#F59E0B] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            className="px-3.5 py-2.5 rounded-lg text-xs font-semibold border border-[#D8D4C7] dark:border-[#1E4438] text-[#171B19] dark:text-[#F6F2E8] hover:border-[#9F7B37] dark:hover:border-[#C6A45B] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
           >
-            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#B45309] dark:text-[#F59E0B]' : ''}`} />
+            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#9F7B37] dark:text-[#C6A45B]' : ''}`} />
             <span>{isSaved ? 'Saved' : 'Save'}</span>
           </button>
           <button
             type="button"
-            onClick={() => onNavigate(`/request?provider=${provider.id}`)}
-            className="flex-1 md:flex-initial px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A] whitespace-nowrap"
+            onClick={() => onNavigate(`/request-service?provider=${provider.id}`)}
+            className="flex-1 md:flex-initial px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] hover:bg-[#145443] dark:bg-[#C6A45B] dark:text-[#071E17] dark:hover:bg-[#D8B66F] whitespace-nowrap cursor-pointer transition-colors"
           >
             Request This Professional
           </button>
@@ -225,7 +232,7 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
         <div
           role="status"
           aria-live="polite"
-          className="px-4 py-3 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 flex items-center justify-between gap-3"
+          className="px-4 py-3 rounded-xl border border-[#145443]/30 dark:border-[#C6A45B]/40 bg-[#F6F2E8] dark:bg-[#063B2B]/50 text-xs sm:text-sm text-[#063B2B] dark:text-[#F6F2E8] flex items-center justify-between gap-3"
         >
           <span>
             Profile URL copied to your clipboard — share it with a friend, fleet manager, or neighbour who needs a trusted pro.
@@ -236,33 +243,33 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
       {/* Main Content Split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
-          <div className="p-6 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-3">
-            <h2 className="font-display text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+          <div className="p-6 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-3">
+            <h2 className="font-display text-lg font-bold text-[#171B19] dark:text-[#F6F2E8]">
               About &amp; Services Offered
             </h2>
-            <p className="text-sm text-[#475569] dark:text-[#94A3B8] leading-relaxed">
+            <p className="text-sm text-[#6D756F] dark:text-[#A3ABA5] leading-relaxed">
               {provider.bio}
             </p>
             <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {services.map((s) => (
                 <div
                   key={s.id}
-                  className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#090D16] border border-[#E2E8F0] dark:border-[#1E293B]"
+                  className="p-3 rounded-lg bg-[#F8F7F2] dark:bg-[#071E17] border border-[#D8D4C7] dark:border-[#1E4438]"
                 >
-                  <div className="text-sm font-semibold text-[#0F172A] dark:text-[#F8FAFC]">{s.name}</div>
-                  <div className="text-xs text-[#475569] dark:text-[#94A3B8] mt-0.5">Typical: {s.typical_duration}</div>
+                  <div className="text-sm font-semibold text-[#171B19] dark:text-[#F6F2E8]">{s.name}</div>
+                  <div className="text-xs text-[#6D756F] dark:text-[#A3ABA5] mt-0.5">Typical: {s.typical_duration}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="p-6 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-5">
+          <div className="p-6 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <h2 className="font-display text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+              <h2 className="font-display text-lg font-bold text-[#171B19] dark:text-[#F6F2E8]">
                 Verified Customer Reviews ({reviews.length})
               </h2>
               {reviews.length > 0 && (
-                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#B45309] dark:text-[#F59E0B]">
+                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9F7B37] dark:text-[#C6A45B]">
                   <Star className="w-4 h-4 fill-current" />
                   <span className="tabular-nums">
                     {(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)} out of 5
@@ -272,27 +279,27 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
             </div>
 
             {reviews.length === 0 ? (
-              <p className="text-sm text-[#475569] dark:text-[#94A3B8]">
+              <p className="text-sm text-[#6D756F] dark:text-[#A3ABA5]">
                 No completed-job reviews yet. Reviews appear here once customers rate completed jobs.
               </p>
             ) : (
               <>
-                <div className="p-4 rounded-lg bg-[#F8FAFC] dark:bg-[#090D16] border border-[#E2E8F0] dark:border-[#1E293B] space-y-1.5">
+                <div className="p-4 rounded-lg bg-[#F8F7F2] dark:bg-[#071E17] border border-[#D8D4C7] dark:border-[#1E4438] space-y-1.5">
                   {[5, 4, 3, 2, 1].map((star) => {
                     const count = reviews.filter((r) => Math.round(r.rating) === star).length;
                     const pct = Math.round((count / reviews.length) * 100);
                     return (
                       <div key={star} className="flex items-center gap-2.5 text-xs">
-                        <span className="w-8 font-semibold text-[#475569] dark:text-[#94A3B8] tabular-nums">
+                        <span className="w-8 font-semibold text-[#6D756F] dark:text-[#A3ABA5] tabular-nums">
                           {star}★
                         </span>
-                        <div className="flex-1 h-2 rounded-full bg-[#E2E8F0] dark:bg-[#1E293B] overflow-hidden">
+                        <div className="flex-1 h-2 rounded-full bg-[#D8D4C7] dark:bg-[#1E4438] overflow-hidden">
                           <div
-                            className="h-full rounded-full bg-[#B45309] dark:bg-[#F59E0B]"
+                            className="h-full rounded-full bg-[#9F7B37] dark:bg-[#C6A45B]"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
-                        <span className="w-8 text-right text-[#475569] dark:text-[#94A3B8] tabular-nums">
+                        <span className="w-8 text-right text-[#6D756F] dark:text-[#A3ABA5] tabular-nums">
                           {count}
                         </span>
                       </div>
@@ -302,28 +309,26 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
 
                 <div className="space-y-4">
                   {reviews.map((rev) => (
-                    <div key={rev.id} className="pb-4 border-b last:border-b-0 border-[#E2E8F0] dark:border-[#1E293B]">
-                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#475569] dark:text-[#94A3B8]">
+                    <div key={rev.id} className="pb-4 border-b last:border-b-0 border-[#D8D4C7] dark:border-[#1E4438]">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#6D756F] dark:text-[#A3ABA5]">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
+                          <span className="font-semibold text-[#171B19] dark:text-[#F6F2E8]">
                             {rev.customer_name}
                           </span>
-                          {rev.service_name && (
-                            <span>· {rev.service_name}</span>
-                          )}
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[11px] font-medium">
+                          {rev.service_name && <span>· {rev.service_name}</span>}
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#063B2B]/10 dark:bg-[#C6A45B]/15 text-[#063B2B] dark:text-[#D8B66F] text-[11px] font-medium">
                             <ShieldCheck className="w-3 h-3" />
                             Verified Job
                           </span>
                         </div>
                         <span className="tabular-nums">{new Date(rev.created_at).toLocaleDateString()}</span>
                       </div>
-                      <div className="flex items-center gap-1 my-1.5 text-[#B45309] dark:text-[#F59E0B]">
+                      <div className="flex items-center gap-1 my-1.5 text-[#9F7B37] dark:text-[#C6A45B]">
                         {Array.from({ length: rev.rating }).map((_, idx) => (
                           <Star key={idx} className="w-3.5 h-3.5 fill-current" />
                         ))}
                       </div>
-                      <p className="text-sm text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed">{rev.comment}</p>
+                      <p className="text-sm text-[#171B19] dark:text-[#F6F2E8] leading-relaxed">{rev.comment}</p>
                     </div>
                   ))}
                 </div>
@@ -341,13 +346,13 @@ export function ProviderProfilePage({ slug, onNavigate }: ProviderProfilePagePro
             onNavigate={onNavigate}
           />
 
-          <div className="p-6 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-3 text-sm">
-            <h2 className="font-display text-base font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+          <div className="p-6 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-3 text-sm">
+            <h2 className="font-display text-base font-bold text-[#171B19] dark:text-[#F6F2E8]">
               Coverage &amp; Pricing Notes
             </h2>
-            <div className="text-xs text-[#475569] dark:text-[#94A3B8] space-y-2">
+            <div className="text-xs text-[#6D756F] dark:text-[#A3ABA5] space-y-2">
               <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B] shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-[#9F7B37] dark:text-[#C6A45B] shrink-0 mt-0.5" />
                 <span>
                   Serves: {provider.coverage_cities.join(', ')} (~{provider.coverage_radius_km} km radius)
                 </span>

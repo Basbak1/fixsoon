@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Compass, ShieldCheck, Sparkles, UserCheck } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Compass,
+  Hammer,
+  ShieldCheck,
+  Sparkles,
+  UserCheck,
+  Wrench,
+} from 'lucide-react';
 import { apiFetch } from '../lib/api';
 import { saveRequestToFirestore } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +19,7 @@ import type {
   ProviderProfile,
   RequestType,
   ServiceCategory,
+  ServiceDivision,
   ServiceRequest,
   ServiceSubcategory,
 } from '../types/fixsoon';
@@ -41,7 +53,14 @@ export function RequestFlowPage({
 }: RequestFlowPageProps) {
   const { user, login, register } = useAuth();
 
+  const initialCatObj = categories.find((c) => c.id === initialCategoryId);
+  const initialDiv: ServiceDivision =
+    initialCatObj?.division === 'home' || initialCategoryId === 'cat_home'
+      ? 'home'
+      : 'auto';
+
   const [step, setStep] = useState(1);
+  const [division, setDivision] = useState<ServiceDivision>(initialDiv);
   const [problemQuery, setProblemQuery] = useState(initialQuery);
   const [categoryId, setCategoryId] = useState(initialCategoryId || categories[0]?.id || '');
   const [subcategoryId, setSubcategoryId] = useState(initialSubcategoryId || '');
@@ -50,7 +69,9 @@ export function RequestFlowPage({
   const [problemSummary, setProblemSummary] = useState(initialQuery);
   const [problemDetails, setProblemDetails] = useState('');
   const [dynamicFields, setDynamicFields] = useState<Record<string, string>>({});
-  const [urgency, setUrgency] = useState<'emergency' | 'today' | 'scheduled'>(initialUrgency);
+  const [urgency, setUrgency] = useState<'emergency' | 'today' | 'scheduled'>(
+    initialDiv === 'home' && initialUrgency === 'emergency' ? 'today' : initialUrgency
+  );
 
   const [requestType, setRequestType] = useState<RequestType>(initialProviderId ? 'direct' : 'marketplace');
   const [targetProviderId, setTargetProviderId] = useState(initialProviderId);
@@ -72,11 +93,40 @@ export function RequestFlowPage({
   const [error, setError] = useState('');
   const [confirmed, setConfirmed] = useState<{ request: ServiceRequest; matched_count: number } | null>(null);
 
-  const selectedCategory = categories.find((c) => c.id === categoryId) || categories[0];
-  const categorySubcategories = subcategories.filter((s) => s.category_id === (selectedCategory?.id || ''));
+  const divisionCategories = categories.filter(
+    (c) => (c.division || (c.id === 'cat_home' ? 'home' : 'auto')) === division
+  );
+  const selectedCategory =
+    divisionCategories.find((c) => c.id === categoryId) || divisionCategories[0] || categories[0];
+  const categorySubcategories = subcategories.filter(
+    (s) => s.category_id === (selectedCategory?.id || '')
+  );
   const selectedProvider = providers.find((p) => p.id === targetProviderId);
 
-  // Run classifier when initialQuery is provided
+  const handleSelectDivision = (nextDiv: ServiceDivision) => {
+    setDivision(nextDiv);
+    const matchingCats = categories.filter(
+      (c) => (c.division || (c.id === 'cat_home' ? 'home' : 'auto')) === nextDiv
+    );
+    if (matchingCats[0]) {
+      setCategoryId(matchingCats[0].id);
+      const firstSub = subcategories.find((s) => s.category_id === matchingCats[0].id);
+      if (firstSub) setSubcategoryId(firstSub.id);
+    }
+    if (nextDiv === 'home' && urgency === 'emergency') {
+      setUrgency('today');
+    }
+  };
+
+  useEffect(() => {
+    if (initialCategoryId) {
+      const cat = categories.find((c) => c.id === initialCategoryId);
+      const d: ServiceDivision = cat?.division === 'home' || initialCategoryId === 'cat_home' ? 'home' : 'auto';
+      setDivision(d);
+      setCategoryId(initialCategoryId);
+    }
+  }, [initialCategoryId, categories]);
+
   useEffect(() => {
     if (initialQuery.trim()) {
       runClassifier(initialQuery);
@@ -84,7 +134,6 @@ export function RequestFlowPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery]);
 
-  // Ensure a default subcategory is selected when category changes
   useEffect(() => {
     if (selectedCategory && (!subcategoryId || !categorySubcategories.some((s) => s.id === subcategoryId))) {
       if (categorySubcategories[0]) {
@@ -92,7 +141,7 @@ export function RequestFlowPage({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryId, categories.length]);
+  }, [categoryId, division, categories.length]);
 
   const runClassifier = async (text: string) => {
     if (!text.trim()) return;
@@ -105,6 +154,10 @@ export function RequestFlowPage({
         body: JSON.stringify({ query: text }),
       });
       if (res.matched_category_id) {
+        const matchedCat = categories.find((c) => c.id === res.matched_category_id);
+        const matchedDiv: ServiceDivision =
+          matchedCat?.division === 'home' || res.matched_category_id === 'cat_home' ? 'home' : 'auto';
+        setDivision(matchedDiv);
         setCategoryId(res.matched_category_id);
       }
       if (res.matched_subcategories.length > 0) {
@@ -128,7 +181,7 @@ export function RequestFlowPage({
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setGeoMessage(
-          `Coordinates captured (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}). Confirm your GTA city below.`
+          `Coordinates captured (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}). Confirm your city below.`
         );
       },
       () => {
@@ -197,41 +250,47 @@ export function RequestFlowPage({
   if (confirmed) {
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-14">
-        <div className="p-8 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] space-y-6">
-          <div className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-400 text-sm font-semibold">
+        <div className="p-8 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] space-y-6">
+          <div className="inline-flex items-center gap-2 text-[#063B2B] dark:text-[#D8B66F] text-sm font-semibold">
             <CheckCircle2 className="w-5 h-5" />
-            <span>Request Submitted</span>
+            <span>Request Submitted to WorldLeo</span>
           </div>
 
           <div className="space-y-2">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
               Reference: <span className="font-mono">{confirmed.request.reference_code}</span>
             </h1>
-            <p className="text-sm text-[#475569] dark:text-[#94A3B8]">
+            <p className="text-sm text-[#58605A] dark:text-[#B4C2BC]">
               {confirmed.request.request_type === 'direct'
                 ? `Sent directly to ${confirmed.request.target_provider_name}. Only this professional received your request.`
-                : `Submitted to the FixSoon marketplace in ${confirmed.request.city}. ${confirmed.matched_count} eligible professional(s) were notified.`}
+                : `Submitted to the WorldLeo marketplace in ${confirmed.request.city}. ${confirmed.matched_count} eligible professional(s) were notified.`}
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-[#F8FAFC] dark:bg-[#090D16] border border-[#E2E8F0] dark:border-[#1E293B] space-y-2 text-sm">
+          <div className="p-4 rounded-lg bg-[#F8F7F2] dark:bg-[#071E17] border border-[#D8D4C7] dark:border-[#1E4438] space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-[#475569] dark:text-[#94A3B8]">Service</span>
-              <span className="font-medium text-[#0F172A] dark:text-[#F8FAFC]">{confirmed.request.subcategory_name}</span>
+              <span className="text-[#58605A] dark:text-[#B4C2BC]">Division</span>
+              <span className="font-medium text-[#171B19] dark:text-[#F6F2E8]">
+                {division === 'home' ? 'WorldLeo Home' : 'WorldLeo Auto'}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[#475569] dark:text-[#94A3B8]">Method</span>
-              <span className="font-medium text-[#0F172A] dark:text-[#F8FAFC]">
+              <span className="text-[#58605A] dark:text-[#B4C2BC]">Service</span>
+              <span className="font-medium text-[#171B19] dark:text-[#F6F2E8]">{confirmed.request.subcategory_name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#58605A] dark:text-[#B4C2BC]">Method</span>
+              <span className="font-medium text-[#171B19] dark:text-[#F6F2E8]">
                 {confirmed.request.request_type === 'direct' ? 'Direct Provider Request' : 'General Marketplace'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[#475569] dark:text-[#94A3B8]">Location</span>
-              <span className="font-medium text-[#0F172A] dark:text-[#F8FAFC]">{confirmed.request.city}</span>
+              <span className="text-[#58605A] dark:text-[#B4C2BC]">Location</span>
+              <span className="font-medium text-[#171B19] dark:text-[#F6F2E8]">{confirmed.request.city}</span>
             </div>
           </div>
 
-          <div className="text-xs text-[#475569] dark:text-[#94A3B8]">
+          <div className="text-xs text-[#58605A] dark:text-[#B4C2BC]">
             Next steps: Watch your Customer Dashboard for incoming quotes or questions. Your exact street address remains private until you accept a quote.
           </div>
 
@@ -239,14 +298,14 @@ export function RequestFlowPage({
             <button
               type="button"
               onClick={() => onNavigate('/customer-dashboard')}
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A]"
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] cursor-pointer"
             >
               Go to My Requests
             </button>
             <button
               type="button"
               onClick={() => onNavigate('/')}
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#E2E8F0] dark:border-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]"
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#D8D4C7] dark:border-[#1E4438] text-[#171B19] dark:text-[#F6F2E8] cursor-pointer"
             >
               Back to Home
             </button>
@@ -260,31 +319,31 @@ export function RequestFlowPage({
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
       {/* Step Indicator */}
       <div className="mb-8">
-        <div className="flex items-center justify-between text-xs font-medium text-[#475569] dark:text-[#94A3B8] mb-2">
+        <div className="flex items-center justify-between text-xs font-medium text-[#58605A] dark:text-[#B4C2BC] mb-2">
           <span>Step {step} of 5</span>
           <span>
-            {step === 1 && 'Identify the problem'}
+            {step === 1 && 'Choose Home or Auto & service'}
             {step === 2 && 'Relevant details'}
             {step === 3 && 'Choose request method'}
             {step === 4 && 'Location'}
             {step === 5 && 'Confirm & submit'}
           </span>
         </div>
-        <div className="h-1.5 w-full rounded-full bg-[#E2E8F0] dark:bg-[#1E293B] overflow-hidden">
+        <div className="h-1.5 w-full rounded-full bg-[#D8D4C7] dark:bg-[#1E4438] overflow-hidden">
           <div
-            className="h-full bg-[#B45309] dark:bg-[#F59E0B] transition-all duration-200"
+            className="h-full bg-[#063B2B] dark:bg-[#C6A45B] transition-all duration-200"
             style={{ width: `${(step / 5) * 100}%` }}
           />
         </div>
       </div>
 
       {selectedProvider && requestType === 'direct' && (
-        <div className="mb-6 p-4 rounded-xl border border-[#B45309]/50 dark:border-[#F59E0B]/50 bg-[#FFFFFF] dark:bg-[#111827] flex items-center justify-between gap-4">
+        <div className="mb-6 p-4 rounded-xl border border-[#C6A45B]/70 bg-[#FFFFFF] dark:bg-[#0B261E] flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <UserCheck className="w-5 h-5 text-[#B45309] dark:text-[#F59E0B] shrink-0" />
+            <UserCheck className="w-5 h-5 text-[#9F7B37] dark:text-[#D8B66F] shrink-0" />
             <div>
-              <div className="text-xs text-[#475569] dark:text-[#94A3B8]">Direct Request to</div>
-              <div className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+              <div className="text-xs text-[#58605A] dark:text-[#B4C2BC]">Direct Request to</div>
+              <div className="text-sm font-bold text-[#171B19] dark:text-[#F6F2E8]">
                 {selectedProvider.business_name} ({selectedProvider.primary_city})
               </div>
             </div>
@@ -295,30 +354,75 @@ export function RequestFlowPage({
               setRequestType('marketplace');
               setTargetProviderId('');
             }}
-            className="text-xs font-medium text-[#475569] dark:text-[#94A3B8] hover:underline"
+            className="text-xs font-medium text-[#58605A] dark:text-[#B4C2BC] hover:underline cursor-pointer"
           >
             Switch to general marketplace
           </button>
         </div>
       )}
 
-      <div className="p-6 sm:p-8 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827]">
+      <div className="p-6 sm:p-8 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E]">
         {error && (
           <div className="mb-5 p-3 rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-sm text-red-700 dark:text-red-300">
             {error}
           </div>
         )}
 
-        {/* STEP 1: IDENTIFY THE PROBLEM */}
+        {/* STEP 1: DIVISION CHOICE + IDENTIFY PROBLEM */}
         {step === 1 && (
           <div className="space-y-6">
             <div>
-              <h1 className="font-display text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-                What needs fixing?
+              <h1 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
+                What do you need help with?
               </h1>
-              <p className="text-sm text-[#475569] dark:text-[#94A3B8] mt-1">
-                Describe the issue in everyday words, or choose a category below.
+              <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] mt-1">
+                Start by selecting WorldLeo Home or WorldLeo Auto, or describe your need below.
               </p>
+            </div>
+
+            {/* Explicit Home vs Auto Division Selector */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => handleSelectDivision('home')}
+                className={`p-4 rounded-xl border text-left transition-colors cursor-pointer ${
+                  division === 'home'
+                    ? 'border-[#063B2B] dark:border-[#C6A45B] bg-[#063B2B]/8 dark:bg-[#145443]/35'
+                    : 'border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17]'
+                }`}
+              >
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.1em] text-[#9F7B37] dark:text-[#D8B66F]">
+                  <Hammer className="w-3.5 h-3.5" />
+                  <span>WorldLeo Home</span>
+                </div>
+                <div className="font-display text-base font-bold text-[#171B19] dark:text-[#F6F2E8] mt-1">
+                  Home Repairs &amp; Renovations
+                </div>
+                <p className="text-xs text-[#58605A] dark:text-[#B4C2BC] mt-1">
+                  Plumbing, electrical, appliances, kitchen/bath remodelling, and outdoor spaces.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectDivision('auto')}
+                className={`p-4 rounded-xl border text-left transition-colors cursor-pointer ${
+                  division === 'auto'
+                    ? 'border-[#063B2B] dark:border-[#C6A45B] bg-[#063B2B]/8 dark:bg-[#145443]/35'
+                    : 'border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17]'
+                }`}
+              >
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.1em] text-[#9F7B37] dark:text-[#D8B66F]">
+                  <Wrench className="w-3.5 h-3.5" />
+                  <span>WorldLeo Auto</span>
+                </div>
+                <div className="font-display text-base font-bold text-[#171B19] dark:text-[#F6F2E8] mt-1">
+                  Mobile Mechanics &amp; FixSoon Roadside
+                </div>
+                <p className="text-xs text-[#58605A] dark:text-[#B4C2BC] mt-1">
+                  Mobile vehicle service, tires, batteries, diagnostics, or urgent FixSoon roadside dispatch.
+                </p>
+              </button>
             </div>
 
             <div className="flex gap-2">
@@ -329,64 +433,70 @@ export function RequestFlowPage({
                   setProblemQuery(e.target.value);
                   setProblemSummary(e.target.value);
                 }}
-                placeholder="e.g. My car won't start, flat tire on my trailer, or Bobcat won't crank"
-                className="flex-1 px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                placeholder={
+                  division === 'home'
+                    ? 'e.g. Leaking kitchen faucet, electrical outlet spark, or bathroom tile upgrade'
+                    : "e.g. My car won't start, flat tire on trailer, or Bobcat won't crank"
+                }
+                className="flex-1 px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
               />
               <button
                 type="button"
                 onClick={() => runClassifier(problemQuery)}
-                className="px-4 py-2.5 rounded-lg text-xs font-semibold border border-[#E2E8F0] dark:border-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#B45309] inline-flex items-center gap-1.5 shrink-0"
+                className="px-4 py-2.5 rounded-lg text-xs font-semibold border border-[#D8D4C7] dark:border-[#1E4438] text-[#171B19] dark:text-[#F6F2E8] hover:border-[#9F7B37] inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#B45309] dark:text-[#F59E0B]" />
+                <Sparkles className="w-3.5 h-3.5 text-[#9F7B37] dark:text-[#C6A45B]" />
                 <span>Match Service</span>
               </button>
             </div>
 
-            {/* Emergency Toggle */}
-            <div
-              className={`p-4 rounded-xl border transition-colors flex items-center justify-between gap-4 ${
-                urgency === 'emergency'
-                  ? 'border-red-500/70 bg-red-50/70 dark:bg-red-950/25'
-                  : 'border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16]'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <AlertTriangle
-                  className={`w-5 h-5 shrink-0 mt-0.5 ${
-                    urgency === 'emergency' ? 'text-red-600 dark:text-red-400' : 'text-[#B45309] dark:text-[#F59E0B]'
-                  }`}
-                />
-                <div>
-                  <div className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-                    Emergency Roadside / Priority Dispatch
-                  </div>
-                  <p className="text-xs text-[#475569] dark:text-[#94A3B8]">
-                    {urgency === 'emergency'
-                      ? 'Flagged as Emergency — pinned to the top of matched providers’ job feeds for rapid response.'
-                      : 'Stranded on a highway, jobsite, or unsafe spot? Toggle on to prioritize your request.'}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={urgency === 'emergency'}
-                onClick={() => setUrgency(urgency === 'emergency' ? 'today' : 'emergency')}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B45309] ${
-                  urgency === 'emergency' ? 'bg-red-600' : 'bg-[#CBD5E1] dark:bg-[#334155]'
+            {/* Emergency Roadside Toggle ONLY surfaced for Auto / FixSoon */}
+            {division === 'auto' && (
+              <div
+                className={`p-4 rounded-xl border transition-colors flex items-center justify-between gap-4 ${
+                  urgency === 'emergency'
+                    ? 'border-red-500/70 bg-red-50/70 dark:bg-red-950/25'
+                    : 'border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17]'
                 }`}
               >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${
-                    urgency === 'emergency' ? 'translate-x-5' : 'translate-x-0'
+                <div className="flex items-start gap-3">
+                  <AlertTriangle
+                    className={`w-5 h-5 shrink-0 mt-0.5 ${
+                      urgency === 'emergency' ? 'text-red-600 dark:text-red-400' : 'text-[#9F7B37] dark:text-[#C6A45B]'
+                    }`}
+                  />
+                  <div>
+                    <div className="text-sm font-bold text-[#171B19] dark:text-[#F6F2E8]">
+                      FixSoon Urgent Roadside Priority
+                    </div>
+                    <p className="text-xs text-[#58605A] dark:text-[#B4C2BC]">
+                      {urgency === 'emergency'
+                        ? 'Flagged as FixSoon Emergency — pinned to the top of matched roadside providers’ queues.'
+                        : 'Stranded on a highway, parking lot, or job site? Toggle on for FixSoon rapid dispatch.'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={urgency === 'emergency'}
+                  onClick={() => setUrgency(urgency === 'emergency' ? 'today' : 'emergency')}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9F7B37] ${
+                    urgency === 'emergency' ? 'bg-red-600' : 'bg-[#D8D4C7] dark:bg-[#1E4438]'
                   }`}
-                />
-              </button>
-            </div>
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ${
+                      urgency === 'emergency' ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
 
             {suggestedSubs.length > 0 && (
-              <div className="p-3.5 rounded-lg bg-[#F8FAFC] dark:bg-[#090D16] border border-[#E2E8F0] dark:border-[#1E293B] space-y-2">
-                <div className="text-xs font-semibold text-[#475569] dark:text-[#94A3B8]">
+              <div className="p-3.5 rounded-lg bg-[#F8F7F2] dark:bg-[#071E17] border border-[#D8D4C7] dark:border-[#1E4438] space-y-2">
+                <div className="text-xs font-semibold text-[#58605A] dark:text-[#B4C2BC]">
                   Suggested services based on your description:
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -395,13 +505,15 @@ export function RequestFlowPage({
                       key={sub.id}
                       type="button"
                       onClick={() => {
+                        const cat = categories.find((c) => c.id === sub.category_id);
+                        setDivision(cat?.division === 'home' || sub.category_id === 'cat_home' ? 'home' : 'auto');
                         setCategoryId(sub.category_id);
                         setSubcategoryId(sub.id);
                       }}
-                      className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-colors ${
+                      className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-colors cursor-pointer ${
                         subcategoryId === sub.id
-                          ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/15 text-[#0F172A] dark:text-[#F8FAFC]'
-                          : 'border-[#E2E8F0] dark:border-[#1E293B] bg-[#FFFFFF] dark:bg-[#111827] text-[#475569] dark:text-[#94A3B8]'
+                          ? 'border-[#063B2B] dark:border-[#C6A45B] bg-[#063B2B]/12 dark:bg-[#C6A45B]/15 text-[#171B19] dark:text-[#F6F2E8]'
+                          : 'border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF] dark:bg-[#0B261E] text-[#58605A] dark:text-[#B4C2BC]'
                       }`}
                     >
                       {sub.name}
@@ -411,37 +523,14 @@ export function RequestFlowPage({
               </div>
             )}
 
-            <div className="space-y-3">
-              <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
-                Service Category
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setCategoryId(cat.id)}
-                    className={`p-3.5 rounded-lg border text-left transition-colors ${
-                      selectedCategory?.id === cat.id
-                        ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/10'
-                        : 'border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16]'
-                    }`}
-                  >
-                    <div className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]">{cat.name}</div>
-                    <div className="text-xs text-[#475569] dark:text-[#94A3B8] mt-1 line-clamp-2">{cat.description}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div>
-              <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-2">
-                Specific Service
+              <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-2">
+                Specific {division === 'home' ? 'Home Service' : 'Auto / Equipment Service'}
               </label>
               <select
                 value={subcategoryId}
                 onChange={(e) => setSubcategoryId(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
               >
                 {categorySubcategories.map((sub) => (
                   <option key={sub.id} value={sub.id}>
@@ -455,7 +544,7 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A] inline-flex items-center gap-2"
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] inline-flex items-center gap-2 cursor-pointer"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />
@@ -468,39 +557,43 @@ export function RequestFlowPage({
         {step === 2 && (
           <div className="space-y-5">
             <div>
-              <h2 className="font-display text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+              <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
                 {selectedCategory?.name} Details
               </h2>
-              <p className="text-sm text-[#475569] dark:text-[#94A3B8] mt-1">
-                Only fields relevant to {selectedCategory?.name.toLowerCase()} are shown.
+              <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] mt-1">
+                Only fields relevant to {division === 'home' ? 'your home project or repair' : 'your vehicle or equipment'} are shown.
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
-                Short summary of the problem
+              <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
+                Short summary of what you need
               </label>
               <input
                 type="text"
                 required
                 value={problemSummary}
                 onChange={(e) => setProblemSummary(e.target.value)}
-                placeholder="e.g. Car clicks when turning key, headlights dim"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                placeholder={
+                  division === 'home'
+                    ? 'e.g. Replace kitchen faucet and inspect under-sink shutoff valve'
+                    : 'e.g. Car clicks when turning key, headlights dim'
+                }
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {selectedCategory?.dynamic_fields.map((field) => (
                 <div key={field.key} className={field.type === 'select' ? 'sm:col-span-2' : ''}>
-                  <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+                  <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                     {field.label} {field.required ? '*' : ''}
                   </label>
                   {field.type === 'select' ? (
                     <select
                       value={dynamicFields[field.key] || ''}
                       onChange={(e) => setDynamicFields({ ...dynamicFields, [field.key]: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                     >
                       <option value="">Select an option</option>
                       {field.options?.map((opt) => (
@@ -515,7 +608,7 @@ export function RequestFlowPage({
                       value={dynamicFields[field.key] || ''}
                       onChange={(e) => setDynamicFields({ ...dynamicFields, [field.key]: e.target.value })}
                       placeholder={field.placeholder || ''}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                     />
                   )}
                 </div>
@@ -523,23 +616,29 @@ export function RequestFlowPage({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
-                Urgency
+              <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
+                Timing &amp; Urgency
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'emergency', label: 'Urgent / Stranded' },
-                  { id: 'today', label: 'Today' },
-                  { id: 'scheduled', label: 'Flexible / Scheduled' },
-                ].map((u) => (
+              <div className={`grid ${division === 'auto' ? 'grid-cols-3' : 'grid-cols-2'} gap-2`}>
+                {(division === 'auto'
+                  ? [
+                      { id: 'emergency', label: 'FixSoon Urgent / Stranded' },
+                      { id: 'today', label: 'Today' },
+                      { id: 'scheduled', label: 'Flexible / Scheduled' },
+                    ]
+                  : [
+                      { id: 'today', label: 'Urgent / Same Day' },
+                      { id: 'scheduled', label: 'Planned / Scheduled' },
+                    ]
+                ).map((u) => (
                   <button
                     key={u.id}
                     type="button"
                     onClick={() => setUrgency(u.id as 'emergency' | 'today' | 'scheduled')}
-                    className={`py-2 px-3 rounded-lg text-xs font-semibold border ${
+                    className={`py-2 px-3 rounded-lg text-xs font-semibold border cursor-pointer ${
                       urgency === u.id
-                        ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/15 text-[#0F172A] dark:text-[#F8FAFC]'
-                        : 'border-[#E2E8F0] dark:border-[#1E293B] text-[#475569] dark:text-[#94A3B8]'
+                        ? 'border-[#063B2B] dark:border-[#C6A45B] bg-[#063B2B]/12 dark:bg-[#C6A45B]/15 text-[#171B19] dark:text-[#F6F2E8]'
+                        : 'border-[#D8D4C7] dark:border-[#1E4438] text-[#58605A] dark:text-[#B4C2BC]'
                     }`}
                   >
                     {u.label}
@@ -549,15 +648,19 @@ export function RequestFlowPage({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+              <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                 Additional notes (optional)
               </label>
               <textarea
                 rows={3}
                 value={problemDetails}
                 onChange={(e) => setProblemDetails(e.target.value)}
-                placeholder="Any helpful context like parking garage clearance, warning lights, or error codes..."
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                placeholder={
+                  division === 'home'
+                    ? 'Helpful context such as room measurements, building access, or fixture details...'
+                    : 'Helpful context like parking clearance, warning lights, or error codes...'
+                }
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
               />
             </div>
 
@@ -565,7 +668,7 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#475569] dark:text-[#94A3B8] inline-flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#58605A] dark:text-[#B4C2BC] inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -573,7 +676,7 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A] inline-flex items-center gap-2"
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] inline-flex items-center gap-2 cursor-pointer"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />
@@ -586,11 +689,11 @@ export function RequestFlowPage({
         {step === 3 && (
           <div className="space-y-6">
             <div>
-              <h2 className="font-display text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+              <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
                 How would you like to send this request?
               </h2>
-              <p className="text-sm text-[#475569] dark:text-[#94A3B8] mt-1">
-                Choose between receiving quotes from matching GTA professionals or contacting one professional directly.
+              <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] mt-1">
+                Choose between comparing quotes from matching Ontario professionals or contacting one professional directly.
               </p>
             </div>
 
@@ -601,17 +704,17 @@ export function RequestFlowPage({
                   setRequestType('marketplace');
                   setTargetProviderId('');
                 }}
-                className={`p-5 rounded-xl border text-left space-y-2 transition-colors ${
+                className={`p-5 rounded-xl border text-left space-y-2 transition-colors cursor-pointer ${
                   requestType === 'marketplace'
-                    ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/10'
-                    : 'border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16]'
+                    ? 'border-[#063B2B] dark:border-[#C6A45B] bg-[#063B2B]/10 dark:bg-[#145443]/35'
+                    : 'border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17]'
                 }`}
               >
-                <div className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                <div className="text-sm font-bold text-[#171B19] dark:text-[#F6F2E8]">
                   Find available professionals for me
                 </div>
-                <p className="text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed">
-                  General marketplace request. Eligible professionals in your area can review and send quotes so you can compare offers.
+                <p className="text-xs text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
+                  General marketplace request. Eligible professionals in your area review and send written quotes so you can compare offers.
                 </p>
               </button>
 
@@ -621,16 +724,16 @@ export function RequestFlowPage({
                   setRequestType('direct');
                   if (!targetProviderId && providers[0]) setTargetProviderId(providers[0].id);
                 }}
-                className={`p-5 rounded-xl border text-left space-y-2 transition-colors ${
+                className={`p-5 rounded-xl border text-left space-y-2 transition-colors cursor-pointer ${
                   requestType === 'direct'
-                    ? 'border-[#B45309] dark:border-[#F59E0B] bg-[#B45309]/10'
-                    : 'border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16]'
+                    ? 'border-[#063B2B] dark:border-[#C6A45B] bg-[#063B2B]/10 dark:bg-[#145443]/35'
+                    : 'border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17]'
                 }`}
               >
-                <div className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                <div className="text-sm font-bold text-[#171B19] dark:text-[#F6F2E8]">
                   Request a specific professional
                 </div>
-                <p className="text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed">
+                <p className="text-xs text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
                   Direct request. Only the professional you choose receives this request. You can switch to the general marketplace if they decline.
                 </p>
               </button>
@@ -638,13 +741,13 @@ export function RequestFlowPage({
 
             {requestType === 'direct' && (
               <div>
-                <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1.5">
+                <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1.5">
                   Select professional
                 </label>
                 <select
                   value={targetProviderId}
                   onChange={(e) => setTargetProviderId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                 >
                   {providers.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -659,7 +762,7 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#475569] dark:text-[#94A3B8] inline-flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#58605A] dark:text-[#B4C2BC] inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -667,7 +770,7 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={() => setStep(4)}
-                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A] inline-flex items-center gap-2"
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] inline-flex items-center gap-2 cursor-pointer"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />
@@ -680,11 +783,11 @@ export function RequestFlowPage({
         {step === 4 && (
           <div className="space-y-5">
             <div>
-              <h2 className="font-display text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+              <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
                 Where is the service needed?
               </h2>
-              <p className="text-sm text-[#475569] dark:text-[#94A3B8] mt-1">
-                Only your city and neighbourhood are shared when requesting quotes. Exact address is kept private until you accept a quote.
+              <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] mt-1">
+                Only your city and neighbourhood are shared when requesting quotes. Exact address stays private until you accept a quote.
               </p>
             </div>
 
@@ -692,23 +795,23 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={handleUseGeolocation}
-                className="px-3.5 py-2 rounded-lg text-xs font-semibold border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-[#F8FAFC] inline-flex items-center gap-2"
+                className="px-3.5 py-2 rounded-lg text-xs font-semibold border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-[#171B19] dark:text-[#F6F2E8] inline-flex items-center gap-2 cursor-pointer"
               >
-                <Compass className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B]" />
+                <Compass className="w-4 h-4 text-[#9F7B37] dark:text-[#C6A45B]" />
                 <span>Use approximate device location (optional)</span>
               </button>
-              {geoMessage && <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{geoMessage}</span>}
+              {geoMessage && <span className="text-xs text-[#58605A] dark:text-[#B4C2BC]">{geoMessage}</span>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
-                  GTA City / Municipality *
+                <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
+                  Ontario City / Municipality *
                 </label>
                 <select
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                 >
                   {locations.map((loc) => (
                     <option key={loc.slug} value={loc.name}>
@@ -718,7 +821,7 @@ export function RequestFlowPage({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+                <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                   Neighbourhood or Intersection
                 </label>
                 <input
@@ -726,11 +829,11 @@ export function RequestFlowPage({
                   value={neighbourhood}
                   onChange={(e) => setNeighbourhood(e.target.value)}
                   placeholder="e.g. North York / Yonge & Sheppard"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+                <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                   Postal Code
                 </label>
                 <input
@@ -738,11 +841,11 @@ export function RequestFlowPage({
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
                   placeholder="e.g. M2N 5P5"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
+                <label className="block text-xs font-semibold text-[#171B19] dark:text-[#F6F2E8] mb-1">
                   Exact Street Address (kept private until assigned)
                 </label>
                 <input
@@ -750,7 +853,7 @@ export function RequestFlowPage({
                   value={exactAddress}
                   onChange={(e) => setExactAddress(e.target.value)}
                   placeholder="Street number & name or parking lot"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                 />
               </div>
             </div>
@@ -759,7 +862,7 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#475569] dark:text-[#94A3B8] inline-flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#58605A] dark:text-[#B4C2BC] inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -767,7 +870,7 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={() => setStep(5)}
-                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A] inline-flex items-center gap-2"
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] inline-flex items-center gap-2 cursor-pointer"
               >
                 <span>Review &amp; Continue</span>
                 <ArrowRight className="w-4 h-4" />
@@ -780,62 +883,68 @@ export function RequestFlowPage({
         {step === 5 && (
           <form onSubmit={handleSubmitRequest} className="space-y-6">
             <div>
-              <h2 className="font-display text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+              <h2 className="font-display text-2xl font-bold text-[#171B19] dark:text-[#F6F2E8]">
                 Confirm &amp; Submit Request
               </h2>
-              <p className="text-sm text-[#475569] dark:text-[#94A3B8] mt-1">
-                Review your summary below. You can compare quotes in your Customer Dashboard once professionals respond.
+              <p className="text-sm text-[#58605A] dark:text-[#B4C2BC] mt-1">
+                Review your summary below. Compare quotes in your Customer Dashboard once professionals respond.
               </p>
             </div>
 
-            <div className="p-4 rounded-lg bg-[#F8FAFC] dark:bg-[#090D16] border border-[#E2E8F0] dark:border-[#1E293B] space-y-2 text-sm">
+            <div className="p-4 rounded-lg bg-[#F8F7F2] dark:bg-[#071E17] border border-[#D8D4C7] dark:border-[#1E4438] space-y-2 text-sm">
               <div className="flex justify-between gap-4">
-                <span className="text-[#475569] dark:text-[#94A3B8]">Service</span>
-                <span className="font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
+                <span className="text-[#58605A] dark:text-[#B4C2BC]">Division</span>
+                <span className="font-semibold text-[#171B19] dark:text-[#F6F2E8]">
+                  {division === 'home' ? 'WorldLeo Home' : 'WorldLeo Auto'}
+                </span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-[#58605A] dark:text-[#B4C2BC]">Service</span>
+                <span className="font-semibold text-[#171B19] dark:text-[#F6F2E8]">
                   {subcategories.find((s) => s.id === subcategoryId)?.name}
                 </span>
               </div>
               <div className="flex justify-between gap-4">
-                <span className="text-[#475569] dark:text-[#94A3B8]">Summary</span>
-                <span className="font-medium text-[#0F172A] dark:text-[#F8FAFC] text-right">
+                <span className="text-[#58605A] dark:text-[#B4C2BC]">Summary</span>
+                <span className="font-medium text-[#171B19] dark:text-[#F6F2E8] text-right">
                   {problemSummary || 'Service request'}
                 </span>
               </div>
               <div className="flex justify-between gap-4">
-                <span className="text-[#475569] dark:text-[#94A3B8]">Method</span>
-                <span className="font-medium text-[#0F172A] dark:text-[#F8FAFC]">
+                <span className="text-[#58605A] dark:text-[#B4C2BC]">Method</span>
+                <span className="font-medium text-[#171B19] dark:text-[#F6F2E8]">
                   {requestType === 'direct'
                     ? `Direct Request (${selectedProvider?.business_name})`
                     : 'General Marketplace Request'}
                 </span>
               </div>
               <div className="flex justify-between gap-4">
-                <span className="text-[#475569] dark:text-[#94A3B8]">Area</span>
-                <span className="font-medium text-[#0F172A] dark:text-[#F8FAFC]">
+                <span className="text-[#58605A] dark:text-[#B4C2BC]">Area</span>
+                <span className="font-medium text-[#171B19] dark:text-[#F6F2E8]">
                   {neighbourhood ? `${neighbourhood}, ` : ''}{city} {postalCode}
                 </span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-[#B45309]/30 dark:border-[#F59E0B]/30 bg-[#B45309]/5 dark:bg-[#F59E0B]/5 space-y-1">
-              <div className="text-xs font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+            <div className="p-4 rounded-xl border border-[#C6A45B]/50 bg-[#F6F2E8] dark:bg-[#103228] space-y-1">
+              <div className="text-xs font-bold text-[#171B19] dark:text-[#F6F2E8]">
                 Upfront Service-Fee + Parts Estimates
               </div>
-              <p className="text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed">
-                Matched providers respond using our standardized <strong className="text-[#0F172A] dark:text-[#F8FAFC]">Service Fee + Parts</strong> estimate template. You can review the itemized breakdown and approve your preferred offer in your dashboard before work starts.
+              <p className="text-xs text-[#58605A] dark:text-[#B4C2BC] leading-relaxed">
+                Matched providers respond using our standardized <strong className="text-[#171B19] dark:text-[#F6F2E8]">Service Fee + Parts</strong> estimate template. Review itemized breakdowns and approve your preferred offer before work starts.
               </p>
             </div>
 
             {!user ? (
-              <div className="p-5 rounded-xl border border-[#E2E8F0] dark:border-[#1E293B] space-y-4">
+              <div className="p-5 rounded-xl border border-[#D8D4C7] dark:border-[#1E4438] space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                  <h3 className="text-sm font-bold text-[#171B19] dark:text-[#F6F2E8]">
                     Your Contact Account
                   </h3>
                   <button
                     type="button"
                     onClick={() => setAuthMode(authMode === 'register' ? 'login' : 'register')}
-                    className="text-xs font-semibold text-[#B45309] dark:text-[#F59E0B] hover:underline"
+                    className="text-xs font-semibold text-[#9F7B37] dark:text-[#D8B66F] hover:underline cursor-pointer"
                   >
                     {authMode === 'register' ? 'Already have an account? Sign in' : 'Need an account? Register'}
                   </button>
@@ -849,14 +958,14 @@ export function RequestFlowPage({
                       value={guestName}
                       onChange={(e) => setGuestName(e.target.value)}
                       placeholder="Full name *"
-                      className="px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                      className="px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                     />
                     <input
                       type="tel"
                       value={guestPhone}
                       onChange={(e) => setGuestPhone(e.target.value)}
                       placeholder="Phone number"
-                      className="px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                      className="px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                     />
                   </div>
                 )}
@@ -867,7 +976,7 @@ export function RequestFlowPage({
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
                     placeholder="Email address *"
-                    className="px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                    className="px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                   />
                   <input
                     type="password"
@@ -876,13 +985,13 @@ export function RequestFlowPage({
                     value={guestPassword}
                     onChange={(e) => setGuestPassword(e.target.value)}
                     placeholder="Password (6+ chars) *"
-                    className="px-3.5 py-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#090D16] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                    className="px-3.5 py-2.5 rounded-lg border border-[#D8D4C7] dark:border-[#1E4438] bg-[#F8F7F2] dark:bg-[#071E17] text-sm text-[#171B19] dark:text-[#F6F2E8]"
                   />
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-xs text-[#475569] dark:text-[#94A3B8]">
-                <ShieldCheck className="w-4 h-4 text-[#B45309] dark:text-[#F59E0B]" />
+              <div className="flex items-center gap-2 text-xs text-[#58605A] dark:text-[#B4C2BC]">
+                <ShieldCheck className="w-4 h-4 text-[#063B2B] dark:text-[#C6A45B]" />
                 <span>Submitting as {user.name} ({user.email})</span>
               </div>
             )}
@@ -891,7 +1000,7 @@ export function RequestFlowPage({
               <button
                 type="button"
                 onClick={() => setStep(4)}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#475569] dark:text-[#94A3B8] inline-flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#58605A] dark:text-[#B4C2BC] inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -899,7 +1008,7 @@ export function RequestFlowPage({
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-3 rounded-lg text-sm font-semibold bg-[#0F172A] text-[#F59E0B] dark:bg-[#F59E0B] dark:text-[#0F172A] hover:opacity-90 disabled:opacity-50"
+                className="px-6 py-3 rounded-lg text-sm font-semibold bg-[#063B2B] text-[#F6F2E8] dark:bg-[#C6A45B] dark:text-[#071E17] hover:opacity-90 disabled:opacity-50 cursor-pointer"
               >
                 {submitting ? 'Submitting...' : 'Submit Service Request'}
               </button>

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { apiFetch } from '../lib/api';
+import { apiFetch, setInMemorySessionToken } from '../lib/api';
 import { signInWithGoogleFirebase, signOutFirebase } from '../lib/firebase';
 import type { ProviderProfile, PublicUser, UserRole } from '../types/fixsoon';
 
@@ -8,6 +8,7 @@ interface AuthContextValue {
   providerProfile: ProviderProfile | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<PublicUser>;
+  loginDemo: (email: string) => Promise<PublicUser>;
   loginWithGoogle: () => Promise<PublicUser>;
   register: (payload: {
     name: string;
@@ -17,7 +18,7 @@ interface AuthContextValue {
     role: UserRole;
     city: string;
   }) => Promise<PublicUser>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshMe: () => Promise<void>;
   setProviderProfile: (p: ProviderProfile | null) => void;
 }
@@ -30,19 +31,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refreshMe = async () => {
-    const token = localStorage.getItem('fixsoon_token');
-    if (!token) {
-      setUser(null);
-      setProviderProfile(null);
-      setLoading(false);
-      return;
-    }
     try {
-      const res = await apiFetch<{ user: PublicUser; providerProfile: ProviderProfile | null }>('/api/auth/me');
+      const res = await apiFetch<{ user: PublicUser; providerProfile: ProviderProfile | null }>(
+        '/api/auth/me'
+      );
       setUser(res.user);
       setProviderProfile(res.providerProfile);
     } catch {
-      localStorage.removeItem('fixsoon_token');
+      setInMemorySessionToken(null);
       setUser(null);
       setProviderProfile(null);
     } finally {
@@ -51,18 +47,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    setInMemorySessionToken(null);
     refreshMe();
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await apiFetch<{ token: string; user: PublicUser; providerProfile: ProviderProfile | null }>(
-      '/api/auth/login',
-      {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      }
-    );
-    localStorage.setItem('fixsoon_token', res.token);
+    const res = await apiFetch<{
+      token: string;
+      user: PublicUser;
+      providerProfile: ProviderProfile | null;
+    }>('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    setInMemorySessionToken(res.token);
     setUser(res.user);
     setProviderProfile(res.providerProfile);
     return res.user;
@@ -80,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       method: 'POST',
       body: JSON.stringify(payload),
     });
-    localStorage.setItem('fixsoon_token', res.token);
+    setInMemorySessionToken(res.token);
     setUser(res.user);
     setProviderProfile(null);
     return res.user;
@@ -88,25 +86,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = async () => {
     const fbUser = await signInWithGoogleFirebase();
-    const res = await apiFetch<{ token: string; user: PublicUser; providerProfile: ProviderProfile | null }>(
-      '/api/auth/firebase',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          uid: fbUser.uid,
-          name: fbUser.displayName || 'FixSoon User',
-          email: fbUser.email,
-        }),
-      }
-    );
-    localStorage.setItem('fixsoon_token', res.token);
+    const idToken = await fbUser.getIdToken();
+    const res = await apiFetch<{
+      token: string;
+      user: PublicUser;
+      providerProfile: ProviderProfile | null;
+    }>('/api/auth/firebase', {
+      method: 'POST',
+      body: JSON.stringify({ idToken }),
+    });
+    setInMemorySessionToken(res.token);
     setUser(res.user);
     setProviderProfile(res.providerProfile);
     return res.user;
   };
 
-  const logout = () => {
-    localStorage.removeItem('fixsoon_token');
+  const loginDemo = async (email: string) => {
+    const res = await apiFetch<{
+      token: string;
+      user: PublicUser;
+      providerProfile: ProviderProfile | null;
+    }>('/api/auth/demo', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+    setInMemorySessionToken(res.token);
+    setUser(res.user);
+    setProviderProfile(res.providerProfile);
+    return res.user;
+  };
+
+  const logout = async () => {
+    setInMemorySessionToken(null);
+    try {
+      await apiFetch('/api/auth/logout', { method: 'POST' });
+    } catch {
+      // ignore network failure during logout
+    }
     signOutFirebase().catch(() => {});
     setUser(null);
     setProviderProfile(null);
@@ -114,7 +130,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, providerProfile, loading, login, loginWithGoogle, register, logout, refreshMe, setProviderProfile }}
+      value={{
+        user,
+        providerProfile,
+        loading,
+        login,
+        loginDemo,
+        loginWithGoogle,
+        register,
+        logout,
+        refreshMe,
+        setProviderProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>

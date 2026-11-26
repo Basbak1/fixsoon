@@ -17,6 +17,8 @@ interface BreadcrumbsProps {
 
 const STATIC_LABELS: Record<string, string> = {
   home: 'WorldLeo Home',
+  repairs: 'Home Repairs & Trades',
+  renovations: 'Renovations & Remodelling',
   auto: 'WorldLeo Auto',
   fixsoon: 'FixSoon Roadside',
   'ai-design': 'AI Design Studio',
@@ -29,17 +31,19 @@ const STATIC_LABELS: Record<string, string> = {
   'for-professionals': 'For Professionals',
   'for-providers': 'For Professionals',
   'coverage-areas': 'Coverage Areas',
-  about: 'About & Vetting',
+  about: 'About & Verification',
   contact: 'Contact',
   privacy: 'Privacy Policy',
   terms: 'Terms of Service',
+  'request-service': 'Request Service',
   request: 'Request Service',
   auth: 'Account & Sign In',
+  dashboard: 'Dashboard',
   'customer-dashboard': 'Customer Dashboard',
   'provider-dashboard': 'Provider Hub',
   'provider-onboarding': 'Provider Onboarding',
   admin: 'Operations Console',
-  'android-blueprint': 'Mobile & Shared API',
+  'android-blueprint': 'Platform Architecture',
 };
 
 export function Breadcrumbs({
@@ -152,17 +156,17 @@ export function Breadcrumbs({
   return (
     <nav
       aria-label="Breadcrumb"
-      className="border-b border-[#D8D4CA] dark:border-[#343941] bg-[#FFFFFF]/80 dark:bg-[#171A1F]/80"
+      className="border-b border-[#D8D4C7] dark:border-[#1E4438] bg-[#FFFFFF]/80 dark:bg-[#0B261E]/80"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5">
-        <ol className="flex flex-wrap items-center gap-1.5 text-xs text-[#55534E] dark:text-[#B5B7BB]">
+        <ol className="flex flex-wrap items-center gap-1.5 text-xs text-[#58605A] dark:text-[#B4C2BC]">
           {items.map((item, idx) => {
             const isLast = idx === items.length - 1;
             return (
               <li key={`${item.path}-${idx}`} className="inline-flex items-center gap-1.5">
                 {idx > 0 && (
                   <span
-                    className="text-[#D8D4CA] dark:text-[#343941] select-none font-mono text-xs px-0.5"
+                    className="text-[#D8D4C7] dark:text-[#1E4438] select-none font-mono text-xs px-0.5"
                     aria-hidden="true"
                   >
                     /
@@ -171,7 +175,7 @@ export function Breadcrumbs({
                 {isLast ? (
                   <span
                     aria-current="page"
-                    className="px-1.5 py-0.5 font-semibold text-[#171717] dark:text-[#F1EFE8]"
+                    className="px-1.5 py-0.5 font-semibold text-[#171B19] dark:text-[#F6F2E8]"
                   >
                     {item.label}
                   </span>
@@ -179,7 +183,7 @@ export function Breadcrumbs({
                   <button
                     type="button"
                     onClick={() => onNavigate(item.path)}
-                    className="px-1.5 py-0.5 rounded-md text-[#55534E] dark:text-[#B5B7BB] hover:text-[#A87919] dark:hover:text-[#D8B45A] hover:bg-[#ECE9E0] dark:hover:bg-[#22262D] hover:underline underline-offset-4 decoration-[#A87919]/50 dark:decoration-[#D8B45A]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A87919] dark:focus-visible:ring-[#D8B45A] transition-all duration-150 cursor-pointer"
+                    className="px-1.5 py-0.5 rounded-md text-[#58605A] dark:text-[#B4C2BC] hover:text-[#9F7B37] dark:hover:text-[#D8B66F] hover:bg-[#F6F2E8] dark:hover:bg-[#145443]/40 hover:underline underline-offset-4 decoration-[#9F7B37]/50 dark:decoration-[#C6A45B]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9F7B37] dark:focus-visible:ring-[#C6A45B] transition-all duration-150 cursor-pointer"
                   >
                     {item.label}
                   </button>
